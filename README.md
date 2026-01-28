@@ -34,21 +34,30 @@ chmod +x demarrer.sh
 
 ## Backend
 
-Port 8100
+Port `8100`
 
-- `PORT_EXPRESS`
-- `NODE_ENV=production` ou
-- `DOTENV_CONFIG_QUIET=true`
-- `IP_FRONTEND`
-- `CONTROLEUR_DEFAUT` node -e "import('bcrypt').then(b=>b.hash(process.argv[1],12).then(console.log))"
+```
+PORT_EXPRESS=100
+NODE_ENV=development ou production
+DOTENV_CONFIG_QUIET=true
+IP_FRONTEND=http://ipFrontend:5252
+CONTROLEUR_DEFAUT`= node -e "import('bcrypt').then(b=>b.hash(process.argv[1],12).then(console.log))"
+CHAINE_JWT_COOKIE=
+JWT_SECRET=
+MAIL_UTILISATEUR=
+MAIL_MDP=
+
+```
 
 ## Frontend
 
-5252
+Port `5252`
 
-- `DOTENV_CONFIG_QUIET=true`
-- `VITE_API_URL_BACKEND`
-- `VITE_PORT_APPLICATION`
+```
+DOTENV_CONFIG_QUIET=true
+VITE_API_URL_BACKEND=http://ipBackend:8100
+VITE_PORT_APPLICATION=5252
+```
 
 frontend$ npm install --save-dev @types/react @types/react-dom
 

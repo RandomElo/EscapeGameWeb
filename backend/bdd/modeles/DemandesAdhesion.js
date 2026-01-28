@@ -29,6 +29,13 @@ export default function (bdd) {
                 onDelete: "CASCADE",
                 onUpdate: "CASCADE",
             },
+            type: {
+                type: DataTypes.STRING(20),
+                allowNull: false,
+                validate: {
+                    isIn: [["demande", "enCours", "finie"]],
+                },
+            },
             accepter: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,

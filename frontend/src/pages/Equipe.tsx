@@ -13,7 +13,7 @@ export default function Equipe() {
     const requete = useRequete();
 
     const [afficherModal, setAfficherModal] = useState<boolean>(false);
-    const [contenuModal, setContenuModal] = useState<"creationEquipe" | "optionsEquipe" | "menuEquipeSupprimer" | "menuEquipeModifierNom">();
+    const [contenuModal, setContenuModal] = useState<"creationEquipe" | "optionsEquipe" | "menuEquipeSupprimer" | "menuEquipeModifierNom" | "menuAjouterMembre">();
     const [erreur, setErreur] = useState<string>();
     const [equipesListe, setEquipesListe] = useState<[{ nom: string; estChef: boolean }]>();
     const [donneesModal, setDonneesModal] = useState<string>();
@@ -127,7 +127,14 @@ export default function Equipe() {
                     <div id="modalOptionsEquipe">
                         <h1>Menu d'équipe</h1>
                         <div id="divOptions">
-                            <a className="bouton">Ajouter un membre</a>
+                            <a
+                                className="bouton"
+                                onClick={() => {
+                                    setContenuModal("menuAjouterMembre");
+                                }}
+                            >
+                                Ajouter un membre
+                            </a>
                             <a
                                 className="bouton"
                                 onClick={() => {
@@ -177,10 +184,14 @@ export default function Equipe() {
                     <div id="modalModifierEquipe">
                         <h1>Modifier le nom</h1>
                         <form
-                            onSubmit={(e) => {
+                            onSubmit={async (e) => {
                                 e.preventDefault();
                                 const nom = document.querySelector<HTMLInputElement>("#inputNouveauNom")!.value;
-                                console.log(nom);
+
+                                const reponse = await requete({ url: "/equipes/modification-nom", methode: "PATCH", corps: { nouveauNom: nom, ancienNom: donneesModal } });
+
+                                setEquipesListe(reponse);
+                                setAfficherModal(false);
                             }}
                         >
                             <ChampDonneesForm id="inputNouveauNom" typeInput="text" placeholder={donneesModal} focus={true} />
@@ -190,6 +201,45 @@ export default function Equipe() {
                         </form>
                     </div>
                 )}
+                {contenuModal == "menuAjouterMembre" && (
+                    <div id="modalAjouterMembre">
+                        <h1>Inviter une personne</h1>
+                        <form
+                            onSubmit={async (e) => {
+                                e.preventDefault();
+                                const mail = document.querySelector<HTMLInputElement>("#inputMail")!.value;
+                                const activerNotification = document.querySelector<HTMLInputElement>("#checkboxEnvoyerMail")?.checked;
+
+                                const reponse = await requete({ url: "/equipes/ajout-utilisateur", methode: "POST", corps: { mail, activerNotification, nomEquipe: donneesModal } });
+                            }}
+                        >
+                            <ChampDonneesForm
+                                id="inputMail"
+                                placeholder="exemple@mail.com"
+                                onBlur={(e) => {
+                                    const valeur = e.target.value.trim();
+                                    const regexMail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+                                    if (valeur && !regexMail.test(valeur)) {
+                                        setErreur("Adresse mail invalide.");
+                                    } else {
+                                        setErreur("");
+                                    }
+                                }}
+                                focus={true}
+                            />
+                            <div id="divEnvoyerMail">
+                                <input type="checkbox" id="checkboxEnvoyerMail" checked />
+                                <label htmlFor="checkboxEnvoyerMail">Envoyer une notification par mail</label>
+                            </div>
+                            {erreur && <p id="pErreur"> {erreur}</p>}
+                            <button type="submit" className="bouton" disabled={!!erreur}>
+                                Ajouter
+                            </button>
+                        </form>
+                    </div>
+                )}
+                {/* {contenuModal == "menu" && <div id="modal"></div>} */}
             </Modal>
         </>
     );

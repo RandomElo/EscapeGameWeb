@@ -3,7 +3,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 interface RequeteParametres {
     url: string;
-    methode?: "GET" | "POST" | "PUT" | "DELETE";
+    methode?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
     corps?: object;
     enTete?: Record<string, string>;
 }

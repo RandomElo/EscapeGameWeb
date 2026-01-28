@@ -1,4 +1,5 @@
 import gestionErreur from "../middlewares/gestionErreur.js";
+
 async function RecuperationMesEquipes(req) {
     const mesEquipes = await req.MembresEquipe.findAll({ where: { utilisateurId: req.idUtilisateur }, raw: true });
     let tableauEquipes = [];
@@ -8,6 +9,33 @@ async function RecuperationMesEquipes(req) {
     }
     return tableauEquipes.map(({ nom, estChef }) => ({ nom, estChef }));
 }
+
+async function VerificationChef(nomEquipe, req, res) {
+    const equipe = await req.Equipes.findOne({ where: { nom: nomEquipe }, raw: true });
+    if (!equipe) {
+        return res.status(404).json({
+            etat: false,
+            detail: "Équipe inexistante",
+        });
+    }
+
+    const membreEquipe = await req.MembresEquipe.findOne({ where: { equipeId: equipe.id, utilisateurId: req.idUtilisateur }, raw: true });
+    if (!membreEquipe) {
+        return res.status(404).json({
+            etat: false,
+            detail: "Ressource inaccessible",
+        });
+    }
+
+    if (!membreEquipe.estChef) {
+        return res.status(403).json({
+            etat: false,
+            detail: "Ressource inaccessible",
+        });
+    }
+    return equipe;
+}
+
 export const mesEquipes = gestionErreur(
     async (req, res) => {
         const liste = await RecuperationMesEquipes(req);
@@ -43,11 +71,49 @@ export const creation = gestionErreur(
     "Erreur lors de la création de l'équipe",
 );
 
-export const modificationNom = gestionErreur((req, res) => {}, "controleurModificationNomEquipe", "Erreur lors de la modification du nom de l'équipe");
+export const modificationNom = gestionErreur(
+    async (req, res) => {
+        const { nouveauNom, ancienNom } = req.body;
+
+        if (!nouveauNom || !ancienNom) {
+            return res.status(401).json({
+                etat: false,
+                detail: "Requête incorrecte",
+            });
+        }
+
+        const equipe = await VerificationChef(ancienNom, req, res);
+        await req.Equipes.update({ nom: nouveauNom }, { where: { id: equipe.id } });
+
+        const liste = await RecuperationMesEquipes(req);
+        return res.json({ etat: true, detail: liste });
+    },
+    "controleurModificationNomEquipe",
+    "Erreur lors de la modification du nom de l'équipe",
+);
 
 export const listeMembres = gestionErreur((req, res) => {}, "controleurRecuperationListeMembres", "Erreur lors de la récupération des membres de l'équipe");
 
-export const ajoutUtilisateur = gestionErreur((req, res) => {}, "controleurAjoutUtilisateurEquipe", "Erreur lors de l'ajout de l'utilisateur dans l'équipe");
+export const ajoutUtilisateur = gestionErreur(
+    async (req, res) => {
+        const { mail, activerNotification, nomEquipe } = req.body;
+
+        if (!mail || !activerNotification || !nomEquipe) {
+            return res.status(401).json({
+                etat: false,
+                detail: "Requête incorrecte",
+            });
+        }
+        const equipe = await VerificationChef(nomEquipe, req, res);
+        
+        const utilisateur = await req.utilisateurs.findOne({ where: { mail } });
+        if (!utilisateur) {
+            console.log("je doit envoyer un mail pour qu'il ce crée un compte");
+        }
+    },
+    "controleurAjoutUtilisateurEquipe",
+    "Erreur lors de l'ajout de l'utilisateur dans l'équipe",
+);
 
 export const quitter = gestionErreur((req, res) => {}, "controleurQuitterEquipe", "Erreur lors du départ de l'équipe");
 
@@ -63,28 +129,8 @@ export const suppressionEquipe = gestionErreur(
             });
         }
 
-        const equipe = await req.Equipes.findOne({ where: { nom }, raw: true });
-        if (!equipe) {
-            return res.status(404).json({
-                etat: false,
-                detail: "Équipe inexistante",
-            });
-        }
+        await VerificationChef(nom, req, res);
 
-        const membreEquipe = await req.MembresEquipe.findOne({ where: { equipeId: equipe.id, utilisateurId: req.idUtilisateur }, raw: true });
-        if (!membreEquipe) {
-            return res.status(404).json({
-                etat: false,
-                detail: "Ressource inaccessible",
-            });
-        }
-
-        if (!membreEquipe.estChef) {
-            return res.status(403).json({
-                etat: false,
-                detail: "Ressource inaccessible",
-            });
-        }
         await req.Equipes.destroy({ where: { nom } });
 
         const liste = await RecuperationMesEquipes(req);
