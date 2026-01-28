@@ -1,0 +1,158 @@
+[2026-01-22T08:50:15.076Z] [INFO] ENGINE MQTT démarré
+[2026-01-22T08:50:15.165Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-22T09:11:43.567Z] [INFO] MQTT | escape/mission/1/state | READY
+[2026-01-22T09:14:28.140Z] [INFO] ENGINE MQTT démarré
+[2026-01-22T09:14:28.218Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-22T10:23:24.034Z] [INFO] ENGINE MQTT démarré
+[2026-01-22T10:23:24.120Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-23T09:12:23.082Z] [INFO] ENGINE MQTT démarré
+[2026-01-23T09:12:23.164Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-23T09:39:35.294Z] [INFO] ENGINE MQTT démarré
+[2026-01-23T09:39:35.373Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-23T10:00:45.232Z] [INFO] ENGINE MQTT démarré
+[2026-01-23T10:00:45.310Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-26T07:33:57.650Z] [INFO] ENGINE MQTT démarré
+[2026-01-26T07:33:57.724Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-26T07:36:41.440Z] [INFO] ENGINE MQTT démarré
+[2026-01-26T07:36:41.521Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-26T07:40:21.338Z] [INFO] ENGINE MQTT démarré
+[2026-01-26T07:40:21.409Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-26T07:42:28.452Z] [INFO] ENGINE MQTT démarré
+[2026-01-26T07:42:28.532Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-26T08:08:24.720Z] [INFO] ENGINE MQTT démarré
+[2026-01-26T08:08:24.795Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-26T08:08:35.483Z] [INFO] ENGINE MQTT démarré
+[2026-01-26T08:08:35.554Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-26T08:17:43.743Z] [INFO] ENGINE MQTT démarré
+[2026-01-26T08:17:43.818Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-26T08:52:00.359Z] [INFO] ENGINE MQTT démarré
+[2026-01-26T08:52:00.437Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-26T10:33:18.344Z] [INFO] ENGINE MQTT démarré
+[2026-01-26T10:33:18.413Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-26T10:35:44.483Z] [INFO] MQTT | escape/mission/3/state | Test
+[2026-01-26T10:37:24.371Z] [INFO] MQTT | escape/mission/3/state | Test
+[2026-01-26T10:48:35.531Z] [INFO] MQTT | escape/mission/3/state | Test
+[2026-01-26T10:50:31.839Z] [INFO] MQTT | escape/mission/3/state | 
+[2026-01-26T10:50:40.169Z] [INFO] MQTT | escape/mission/3/state | Test
+[2026-01-28T07:12:34.956Z] [INFO] ENGINE MQTT démarré
+[2026-01-28T07:12:35.046Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-28T07:15:32.677Z] [INFO] MQTT | escape/mission/3/state | Test
+[2026-01-28T07:17:05.474Z] [INFO] MQTT | escape/mission/3/state | SAlut
+[2026-01-28T07:17:07.501Z] [INFO] MQTT | escape/mission/3/state | SAlut
+[2026-01-28T07:17:10.955Z] [INFO] MQTT | escape/mission/3/state | SAlut
+[2026-01-28T07:17:26.432Z] [INFO] MQTT | escape/mission/3/state | Test
+[2026-01-28T07:32:58.908Z] [INFO] MQTT | escape/mission/3/state | TEST_PC
+[2026-01-28T07:36:33.676Z] [INFO] MQTT | escape/mission/1/state | READY
+[2026-01-28T07:37:16.661Z] [INFO] MQTT | escape/mission/3/state | READY
+[2026-01-28T07:38:53.658Z] [INFO] MQTT | escape/mission/3/state | TEST_PC
+[2026-01-28T07:39:34.535Z] [INFO] MQTT | escape/mission/3/state | TEST_PC
+[2026-01-28T07:40:09.191Z] [INFO] MQTT | escape/mission/3/state | READY
+[2026-01-28T07:40:26.486Z] [INFO] MQTT | escape/mission/3/state | YO
+[2026-01-28T07:41:36.243Z] [INFO] MQTT | escape/mission/3/state | YO
+[2026-01-28T07:48:34.902Z] [INFO] MQTT | escape/mission/3/state | YO
+[2026-01-28T07:48:39.449Z] [INFO] MQTT | escape/mission/3/state | test
+[2026-01-28T07:52:49.512Z] [INFO] MQTT | escape/mission/3/state | Je teste les badges rfid 
+[2026-01-28T08:16:52.720Z] [INFO] ENGINE MQTT démarré
+[2026-01-28T08:16:52.803Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-28T08:17:25.110Z] [INFO] MQTT | escape/mission/3/state | #
+[2026-01-28T08:39:42.898Z] [INFO] MQTT | escape/mission/3/state | Je teste les badges rfid 
+[2026-01-28T12:07:27.823Z] [INFO] ENGINE MQTT démarré
+[2026-01-28T12:07:27.906Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-28T12:35:07.733Z] [INFO] ENGINE MQTT démarré
+[2026-01-28T12:35:07.812Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-28T12:52:04.314Z] [INFO] ENGINE MQTT démarré
+[2026-01-28T12:52:04.357Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-28T13:06:21.921Z] [INFO] MQTT | escape/mission/3/event | grrrrrrrrrrrrrrr
+[2026-01-28T13:06:21.922Z] [INFO] MQTT | escape/mission/3/event | grrrrrrrrrrrrrrr
+[2026-01-28T13:11:41.583Z] [INFO] ENGINE MQTT démarré
+[2026-01-28T13:11:41.617Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-28T13:18:31.852Z] [INFO] ENGINE MQTT démarré
+[2026-01-28T13:18:31.921Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-28T13:23:19.462Z] [INFO] MQTT | escape/mission/3/event | grrrrrrrrrrrrrrr
+[2026-01-28T13:26:32.087Z] [INFO] MQTT | escape/mission/3/event | grrrrrrrrrrrrrrr
+[2026-01-28T13:27:19.462Z] [INFO] MQTT | escape/mission/3/event | la jarrive pas pour les badgessssss fdpppppppppppppppppppppppppppppppppppppppppppppp
+[2026-01-28T13:27:50.434Z] [INFO] MQTT | escape/scenario/config | {"id":1,"name":"Test Scenario","missions":[1,2,3]}
+[2026-01-28T13:27:51.016Z] [INFO] MQTT | escape/mission/3/event | Je test !!!!
+[2026-01-28T13:37:37.451Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:37:38.454Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:37:39.502Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:37:41.072Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:37:42.625Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:37:44.189Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:37:45.755Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:37:47.315Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:37:48.865Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:37:50.457Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:37:52.006Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:37:53.637Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:37:55.182Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:37:56.726Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:37:58.271Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:37:59.820Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:38:01.370Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:38:02.918Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:38:04.533Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:38:06.090Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:38:07.632Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:38:09.188Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:38:10.734Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:38:12.279Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:39:54.836Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:39:56.358Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:39:57.971Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:42:24.351Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:42:25.380Z] [INFO] MQTT | escape/mission/3/event | {"reader2": "Tour", "reader3": null, "reader1": null}
+[2026-01-28T13:42:26.954Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:42:28.083Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:42:29.628Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:42:31.172Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:42:32.718Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T13:43:45.418Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": "Artefact"}
+[2026-01-28T13:43:46.487Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": "Artefact"}
+[2026-01-28T13:52:10.037Z] [INFO] ENGINE MQTT démarré
+[2026-01-28T13:52:10.114Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-28T14:00:10.698Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": "Artefact"}
+[2026-01-28T14:00:50.809Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": "Artefact"}
+[2026-01-28T14:03:46.851Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T14:03:47.838Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": "Artefact"}
+[2026-01-28T14:03:49.372Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T14:04:28.445Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T14:04:36.936Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": "Artefact"}
+[2026-01-28T14:04:46.703Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T14:04:51.768Z] [INFO] MQTT | escape/mission/3/event | {"reader2": "Couronne", "reader3": null, "reader1": null}
+[2026-01-28T14:04:53.285Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T14:06:04.472Z] [INFO] ENGINE MQTT démarré
+[2026-01-28T14:06:04.555Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-28T14:06:12.830Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T14:06:15.375Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": "Couronne"}
+[2026-01-28T14:06:16.959Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T14:06:42.108Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": "Artefact", "reader1": null}
+[2026-01-28T14:06:43.625Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T14:06:55.194Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": "Couronne"}
+[2026-01-28T14:06:56.798Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T14:09:16.877Z] [INFO] ENGINE MQTT démarré
+[2026-01-28T14:09:16.946Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-28T14:09:31.864Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T14:09:43.381Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": "Artefact"}
+[2026-01-28T14:09:44.903Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T14:09:48.970Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": "Couronne", "reader1": null}
+[2026-01-28T14:09:51.595Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T14:13:49.849Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": "Tour"}
+[2026-01-28T14:13:51.421Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T14:48:28.593Z] [INFO] ENGINE MQTT démarré
+[2026-01-28T14:48:28.673Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-28T14:48:40.900Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T14:48:47.912Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": "Artefact"}
+[2026-01-28T14:48:50.485Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T14:48:54.637Z] [INFO] MQTT | escape/mission/3/event | {"reader2": "Tour", "reader3": null, "reader1": null}
+[2026-01-28T14:48:56.294Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T14:49:31.823Z] [INFO] MQTT | escape/mission/3/event | {"reader2": "Tour", "reader3": null, "reader1": null}
+[2026-01-28T14:49:32.422Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": "Artefact"}
+[2026-01-28T14:49:34.489Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T14:52:06.964Z] [INFO] ENGINE MQTT démarré
+[2026-01-28T14:52:07.045Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-28T15:23:48.642Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T15:23:52.646Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": "Couronne", "reader1": null}
+[2026-01-28T15:23:55.197Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-28T15:23:56.318Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": "Couronne"}
+[2026-01-28T15:23:58.982Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}

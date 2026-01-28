@@ -1,0 +1,80 @@
+import { Sequelize } from "sequelize";
+import fs from "fs";
+import readlineSync from "readline-sync";
+import qrcode from "qrcode-terminal";
+import speakeasy from "speakeasy";
+import QRCode from "qrcode";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+// Importation des modèles
+import Utilisateurs from "./modeles/Utilisateurs.js";
+import Equipes from "./modeles/Equipes.js";
+import MembresEquipe from "./modeles/MembresEquipe.js";
+import Parties from "./modeles/Parties.js";
+import Scenarios from "./modeles/Scenarios.js";
+import Missions from "./modeles/Missions.js";
+import EtatsMissions from "./modeles/EtatsMissions.js";
+import MissionsScenario from "./modeles/MissionsScenario.js";
+import Scores from "./modeles/Scores.js";
+import MessagesAudio from "./modeles/MessagesAudio.js";
+import JournauxEvenements from "./modeles/JournauxEvenements.js";
+import LiensMail from "./modeles/LiensMail.js";
+import DemandesAdhesion from "./modeles/DemandesAdhesion.js";
+const cheminBDD = "./bdd/bdd.sqlite";
+const enDeveloppement = process.env.NODE_ENV != "production";
+
+// Initialisation de l'ORM
+const sequelize = new Sequelize({
+    dialect: "sqlite",
+    storage: cheminBDD,
+    logging: false,
+    define: {
+        freezeTableName: true,
+        timestamps: false,
+    },
+});
+
+// Création d'instance pour chaque modèle
+const bdd = {
+    sequelize,
+    Utilisateurs: Utilisateurs(sequelize),
+    Equipes: Equipes(sequelize),
+    MembresEquipe: MembresEquipe(sequelize),
+    Parties: Parties(sequelize),
+    Scenarios: Scenarios(sequelize),
+    Missions: Missions(sequelize),
+    EtatsMissions: EtatsMissions(sequelize),
+    MissionsScenario: MissionsScenario(sequelize),
+    Scores: Scores(sequelize),
+    MessagesAudio: MessagesAudio(sequelize),
+    JournauxEvenements: JournauxEvenements(sequelize),
+    LiensMail: LiensMail(sequelize),
+    DemandesAdhesion: DemandesAdhesion(sequelize),
+};
+
+// Initialisation de la bdd
+const existanceBdd = fs.existsSync(cheminBDD);
+
+if (!existanceBdd) {
+    await sequelize.sync({ force: true });
+    console.log("✅ Base SQLite initialisée (première création)");
+}
+
+// Vérification de la présence d'un controleur dans la bdd
+const controleurExiste = await bdd.Utilisateurs.findOne({
+    where: { role: "controleur" },
+});
+
+if (!controleurExiste) {
+    console.log("⚠️  Aucun controleur enregistrer");
+    await bdd.Utilisateurs.create({
+        nom: "Controleur",
+        mail: "escape.game.lla@gmail.com",
+        motDePasse: process.env.CONTROLEUR_DEFAUT,
+        role: "controleur",
+    });
+}
+
+export default bdd;

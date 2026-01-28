@@ -1,0 +1,90 @@
+.Equipe {
+    #divActions {
+        text-align: center;
+    }
+    #divListeEquipes {
+        #divMesEquipes {
+            table {
+                width: 500px;
+                border-collapse: collapse;
+                /* border: 1px solid black; */
+                margin: 0 auto;
+
+                td {
+                    height: 35px;
+                }
+
+                .action {
+                    width: 70px;
+                    text-align: center;
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+}
+#modalCreationEquipe {
+    text-align: center;
+    form {
+        .ChampDonneesForm {
+            margin-left: auto;
+            margin-right: auto;
+        }
+        button {
+            width: 50px;
+        }
+        #divErreurFormulaire {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            #pErreur {
+                margin-left: 10px;
+                font-size: 0.85em;
+                font-weight: bold;
+            }
+            svg {
+                display: block;
+                width: 24px;
+                height: 24px;
+            }
+        }
+    }
+}
+#modalOptionsEquipe {
+    text-align: center;
+    #divOptions {
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        row-gap: 20px;
+    }
+}
+#modalSupprimerEquipe {
+    text-align: center;
+    h1 {
+        margin-bottom: 10px;
+    }
+    #divChoix {
+        width: 80%;
+        margin: 10px auto 0;
+        display: flex;
+        justify-content: space-between;
+        .boutonSupprimer {
+            background-color: red;
+        }
+    }
+}
+#modalModifierEquipe {
+    text-align: center;
+    #divinputNouveauNom {
+        margin: 5px auto 15px auto;
+    }
+
+    button {
+        margin: 0 auto;
+    }
+}

@@ -1,0 +1,93 @@
+@font-face {
+    font-family: "GoogleFonts";
+    src: url("/GoogleSans-Bold.tff") format("tff");
+    font-style: normal;
+}
+
+/* @font-face {
+  font-family: 'GoogleFonts';
+  src: url('/fonts/MaPolice-Bold.woff2') format('woff2'),
+       url('/fonts/MaPolice-Bold.woff') format('woff');
+  font-weight: 700;  Bold
+  font-style: normal;
+  font-display: swap;
+} 
+*/
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: "GoogleFonts", sans-serif;
+    text-decoration: none;
+}
+
+.input {
+    border: 2px solid #f2f2f2;
+    outline: none;
+    margin-top: 8px;
+    padding-left: 10px;
+
+    height: 31px;
+    border-radius: 5px;
+}
+
+.bouton {
+    height: 31px;
+
+    padding: 3px 7px;
+
+    display: flex;
+    align-items: center;
+
+    color: #fff;
+    background-color: #0085ff;
+
+    font-size: 1em;
+    font-weight: bold;
+
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.bouton:disabled {
+    cursor: not-allowed;
+    background-color: #808793;
+}
+
+#titre {
+    text-align: center;
+}
+
+/* Gestion de la navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 30px;
+}
+.navbar .logo {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+.navLinks.mobile-menu {
+    margin-left: 0;
+}
+
+.navbar .navLinks .active {
+    text-decoration: underline;
+}
+.navbar a {
+    color: black;
+}
+.navbar a:hover {
+    text-decoration: underline;
+}
+.navbar .navLinks ul {
+    display: flex;
+    align-items: center;
+}
+.navbar .navLinks ul li {
+    margin: 0 20px;
+    list-style: none;
+}

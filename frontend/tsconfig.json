@@ -1,0 +1,10 @@
+{
+    "files": [],
+    "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }],
+    "compilerOptions": {
+        "strict": false, // désactive le mode strict global
+        "noImplicitAny": true, // autorise le type any
+        "strictNullChecks": false, // desactive la distinction  entre null undefined et les autres types
+        "exactOptionalPropertyTypes": false // la propriété peut être absent, undefined ou string
+    }
+}
