@@ -166,3 +166,19 @@ export const verifier2FA = gestionErreur(
     "controleurVerifier2FA",
     "Erreur lors de la vérification de la double authentification",
 );
+
+export const detailsToken = gestionErreur(
+    async (req, res) => {
+        const { token } = req.params;
+
+        if (!token) {
+            return res.status(401).json({
+                etat: false,
+                detail: "Requête incorrecte",
+            });
+        }
+
+    },
+    "controleurDetailTokenAuthentification",
+    "Erreur lors de la récupération des détails du lien de connexion",
+);

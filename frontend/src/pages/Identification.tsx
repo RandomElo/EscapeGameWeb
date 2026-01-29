@@ -1,6 +1,6 @@
 import { TriangleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import ChampDonneesForm from "../composants/ChampDonneesForm";
 import "../styles/Identification.css";
@@ -14,11 +14,14 @@ export default function Identification({ mode }: { mode: "connexion" | "inscript
     const requete = useRequete();
     const localisation = useLocation();
 
+    const [rechercheParametres] = useSearchParams();
+
     const [erreur, setErreur] = useState<{ bloquante: boolean; detail: string } | null>();
     const [afficherModal, setAfficherModal] = useState<boolean>(false);
     const [typeModal, setTypeModal] = useState<"configuration2FA" | "connexion2FA">();
     const [configuration2FA, setConfiguration2FA] = useState<{ qrCode: string; token2FA: string }>();
     const [connexion2FA, setConnexion2FA] = useState<boolean>(false);
+    const [token, setToken] = useState<string | null>();
 
     interface CorpsRequete {
         nom?: string;
@@ -39,6 +42,17 @@ export default function Identification({ mode }: { mode: "connexion" | "inscript
     useEffect(() => {
         setErreur(null);
     }, [localisation]);
+
+    useEffect(() => {
+        const t = rechercheParametres.get("token");
+        if (t) {
+            setToken(t);
+        }
+        const recuperationToken = async () => {
+            const reponse = await requete({ url: `/utilisateurs/details-token?token=${t}` });
+            console.log(reponse)
+        };
+    }, [rechercheParametres]);
 
     return (
         <>

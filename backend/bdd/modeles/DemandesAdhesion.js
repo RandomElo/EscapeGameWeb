@@ -11,7 +11,7 @@ export default function (bdd) {
             },
             utilisateurId: {
                 type: DataTypes.INTEGER,
-                allowNull: false,
+                allowNull: true,
                 references: {
                     model: "Utilisateurs",
                     key: "id",
@@ -33,9 +33,18 @@ export default function (bdd) {
                 type: DataTypes.STRING(20),
                 allowNull: false,
                 validate: {
-                    isIn: [["demande", "enCours", "finie"]],
+                    isIn: [["demande", "ajout"]],
                 },
             },
+
+            mail: {
+                type: DataTypes.STRING(255),
+                allowNull: true,
+                validate: {
+                    isEmail: true,
+                },
+            },
+
             accepter: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,

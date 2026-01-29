@@ -1,3 +1,5 @@
+import { envoyerMail, recupererTexteMail } from "../fonctions/envoyerMail.js";
+import { genererToken } from "../fonctions/genererToken.js";
 import gestionErreur from "../middlewares/gestionErreur.js";
 
 async function RecuperationMesEquipes(req) {
@@ -105,10 +107,39 @@ export const ajoutUtilisateur = gestionErreur(
             });
         }
         const equipe = await VerificationChef(nomEquipe, req, res);
-        
-        const utilisateur = await req.utilisateurs.findOne({ where: { mail } });
-        if (!utilisateur) {
-            console.log("je doit envoyer un mail pour qu'il ce crée un compte");
+
+        const utilisateurInviter = await req.Utilisateurs.findOne({ where: { mail } });
+        if (!utilisateurInviter) {
+            await req.DemandesAdhesion.create({
+                equipeId: equipe.id,
+                type: "ajout",
+                mail,
+            });
+
+            const token = genererToken(10);
+
+            await req.LiensMail.create({
+                token,
+                type: "creationCompte",
+                details: JSON.stringify({ mail }),
+            });
+
+            const utilisateur = await req.Utilisateurs.findByPk(req.idUtilisateur);
+            const { texte, html } = recupererTexteMail("ajoutEquipeCreationCompte", {
+                nomUtilisateur: utilisateur.nom,
+                nomEquipe,
+                lienCreation: `${process.env.IP_FRONTED}/inscription?token=${token}`,
+            });
+
+            await envoyerMail({
+                destinataire: mail,
+                sujet: "Invitation à rejoindre une équipe",
+                texte,
+                html,
+            });
+
+            console.log(mail);
+            return res.json({ etat: true, detail: "dev" });
         }
     },
     "controleurAjoutUtilisateurEquipe",

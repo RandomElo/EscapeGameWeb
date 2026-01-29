@@ -10,7 +10,7 @@ export default function (bdd) {
                 primaryKey: true,
             },
             token: {
-                type: DataTypes.STRING(100),
+                type: DataTypes.STRING(10),
                 allowNull: false,
                 unique: true,
                 validate: {
@@ -18,8 +18,13 @@ export default function (bdd) {
                 },
             },
             type: {
-                type: DataTypes.ENUM("recapPartie", "resetMdp", "invitationEquipe", "validationCompte", "demandeAdhesion"),
+                type: DataTypes.ENUM("recapPartie", "resetMdp", "invitationEquipe", "validationCompte", "demandeAdhesion", "creationCompte"),
                 allowNull: false,
+            },
+            details: {
+                type: DataTypes.JSON,
+                allowNull: false,
+                defaultValue: {},
             },
         },
         {

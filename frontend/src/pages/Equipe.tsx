@@ -211,6 +211,7 @@ export default function Equipe() {
                                 const activerNotification = document.querySelector<HTMLInputElement>("#checkboxEnvoyerMail")?.checked;
 
                                 const reponse = await requete({ url: "/equipes/ajout-utilisateur", methode: "POST", corps: { mail, activerNotification, nomEquipe: donneesModal } });
+                                console.log(reponse);
                             }}
                         >
                             <ChampDonneesForm

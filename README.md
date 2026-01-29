@@ -43,7 +43,6 @@ DOTENV_CONFIG_QUIET=true
 IP_FRONTEND=http://ipFrontend:5252
 CONTROLEUR_DEFAUT`= node -e "import('bcrypt').then(b=>b.hash(process.argv[1],12).then(console.log))"
 CHAINE_JWT_COOKIE=
-JWT_SECRET=
 MAIL_UTILISATEUR=
 MAIL_MDP=
 
