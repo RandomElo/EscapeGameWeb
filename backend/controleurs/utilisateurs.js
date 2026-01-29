@@ -41,7 +41,7 @@ export const inscription = gestionErreur(
         const motDePasseHash = await bcrypt.hash(req.body.mdp, 12);
 
         const utilisateur = await req.Utilisateurs.create({
-            nom: req.body.mail,
+            nom: req.body.nom,
             mail: req.body.mail,
             motDePasse: motDePasseHash,
         });

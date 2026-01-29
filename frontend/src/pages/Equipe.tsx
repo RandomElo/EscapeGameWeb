@@ -15,7 +15,7 @@ export default function Equipe() {
     const [afficherModal, setAfficherModal] = useState<boolean>(false);
     const [contenuModal, setContenuModal] = useState<"creationEquipe" | "optionsEquipe" | "menuEquipeSupprimer" | "menuEquipeModifierNom" | "menuAjouterMembre">();
     const [erreur, setErreur] = useState<string>();
-    const [equipesListe, setEquipesListe] = useState<[{ nom: string; estChef: boolean }]>();
+    const [equipesListe, setEquipesListe] = useState<[{ nom: string; estChef: boolean; listeMembres: { nom: string; mail?: string }[] }]>();
     const [donneesModal, setDonneesModal] = useState<string>();
 
     useEffect(() => {
@@ -66,6 +66,7 @@ export default function Equipe() {
                                             >
                                                 <EllipsisVertical />
                                             </td>
+                                            {/* je doit mettre les détails des membres */}
                                             {/* <td className="action"><UserPlus /></td>
                                             <td className="action"><Pencil /></td>
                                             <td className="action"><Trash2 /></td> */}

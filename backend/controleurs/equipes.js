@@ -1,16 +1,61 @@
 import { envoyerMail, recupererTexteMail } from "../fonctions/envoyerMail.js";
 import { genererToken } from "../fonctions/genererToken.js";
 import gestionErreur from "../middlewares/gestionErreur.js";
+import { Op } from "sequelize";
 
 async function RecuperationMesEquipes(req) {
-    // il faut que je verifie si j'ai pas de demandes d'adhesion
+    // --- Vérification des ajouts
+    const utilisateur = await req.Utilisateurs.findByPk(req.idUtilisateur);
+    const listeAjoutsEquipes = await req.DemandesAdhesion.findAll({
+        where: {
+            type: "ajout",
+            accepter: false,
+            [Op.or]: [{ utilisateurId: req.idUtilisateur }, { mail: utilisateur.mail }],
+        },
+        raw: true,
+    });
+
+    for (const equipe of listeAjoutsEquipes) {
+        await req.MembresEquipe.create({
+            equipeId: equipe.equipeId,
+            utilisateurId: req.idUtilisateur,
+        });
+        await req.DemandesAdhesion.update({ accepter: true }, { where: { id: equipe.id } });
+    }
+    // ---
+
     const mesEquipes = await req.MembresEquipe.findAll({ where: { utilisateurId: req.idUtilisateur }, raw: true });
     let tableauEquipes = [];
+
     for (const equipe of mesEquipes) {
-        const detailEquipe = await req.Equipes.findByPk(equipe.equipeId, { raw: true });
-        tableauEquipes.push({ ...detailEquipe, estChef: equipe.estChef });
+        // Récupération des détails de l'équipes
+        const detailEquipe = await req.Equipes.findByPk(equipe.equipeId, {
+            attributes: ["nom"],
+            raw: true,
+        });
+
+        // Récupération de la liste des membres
+        const membresEquipe = await req.MembresEquipe.findAll({ where: { equipeId: equipe.equipeId }, raw: true });
+
+        // Récupération des détails des membres (nom et mail)
+        const tableauMembresEquipe = [];
+        for (const membre of membresEquipe) {
+            const utilisateur = await req.Utilisateurs.findByPk(membre.utilisateurId, { raw: true });
+            if (equipe.estChef) {
+                tableauMembresEquipe.push({ nom: utilisateur.nom, mail: utilisateur.mail });
+            } else {
+                tableauMembresEquipe.push({ nom: utilisateur.nom });
+            }
+        }
+
+        tableauEquipes.push({
+            nom: detailEquipe.nom,
+            estChef: equipe.estChef,
+            listeMembres: tableauMembresEquipe,
+        });
     }
-    return tableauEquipes.map(({ nom, estChef }) => ({ nom, estChef }));
+
+    return tableauEquipes;
 }
 
 async function VerificationChef(nomEquipe, req, res) {
