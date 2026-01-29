@@ -22,7 +22,7 @@ export default function Identification({ mode }: { mode: "connexion" | "inscript
     const [configuration2FA, setConfiguration2FA] = useState<{ qrCode: string; token2FA: string }>();
     const [connexion2FA, setConnexion2FA] = useState<boolean>(false);
     const [token, setToken] = useState<string | null>();
-
+    const [mail, setMail] = useState<string>();
     interface CorpsRequete {
         nom?: string;
         mail: string;
@@ -44,14 +44,19 @@ export default function Identification({ mode }: { mode: "connexion" | "inscript
     }, [localisation]);
 
     useEffect(() => {
-        const t = rechercheParametres.get("token");
-        if (t) {
-            setToken(t);
-        }
         const recuperationToken = async () => {
-            const reponse = await requete({ url: `/utilisateurs/details-token?token=${t}` });
-            console.log(reponse)
+            const t = rechercheParametres.get("token");
+            if (t) {
+                setToken(t);
+                const reponse = await requete({ url: `/utilisateurs/details-token?token=${t}` });
+                if (!reponse.trouver) {
+                    return navigation("/" + mode);
+                } else {
+                    setMail(reponse.mail);
+                }
+            }
         };
+        recuperationToken();
     }, [rechercheParametres]);
 
     return (
@@ -112,8 +117,10 @@ export default function Identification({ mode }: { mode: "connexion" | "inscript
                                 }}
                             />
                         )}
+
                         <ChampDonneesForm
                             id="champMail"
+                            classe={mode == "inscription" && mail ? "inputMailDefini" : ""}
                             label="Adresse mail"
                             placeholder="exemple@mail.com"
                             onBlur={(e) => {
@@ -126,7 +133,10 @@ export default function Identification({ mode }: { mode: "connexion" | "inscript
                                     setErreur(null);
                                 }
                             }}
+                            value={mode == "inscription" && mail ? mail : ""}
+                            modificationDesactiver={!!(mode == "inscription" && mail)}
                         />
+
                         <ChampDonneesForm
                             id="champMdp"
                             label="Mot de passe"

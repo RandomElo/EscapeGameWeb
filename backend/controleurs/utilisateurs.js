@@ -169,7 +169,7 @@ export const verifier2FA = gestionErreur(
 
 export const detailsToken = gestionErreur(
     async (req, res) => {
-        const { token } = req.params;
+        const { token } = req.query;
 
         if (!token) {
             return res.status(401).json({
@@ -177,7 +177,20 @@ export const detailsToken = gestionErreur(
                 detail: "Requête incorrecte",
             });
         }
+        const lien = await req.LiensMail.findOne({ where: { token }, raw: true });
 
+        if (!lien) {
+            return res.json({ etat: true, detail: { trouver: false } });
+        }
+        if(lien.type != "creationCompte") {
+            return res.status(403).json({
+                etat: false,
+                detail: "Erreur d'utilisation du token",
+            });
+        }
+        const detailLien = JSON.parse(lien.details);
+
+        return res.json({ etat: true, detail: { trouver: true, mail:detailLien } });
     },
     "controleurDetailTokenAuthentification",
     "Erreur lors de la récupération des détails du lien de connexion",

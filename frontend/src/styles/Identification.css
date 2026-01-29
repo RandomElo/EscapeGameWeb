@@ -33,6 +33,14 @@
             flex-direction: column;
             gap: 14px;
         }
+        .inputMailDefini {
+            cursor: not-allowed;
+        }
+
+        .inputMailDefini {
+            color: black;
+            font-style: italic;
+        }
 
         #divInputMdp {
             position: relative;

@@ -3,6 +3,7 @@ import { genererToken } from "../fonctions/genererToken.js";
 import gestionErreur from "../middlewares/gestionErreur.js";
 
 async function RecuperationMesEquipes(req) {
+    // il faut que je verifie si j'ai pas de demandes d'adhesion
     const mesEquipes = await req.MembresEquipe.findAll({ where: { utilisateurId: req.idUtilisateur }, raw: true });
     let tableauEquipes = [];
     for (const equipe of mesEquipes) {
@@ -121,14 +122,14 @@ export const ajoutUtilisateur = gestionErreur(
             await req.LiensMail.create({
                 token,
                 type: "creationCompte",
-                details: JSON.stringify({ mail }),
+                details: mail,
             });
 
             const utilisateur = await req.Utilisateurs.findByPk(req.idUtilisateur);
             const { texte, html } = recupererTexteMail("ajoutEquipeCreationCompte", {
                 nomUtilisateur: utilisateur.nom,
                 nomEquipe,
-                lienCreation: `${process.env.IP_FRONTED}/inscription?token=${token}`,
+                lienCreation: `${process.env.IP_FRONTEND}/inscription?token=${token}`,
             });
 
             await envoyerMail({

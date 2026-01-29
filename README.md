@@ -37,7 +37,7 @@ chmod +x demarrer.sh
 Port `8100`
 
 ```
-PORT_EXPRESS=100
+PORT_EXPRESS=8100
 NODE_ENV=development ou production
 DOTENV_CONFIG_QUIET=true
 IP_FRONTEND=http://ipFrontend:5252
