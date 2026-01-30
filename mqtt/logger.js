@@ -1,24 +1,23 @@
 const fs = require('fs');
 const path = require('path');
 
-const logFile = path.join(__dirname, 'logs', 'engine.log');
+const logDir = path.join(__dirname, 'logs');
+if (!fs.existsSync(logDir)) {
+  fs.mkdirSync(logDir);
+}
 
-function log(level, message) {
-  const line = `[${new Date().toISOString()}] [${level}] ${message}\n`;
+const logFile = path.join(logDir, 'engine.log');
 
-  // console
-  console.log(line.trim());
+function write(level, message) {
+  const line = `[${new Date().toISOString()}] [${level}] ${message}`;
+  
+  console.log(line); // 👈 IMPORTANT : affichage console
 
-  // fichier
-  fs.appendFile(logFile, line, (err) => {
-    if (err) {
-      console.error('Erreur écriture log:', err.message);
-    }
-  });
+  fs.appendFileSync(logFile, line + '\n');
 }
 
 module.exports = {
-  info: (msg) => log('INFO', msg),
-  warn: (msg) => log('WARN', msg),
-  error: (msg) => log('ERROR', msg)
+  info: (msg) => write('INFO', msg),
+  error: (msg) => write('ERROR', msg),
+  warn: (msg) => write('WARN', msg)
 };

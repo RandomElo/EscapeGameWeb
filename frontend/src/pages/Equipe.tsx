@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useRequete } from "../fonctions/requete";
 import Modal from "../composants/Modal";
 import ChampDonneesForm from "../composants/ChampDonneesForm";
-import { ClipboardSignature, EllipsisVertical, TriangleAlert, UserPlus } from "lucide-react";
+import { ClipboardSignature, EllipsisVertical, Trash2, TriangleAlert, UserPlus } from "lucide-react";
 
 export default function Equipe() {
     const { estAuth, chargement } = useAuth();
@@ -13,9 +13,9 @@ export default function Equipe() {
     const requete = useRequete();
 
     const [afficherModal, setAfficherModal] = useState<boolean>(false);
-    const [contenuModal, setContenuModal] = useState<"creationEquipe" | "optionsEquipe" | "menuEquipeSupprimer" | "menuEquipeModifierNom" | "menuAjouterMembre">();
+    const [contenuModal, setContenuModal] = useState<"creationEquipe" | "optionsEquipe" | "menuEquipeSupprimer" | "menuEquipeModifierNom" | "menuAjouterMembre" | "menuListeMembres">();
     const [erreur, setErreur] = useState<string>();
-    const [equipesListe, setEquipesListe] = useState<[{ nom: string; estChef: boolean; listeMembres: { nom: string; mail?: string }[] }]>();
+    const [equipesListe, setEquipesListe] = useState<[{ nom: string; estChef: boolean; listeMembres: { nom: string; mail?: string; estChef: boolean }[] }]>();
     const [donneesModal, setDonneesModal] = useState<string>();
 
     useEffect(() => {
@@ -25,6 +25,7 @@ export default function Equipe() {
             // recupération de la liste des équipes
             const recuperationDonnees = async () => {
                 const reponse = await requete({ url: "/equipes/mes-equipes" });
+                console.log(reponse);
                 setEquipesListe(reponse);
             };
             recuperationDonnees();
@@ -131,6 +132,15 @@ export default function Equipe() {
                             <a
                                 className="bouton"
                                 onClick={() => {
+                                    console.log(equipesListe?.filter((equipe) => equipe.nom == donneesModal)[0]);
+                                    setContenuModal("menuListeMembres");
+                                }}
+                            >
+                                Liste des membres
+                            </a>
+                            <a
+                                className="bouton"
+                                onClick={() => {
                                     setContenuModal("menuAjouterMembre");
                                 }}
                             >
@@ -212,7 +222,10 @@ export default function Equipe() {
                                 const activerNotification = document.querySelector<HTMLInputElement>("#checkboxEnvoyerMail")?.checked;
 
                                 const reponse = await requete({ url: "/equipes/ajout-utilisateur", methode: "POST", corps: { mail, activerNotification, nomEquipe: donneesModal } });
-                                console.log(reponse);
+                                if (reponse.utilisateurExistant) {
+                                    setEquipesListe(reponse.detail);
+                                }
+                                setAfficherModal(false)
                             }}
                         >
                             <ChampDonneesForm
@@ -231,7 +244,7 @@ export default function Equipe() {
                                 focus={true}
                             />
                             <div id="divEnvoyerMail">
-                                <input type="checkbox" id="checkboxEnvoyerMail" checked />
+                                <input type="checkbox" id="checkboxEnvoyerMail" />
                                 <label htmlFor="checkboxEnvoyerMail">Envoyer une notification par mail</label>
                             </div>
                             {erreur && <p id="pErreur"> {erreur}</p>}
@@ -239,6 +252,39 @@ export default function Equipe() {
                                 Ajouter
                             </button>
                         </form>
+                    </div>
+                )}
+                {contenuModal == "menuListeMembres" && (
+                    <div id="modalListesMembres">
+                        <h1>Liste des membres</h1>
+                        <table>
+                            <tbody>
+                                {equipesListe
+                                    ?.find((equipe) => equipe.nom === donneesModal)
+                                    ?.listeMembres.map((joueur) => (
+                                        <tr key={joueur.nom}>
+                                            <td className="tdNom">{joueur.nom}</td>
+                                            <td className="tdMail">{joueur.mail ?? ""}</td>
+                                            {joueur.mail ? (
+                                                <td
+                                                    className={`tdPoubelle${joueur.estChef ? ` interdit` : ""}`}
+                                                    onClick={async () => {
+                                                        if (!joueur.estChef) {
+                                                            const reponse = await requete({ url: "/equipes/suppression-membre", methode: "DELETE", corps: { membre: joueur.mail, equipe: donneesModal } });
+                                                            setEquipesListe(reponse);
+                                                        }
+                                                    }}
+                                                >
+                                                    <Trash2 />
+                                                </td>
+                                            ) : (
+                                                <td></td>
+                                            )}
+                                        </tr>
+                                    ))}
+                            </tbody>
+                        </table>
+                        {/* <p>Je suis chef {equipesListe.nom[donneesModal]}</p> */}
                     </div>
                 )}
                 {/* {contenuModal == "menu" && <div id="modal"></div>} */}

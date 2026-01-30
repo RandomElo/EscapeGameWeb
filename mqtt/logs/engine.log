@@ -160,3 +160,79 @@
 [2026-01-29T07:33:00.760Z] [INFO] ENGINE connecté au broker MQTT
 [2026-01-29T09:34:08.177Z] [INFO] ENGINE MQTT démarré
 [2026-01-29T09:34:08.255Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-30T07:02:27.009Z] [INFO] ENGINE MQTT démarré
+[2026-01-30T07:02:27.080Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-30T07:32:11.753Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-30T07:32:30.134Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-30T07:32:35.655Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": "Couronne"}
+[2026-01-30T07:32:37.200Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-30T07:32:38.260Z] [INFO] MQTT | escape/mission/3/event | {"reader2": "Couronne", "reader3": null, "reader1": null}
+[2026-01-30T07:32:39.326Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": "Couronne", "reader1": null}
+[2026-01-30T07:32:40.827Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-30T07:32:41.912Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": "Tour"}
+[2026-01-30T07:32:44.496Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-30T07:32:45.533Z] [INFO] MQTT | escape/mission/3/event | {"reader2": "Tour", "reader3": null, "reader1": null}
+[2026-01-30T07:32:47.055Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-01-30T07:44:30.108Z] [INFO] ENGINE MQTT démarré
+[2026-01-30T07:44:30.141Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-30T07:44:46.703Z] [INFO] MQTT | escape/scenario/config | {"id":1,"name":"Test Scenario","missions":[1,2,3]}
+[2026-01-30T07:44:46.710Z] [INFO] Scénario chargé: Test Scenario
+[2026-01-30T07:44:46.710Z] [INFO] Ordre des missions: 1 → 2 → 3
+[2026-01-30T07:44:46.706Z] [INFO] MQTT | escape/scenario/config | {"id":1,"name":"Test Scenario","missions":[1,2,3]}
+[2026-01-30T07:44:46.708Z] [INFO] Scénario chargé: Test Scenario
+[2026-01-30T07:44:46.709Z] [INFO] Ordre des missions: 1 → 2 → 3
+[2026-01-30T07:44:46.709Z] [INFO] Démarrage mission 1
+[2026-01-30T07:44:46.717Z] [INFO] MQTT | escape/mission/1/state | RUNNING
+[2026-01-30T07:44:46.718Z] [INFO] MQTT | escape/mission/1/state | RUNNING
+[2026-01-30T07:45:33.597Z] [INFO] MQTT | escape/mission/1/event | SUCCESS
+[2026-01-30T07:45:33.598Z] [INFO] MQTT | escape/mission/1/event | SUCCESS
+[2026-01-30T07:45:33.600Z] [INFO] Mission 1 réussie
+[2026-01-30T07:45:33.604Z] [INFO] MQTT | escape/mission/1/state | SUCCESS
+[2026-01-30T07:45:33.604Z] [INFO] MQTT | escape/mission/1/state | SUCCESS
+[2026-01-30T07:45:35.603Z] [INFO] Démarrage mission 2
+[2026-01-30T07:45:35.605Z] [INFO] MQTT | escape/mission/2/state | RUNNING
+[2026-01-30T07:45:35.605Z] [INFO] MQTT | escape/mission/2/state | RUNNING
+[2026-01-30T07:46:33.357Z] [INFO] MQTT | escape/mission/2/event | SUCCESS
+[2026-01-30T07:46:33.363Z] [INFO] MQTT | escape/mission/2/state | SUCCESS
+[2026-01-30T07:46:33.358Z] [INFO] MQTT | escape/mission/2/event | SUCCESS
+[2026-01-30T07:46:33.360Z] [INFO] Mission 2 réussie
+[2026-01-30T07:46:33.363Z] [INFO] MQTT | escape/mission/2/state | SUCCESS
+[2026-01-30T07:46:35.363Z] [INFO] Démarrage mission 3
+[2026-01-30T07:46:35.367Z] [INFO] MQTT | escape/mission/3/state | RUNNING
+[2026-01-30T07:46:35.365Z] [INFO] MQTT | escape/mission/3/state | RUNNING
+[2026-01-30T07:49:57.042Z] [INFO] MQTT | escape/mission/3/event | SUCCESS
+[2026-01-30T07:49:57.043Z] [INFO] Mission 3 réussie
+[2026-01-30T07:49:57.042Z] [INFO] MQTT | escape/mission/3/event | SUCCESS
+[2026-01-30T07:49:57.049Z] [INFO] MQTT | escape/mission/3/state | SUCCESS
+[2026-01-30T07:49:57.047Z] [INFO] MQTT | escape/mission/3/state | SUCCESS
+[2026-01-30T07:49:59.047Z] [INFO] Scénario terminé !
+[2026-01-30T08:00:29.382Z] [INFO] ENGINE MQTT démarré
+[2026-01-30T08:00:29.463Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-30T08:13:02.969Z] [INFO] ENGINE MQTT démarré
+[2026-01-30T08:13:03.016Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-30T08:13:15.961Z] [INFO] MQTT | escape/scenario/config | {"id":1,"name":"Test Scenario","missions":[1,2,3]}
+[2026-01-30T08:13:15.962Z] [INFO] Scénario chargé: Test Scenario
+[2026-01-30T08:13:15.963Z] [INFO] Ordre des missions: 1 → 2 → 3
+[2026-01-30T08:13:15.965Z] [INFO] Démarrage mission 1
+[2026-01-30T08:13:15.973Z] [INFO] MQTT | escape/mission/1/state | RUNNING
+[2026-01-30T08:13:15.961Z] [INFO] MQTT | escape/scenario/config | {"id":1,"name":"Test Scenario","missions":[1,2,3]}
+[2026-01-30T08:13:15.969Z] [INFO] Scénario chargé: Test Scenario
+[2026-01-30T08:13:15.969Z] [INFO] Ordre des missions: 1 → 2 → 3
+[2026-01-30T08:13:15.974Z] [INFO] Démarrage mission 1
+[2026-01-30T08:13:15.981Z] [INFO] MQTT | escape/mission/1/state | RUNNING
+[2026-01-30T08:13:15.981Z] [INFO] MQTT | escape/mission/1/state | RUNNING
+[2026-01-30T08:13:16.013Z] [INFO] MQTT | escape/mission/1/state | RUNNING
+[2026-01-30T08:14:46.557Z] [INFO] ENGINE MQTT démarré
+[2026-01-30T08:14:46.591Z] [INFO] ENGINE connecté au broker MQTT
+[2026-01-30T08:14:49.679Z] [INFO] MQTT | escape/scenario/config | {"id":1,"name":"Test Scenario","missions":[1,2,3]}
+[2026-01-30T08:14:49.681Z] [INFO] Scénario chargé: Test Scenario
+[2026-01-30T08:14:49.682Z] [INFO] Ordre des missions: 1 → 2 → 3
+[2026-01-30T08:14:49.683Z] [INFO] Démarrage mission 1
+[2026-01-30T08:14:49.676Z] [INFO] MQTT | escape/scenario/config | {"id":1,"name":"Test Scenario","missions":[1,2,3]}
+[2026-01-30T08:14:49.678Z] [INFO] Scénario chargé: Test Scenario
+[2026-01-30T08:14:49.681Z] [INFO] Ordre des missions: 1 → 2 → 3
+[2026-01-30T08:14:49.681Z] [INFO] Démarrage mission 1
+[2026-01-30T08:14:49.689Z] [INFO] MQTT | escape/mission/1/state | RUNNING
+[2026-01-30T08:14:49.690Z] [INFO] MQTT | escape/mission/1/state | RUNNING
+[2026-01-30T08:14:49.688Z] [INFO] MQTT | escape/mission/1/state | RUNNING
+[2026-01-30T08:14:49.723Z] [INFO] MQTT | escape/mission/1/state | RUNNING

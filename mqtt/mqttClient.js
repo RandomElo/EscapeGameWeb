@@ -26,15 +26,16 @@ client.on('message', (topic, message) => {
       logger.error('Scénario invalide reçu');
     }
   }
-});
 
+  const match = topic.match(/^escape\/mission\/(\d+)\/event$/);
+  if (match && msg === "SUCCESS") {
+    const missionId = match[1];
+    scenarioManager.completeMission(missionId);
+  }
+});
 
 client.on('error', (err) => {
   logger.error(`Erreur MQTT: ${err.message}`);
-});
-
-client.on('message', (topic, message) => {
-  console.log("MESSAGE BRUT REÇU:", topic, message.toString());
 });
 
 module.exports = client;

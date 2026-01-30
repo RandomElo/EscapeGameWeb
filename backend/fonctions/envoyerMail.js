@@ -34,6 +34,45 @@ L’équipe Escape Game`,
             <p>Cordialement,<br>L’équipe Escape Game</p>
         `,
     }),
+    ajoutEquipeNotification: ({ nomUtilisateur, nomEquipe }) => ({
+        texte: `Bonjour,
+
+${nomUtilisateur} vous a ajouté à l’équipe "${nomEquipe}".
+
+Vous faites désormais partie de cette équipe et pouvez y accéder dès votre prochaine connexion ou directement a partir de ce lien.
+
+${process.env.IP_FRONTEND}/equipe
+
+Si vous pensez qu’il s’agit d’une erreur, merci de contacter un administrateur.
+
+Cordialement,
+L’équipe Escape Game`,
+        html: /* html */ `
+            <p>Bonjour,</p>
+
+            <p>
+                <strong>${nomUtilisateur}</strong> vous a ajouté à l’équipe
+                <strong>${nomEquipe}</strong>.
+            </p>
+
+            <p>
+                Vous faites désormais partie de cette équipe et pouvez y accéder dès votre prochaine connexion ou directement a partir de ce lien.
+            </p>
+
+            <p>
+                <a href="${process.env.IP_FRONTEND}/equipe"
+                   style="display:inline-block;padding:10px 16px;background:#0085ff;color:#fff;text-decoration:none;border:none;border-radius:5px;">
+                    Mes équipes
+                </a>
+            </p>
+
+            <p style="color:#666;font-size:0.9em;">
+                Si vous pensez qu’il s’agit d’une erreur, merci de contacter un administrateur.
+            </p>
+
+            <p>Cordialement,<br>L’équipe Escape Game</p>
+        `,
+    }),
 };
 
 export function recupererTexteMail(nomTemplate, donnees) {

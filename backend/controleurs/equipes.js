@@ -41,11 +41,13 @@ async function RecuperationMesEquipes(req) {
         const tableauMembresEquipe = [];
         for (const membre of membresEquipe) {
             const utilisateur = await req.Utilisateurs.findByPk(membre.utilisateurId, { raw: true });
+            let detailsMembre = {};
+            detailsMembre.nom = utilisateur.nom;
+            detailsMembre.estChef = membre.estChef;
             if (equipe.estChef) {
-                tableauMembresEquipe.push({ nom: utilisateur.nom, mail: utilisateur.mail });
-            } else {
-                tableauMembresEquipe.push({ nom: utilisateur.nom });
+                detailsMembre.mail = utilisateur.mail;
             }
+            tableauMembresEquipe.push(detailsMembre);
         }
 
         tableauEquipes.push({
@@ -146,13 +148,17 @@ export const ajoutUtilisateur = gestionErreur(
     async (req, res) => {
         const { mail, activerNotification, nomEquipe } = req.body;
 
-        if (!mail || !activerNotification || !nomEquipe) {
+
+        // je doit modifier ca
+        console.log(req.body.test)
+        if (!mail || !nomEquipe || req.body.activerNotification==undefined) {
             return res.status(401).json({
                 etat: false,
                 detail: "Requête incorrecte",
             });
         }
         const equipe = await VerificationChef(nomEquipe, req, res);
+        const utilisateur = await req.Utilisateurs.findByPk(req.idUtilisateur);
 
         const utilisateurInviter = await req.Utilisateurs.findOne({ where: { mail } });
         if (!utilisateurInviter) {
@@ -170,7 +176,6 @@ export const ajoutUtilisateur = gestionErreur(
                 details: mail,
             });
 
-            const utilisateur = await req.Utilisateurs.findByPk(req.idUtilisateur);
             const { texte, html } = recupererTexteMail("ajoutEquipeCreationCompte", {
                 nomUtilisateur: utilisateur.nom,
                 nomEquipe,
@@ -184,8 +189,28 @@ export const ajoutUtilisateur = gestionErreur(
                 html,
             });
 
-            console.log(mail);
-            return res.json({ etat: true, detail: "dev" });
+            return res.json({ etat: true, detail: { utilisateurExistant: false } });
+        } else {
+            await req.MembresEquipe.create({
+                equipeId: equipe.id,
+                utilisateurId: utilisateurInviter.id,
+            });
+            if (activerNotification) {
+                const { texte, html } = recupererTexteMail("ajoutEquipeNotification", {
+                    nomUtilisateur: utilisateur.nom,
+                    nomEquipe,
+                });
+
+                await envoyerMail({
+                    destinataire: mail,
+                    sujet: "Ajout à une équipe",
+                    texte,
+                    html,
+                });
+
+                const liste = await RecuperationMesEquipes(req);
+                return res.json({ etat: true, detail: { utilisateurExistant: false, detail: liste } });
+            }
         }
     },
     "controleurAjoutUtilisateurEquipe",
@@ -194,7 +219,54 @@ export const ajoutUtilisateur = gestionErreur(
 
 export const quitter = gestionErreur((req, res) => {}, "controleurQuitterEquipe", "Erreur lors du départ de l'équipe");
 
-export const suppressionMembre = gestionErreur((req, res) => {}, "controleurSuppressionMembre", "Erreur lors de la suppression du membre de l'équipe");
+export const suppressionMembre = gestionErreur(
+    async (req, res) => {
+        const { membre, equipe } = req.body;
+
+        if (!membre || !equipe) {
+            return res.status(401).json({
+                etat: false,
+                detail: "Requête incorrecte",
+            });
+        }
+
+        const utilisateur = await req.Utilisateurs.findOne({ where: { mail: membre }, raw: true });
+
+        const equipeDetails = await req.Equipes.findOne({ where: { nom: equipe }, raw: true });
+
+        if (!utilisateur || !equipeDetails) {
+            return res.status(404).json({
+                etat: false,
+                detail: "Ressource inexistante",
+            });
+        }
+
+        const membreEquipe = await req.MembresEquipe.findOne({ where: { utilisateurId: req.idUtilisateur, equipeId: equipeDetails.id }, raw: true });
+
+        if (!membreEquipe.estChef) {
+            return res.status(403).json({
+                etat: false,
+                detail: "Accès interdit",
+            });
+        }
+
+        const membreEquipeASupprimer = await req.MembresEquipe.findOne({ where: { utilisateurId: utilisateur.id, equipeId: equipeDetails.id }, raw: true });
+
+        if (!membreEquipeASupprimer) {
+            return res.status(404).json({
+                etat: false,
+                detail: "Ressource inexistante",
+            });
+        }
+
+        await req.MembresEquipe.destroy({ where: { id: membreEquipeASupprimer.id } });
+
+        const liste = await RecuperationMesEquipes(req);
+        return res.json({ etat: true, detail: liste });
+    },
+    "controleurSuppressionMembre",
+    "Erreur lors de la suppression du membre de l'équipe",
+);
 
 export const suppressionEquipe = gestionErreur(
     async (req, res) => {
