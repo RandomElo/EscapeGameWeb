@@ -1,24 +1,46 @@
 .Equipe {
-    #divActions {
-        text-align: center;
-    }
     #divListeEquipes {
-        #divMesEquipes {
-            table {
-                width: 500px;
-                border-collapse: collapse;
-                /* border: 1px solid black; */
-                margin: 0 auto;
+        table {
+            width: 400px;
+            border-collapse: collapse;
+            /* border: 1px solid black; */
+            margin: 0 auto;
 
-                td {
-                    height: 35px;
-                }
+            td {
+                height: 35px;
+                padding: 0 20px;
+            }
 
-                .action {
-                    width: 70px;
+            .tdEstChef {
+                width: 50px;
+                text-align: center;
+                position: relative;
+                cursor: pointer;
+                .infoBulle {
+                    visibility: hidden;
+                    background-color: #333;
+                    color: #fff;
                     text-align: center;
-                    cursor: pointer;
+                    padding: 6px 10px;
+                    border-radius: 4px;
+
+                    position: absolute;
+                    bottom: -100%;
+                    left: 50%;
+                    transform: translateX(-50%);
+
+                    white-space: nowrap;
+                    z-index: 10;
                 }
+            }
+            .tdEstChef:hover .infoBulle {
+                visibility: visible;
+            }
+
+            .action {
+                width: 70px;
+                text-align: center;
+                cursor: pointer;
             }
         }
     }
@@ -144,6 +166,37 @@
 
         .tdPoubelle:hover svg {
             color: gray;
+        }
+    }
+}
+#modalQuitterEquipe {
+    text-align: center;
+    form {
+        p {
+            margin-top: 3px;
+        }
+        #divBoutons {
+            width: 80%;
+            margin: 10px auto 0;
+            display: flex;
+            justify-content: space-between;
+            .boutonQuitter {
+                background-color: red;
+            }
+        }
+    }
+}
+#modalDemandeAdhesion {
+    text-align: center;
+    form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        .ChampDonneesForm {
+            margin: 10px 0;
+        }
+        #pErreur {
+            margin: -10px 0 10px;
         }
     }
 }

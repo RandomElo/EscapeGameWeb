@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useRequete } from "../fonctions/requete";
 import Modal from "../composants/Modal";
 import ChampDonneesForm from "../composants/ChampDonneesForm";
-import { ClipboardSignature, EllipsisVertical, Trash2, TriangleAlert, UserPlus } from "lucide-react";
+import { ClipboardSignature, Crown, EllipsisVertical, Trash2, TriangleAlert, UserPlus } from "lucide-react";
 
 export default function Equipe() {
     const { estAuth, chargement } = useAuth();
@@ -13,10 +13,11 @@ export default function Equipe() {
     const requete = useRequete();
 
     const [afficherModal, setAfficherModal] = useState<boolean>(false);
-    const [contenuModal, setContenuModal] = useState<"creationEquipe" | "optionsEquipe" | "menuEquipeSupprimer" | "menuEquipeModifierNom" | "menuAjouterMembre" | "menuListeMembres">();
+    const [contenuModal, setContenuModal] = useState<"creationEquipe" | "optionsEquipe" | "menuEquipeSupprimer" | "menuEquipeModifierNom" | "menuAjouterMembre" | "menuListeMembres" | "menuQuitterEquipe" | "demandeAdhesion">();
     const [erreur, setErreur] = useState<string>();
     const [equipesListe, setEquipesListe] = useState<[{ nom: string; estChef: boolean; listeMembres: { nom: string; mail?: string; estChef: boolean }[] }]>();
     const [donneesModal, setDonneesModal] = useState<string>();
+    const [etatModal, setEtatModal] = useState<string>();
 
     useEffect(() => {
         if (!estAuth && chargement) {
@@ -36,57 +37,122 @@ export default function Equipe() {
         <>
             <main className="Equipe">
                 <h1 id="titre">Équipe</h1>
-                <div id="divActions">
-                    <button
-                        className="bouton"
-                        onClick={() => {
-                            setContenuModal("creationEquipe");
-                            setAfficherModal(true);
-                        }}
-                    >
-                        Crée une équipe
-                    </button>
-                </div>
+                <button
+                    className="bouton"
+                    onClick={() => {
+                        setContenuModal("creationEquipe");
+                        setAfficherModal(true);
+                    }}
+                >
+                    Crée une équipe
+                </button>
                 <div id="divListeEquipes">
-                    <div id="divMesEquipes">
-                        <h2>Les équipes que vous avez crée</h2>
-                        <table>
-                            <tbody>
-                                {equipesListe
-                                    ?.filter((equipe) => equipe.estChef)
-                                    .map((equipe, key) => (
-                                        <tr key={key}>
-                                            <td>{equipe.nom}</td>
-                                            <td
-                                                className="action"
-                                                onClick={() => {
-                                                    setDonneesModal(equipe.nom);
-                                                    setContenuModal("optionsEquipe");
-                                                    setAfficherModal(true);
-                                                }}
-                                            >
-                                                <EllipsisVertical />
-                                            </td>
-                                            {/* je doit mettre les détails des membres */}
-                                            {/* <td className="action"><UserPlus /></td>
+                    <table>
+                        <tbody>
+                            {equipesListe?.map((equipe, key) => (
+                                <tr key={key}>
+                                    <td className={equipe.estChef ? "tdEstChef" : ""}>
+                                        {equipe.estChef ? (
+                                            <>
+                                                <Crown />
+                                                <span className="infoBulle">Vous êtes le propriétaire de l'équipe</span>
+                                            </>
+                                        ) : (
+                                            ""
+                                        )}
+                                    </td>
+                                    <td>{equipe.nom}</td>
+                                    <td
+                                        className="action"
+                                        onClick={() => {
+                                            setDonneesModal(equipe.nom);
+                                            setContenuModal("optionsEquipe");
+                                            setAfficherModal(true);
+                                        }}
+                                    >
+                                        <EllipsisVertical />
+                                    </td>
+                                    {/* je doit mettre les détails des membres */}
+                                    {/* <td className="action"><UserPlus /></td>
                                             <td className="action"><Pencil /></td>
                                             <td className="action"><Trash2 /></td> */}
-                                        </tr>
-                                    ))}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div id="divAutreEquipes">
-                        <h2>Les équipes dont vous faite partie</h2>
-                        {equipesListe
-                            ?.filter((equipe) => !equipe.estChef)
-                            .map((equipe) => (
-                                <p>{equipe.nom}</p>
+                                </tr>
                             ))}
-                    </div>
+                        </tbody>
+                    </table>
                 </div>
+                <button
+                    id="boutonDemanderRejoindre"
+                    className="bouton"
+                    onClick={() => {
+                        setContenuModal("demandeAdhesion");
+                        setAfficherModal(true);
+                    }}
+                >
+                    Demander à rejoindre une équipe
+                </button>
             </main>
-            <Modal estOuvert={afficherModal} fermeture={() => setAfficherModal(false)}>
+            <Modal
+                estOuvert={afficherModal}
+                fermeture={() => {
+                    setAfficherModal(false);
+                    setEtatModal("");
+                }}
+            >
+                {contenuModal == "optionsEquipe" && (
+                    <div id="modalOptionsEquipe">
+                        <h1>Menu d'équipe</h1>
+                        <div id="divOptions">
+                            <a
+                                className="bouton"
+                                onClick={() => {
+                                    setContenuModal("menuListeMembres");
+                                }}
+                            >
+                                Liste des membres
+                            </a>
+                            {equipesListe?.find((equipe) => equipe.nom == donneesModal)?.estChef ? (
+                                <>
+                                    <a
+                                        className="bouton"
+                                        onClick={() => {
+                                            setContenuModal("menuAjouterMembre");
+                                        }}
+                                    >
+                                        Ajouter un membre
+                                    </a>
+                                    <a
+                                        className="bouton"
+                                        onClick={() => {
+                                            setContenuModal("menuEquipeModifierNom");
+                                        }}
+                                    >
+                                        Modifier le nom de l'équipe
+                                    </a>
+                                    <a
+                                        className="bouton"
+                                        onClick={() => {
+                                            setContenuModal("menuEquipeSupprimer");
+                                        }}
+                                    >
+                                        Supprimer l'équipe
+                                    </a>
+                                </>
+                            ) : (
+                                <>
+                                    <a
+                                        className="bouton"
+                                        onClick={() => {
+                                            setContenuModal("menuQuitterEquipe");
+                                        }}
+                                    >
+                                        Quitter l'équipe
+                                    </a>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                )}
                 {contenuModal == "creationEquipe" && (
                     <div id="modalCreationEquipe">
                         <h1>Création d'équipe</h1>
@@ -123,46 +189,6 @@ export default function Equipe() {
                                 Crée
                             </button>
                         </form>
-                    </div>
-                )}
-                {contenuModal == "optionsEquipe" && (
-                    <div id="modalOptionsEquipe">
-                        <h1>Menu d'équipe</h1>
-                        <div id="divOptions">
-                            <a
-                                className="bouton"
-                                onClick={() => {
-                                    console.log(equipesListe?.filter((equipe) => equipe.nom == donneesModal)[0]);
-                                    setContenuModal("menuListeMembres");
-                                }}
-                            >
-                                Liste des membres
-                            </a>
-                            <a
-                                className="bouton"
-                                onClick={() => {
-                                    setContenuModal("menuAjouterMembre");
-                                }}
-                            >
-                                Ajouter un membre
-                            </a>
-                            <a
-                                className="bouton"
-                                onClick={() => {
-                                    setContenuModal("menuEquipeModifierNom");
-                                }}
-                            >
-                                Modifier le nom
-                            </a>
-                            <a
-                                className="bouton"
-                                onClick={() => {
-                                    setContenuModal("menuEquipeSupprimer");
-                                }}
-                            >
-                                Supprimer
-                            </a>
-                        </div>
                     </div>
                 )}
                 {contenuModal == "menuEquipeSupprimer" && (
@@ -225,7 +251,7 @@ export default function Equipe() {
                                 if (reponse.utilisateurExistant) {
                                     setEquipesListe(reponse.detail);
                                 }
-                                setAfficherModal(false)
+                                setAfficherModal(false);
                             }}
                         >
                             <ChampDonneesForm
@@ -285,6 +311,66 @@ export default function Equipe() {
                             </tbody>
                         </table>
                         {/* <p>Je suis chef {equipesListe.nom[donneesModal]}</p> */}
+                    </div>
+                )}
+                {contenuModal == "menuQuitterEquipe" && (
+                    <div id="modalQuitterEquipe">
+                        <h1>Quitter l'équipe</h1>
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                            }}
+                        >
+                            <p>Êtes-vous sur de vouloir quitter l'équipe ?</p>
+                            <div id="divBoutons">
+                                <button className="bouton" onClick={() => setContenuModal("optionsEquipe")}>
+                                    Annuler
+                                </button>
+
+                                <button
+                                    type="submit"
+                                    className="bouton boutonQuitter"
+                                    onClick={async () => {
+                                        const reponse = await requete({ url: "/equipes/quitter", methode: "DELETE", corps: { equipe: donneesModal } });
+                                        setEquipesListe(reponse);
+                                        setAfficherModal(false);
+                                    }}
+                                >
+                                    Quitter
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                )}
+                {contenuModal == "demandeAdhesion" && (
+                    <div id="modalDemandeAdhesion">
+                        <h1>Demande d'adhésion</h1>
+                        <form
+                            onSubmit={async (e) => {
+                                e.preventDefault();
+                                const nomEquipe = document.querySelector<HTMLInputElement>("#inputNomEquipe")!.value;
+                                const reponse = await requete({ url: "/equipes/cree-demande-adhesion", methode: "POST", corps: { nomEquipe } });
+
+                                if (reponse.ajouter) {
+                                    setEtatModal("demandeEnvoyee");
+                                    setTimeout(() => {
+                                        setEtatModal("");
+                                        setAfficherModal(false);
+                                    }, 700);
+                                } else {
+                                    // je doit afficher le message et en grisant le bouton
+                                    setErreur(reponse.detail);
+                                }
+                            }}
+                        >
+                            <ChampDonneesForm id="inputNomEquipe" placeholder="Nom de l'équipe" focus={true} onBlur={() => setErreur("")} />
+
+                            {erreur && <p id="pErreur">{erreur}</p>}
+
+                            <button type="submit" className="bouton" disabled={!!(erreur || etatModal == "demandeEnvoyee")}>
+                                {etatModal == "demandeEnvoyee" ? "✅ Demande envoyée" : "Envoyer"}
+                            </button>
+                        </form>
                     </div>
                 )}
                 {/* {contenuModal == "menu" && <div id="modal"></div>} */}

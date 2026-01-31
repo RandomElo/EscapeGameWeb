@@ -9,7 +9,7 @@ async function RecuperationMesEquipes(req) {
     const listeAjoutsEquipes = await req.DemandesAdhesion.findAll({
         where: {
             type: "ajout",
-            accepter: false,
+            traitee: false,
             [Op.or]: [{ utilisateurId: req.idUtilisateur }, { mail: utilisateur.mail }],
         },
         raw: true,
@@ -20,7 +20,7 @@ async function RecuperationMesEquipes(req) {
             equipeId: equipe.equipeId,
             utilisateurId: req.idUtilisateur,
         });
-        await req.DemandesAdhesion.update({ accepter: true }, { where: { id: equipe.id } });
+        await req.DemandesAdhesion.update({ traitee: true }, { where: { id: equipe.id } });
     }
     // ---
 
@@ -142,16 +142,11 @@ export const modificationNom = gestionErreur(
     "Erreur lors de la modification du nom de l'équipe",
 );
 
-export const listeMembres = gestionErreur((req, res) => {}, "controleurRecuperationListeMembres", "Erreur lors de la récupération des membres de l'équipe");
-
 export const ajoutUtilisateur = gestionErreur(
     async (req, res) => {
         const { mail, activerNotification, nomEquipe } = req.body;
 
-
-        // je doit modifier ca
-        console.log(req.body.test)
-        if (!mail || !nomEquipe || req.body.activerNotification==undefined) {
+        if (!mail || !nomEquipe || req.body.activerNotification == undefined) {
             return res.status(401).json({
                 etat: false,
                 detail: "Requête incorrecte",
@@ -217,7 +212,46 @@ export const ajoutUtilisateur = gestionErreur(
     "Erreur lors de l'ajout de l'utilisateur dans l'équipe",
 );
 
-export const quitter = gestionErreur((req, res) => {}, "controleurQuitterEquipe", "Erreur lors du départ de l'équipe");
+export const quitter = gestionErreur(
+    async (req, res) => {
+        const { equipe } = req.body;
+        if (!equipe) {
+            return res.status(401).json({
+                etat: false,
+                detail: "Requête incorrecte",
+            });
+        }
+
+        const equipeDetails = await req.Equipes.findOne({ where: { nom: equipe }, raw: true });
+        if (!equipeDetails) {
+            return res.status(404).json({
+                etat: false,
+                detail: "Ressource inexistante",
+            });
+        }
+
+        const membre = await req.MembresEquipe.findOne({ where: { utilisateurId: req.idUtilisateur, equipeId: equipeDetails.id } });
+        if (!membre) {
+            return res.status(403).json({
+                etat: false,
+                detail: "Accès interdit",
+            });
+        }
+
+        if (membre.estChef) {
+            return res.status(403).json({
+                etat: false,
+                detail: "Accès interdit",
+            });
+        }
+        await req.MembresEquipe.destroy({ where: { id: membre.id } });
+
+        const liste = await RecuperationMesEquipes(req);
+        return res.json({ etat: true, detail: liste });
+    },
+    "controleurQuitterEquipe",
+    "Erreur lors du départ de l'équipe",
+);
 
 export const suppressionMembre = gestionErreur(
     async (req, res) => {
@@ -291,8 +325,103 @@ export const suppressionEquipe = gestionErreur(
 
 // Gestion de l'adhésion
 
-export const creeDemandeAdhesion = gestionErreur((req, res) => {}, "controleurCreeDemandeAdhesion", "Erreur lors de la création de la demande d'adhésion");
+export const creeDemandeAdhesion = gestionErreur(
+    async (req, res) => {
+        const { nomEquipe } = req.body;
+        if (!nomEquipe) {
+            return res.status(401).json({
+                etat: false,
+                detail: "Requête incorrecte",
+            });
+        }
 
-export const demandeAdhesion = gestionErreur((req, res) => {}, "controleurRecuperationDemandeAdhesion", "Erreur lors de la récupération des demandes d'adhésion pour l'équipe");
+        const equipe = await req.Equipes.findOne({ where: { nom: nomEquipe }, raw: true });
+        if (!equipe) {
+            return res.json({ etat: true, detail: { ajouter: false, detail: "Équipe inexistante" } });
+        }
 
-export const reponseDemandeAdhesion = gestionErreur((req, res) => {}, "controleurReponseDemandeAdhesion", "Erreur lors de l'envoi de la réponse pour la demande d'adhésion");
+        if (await req.MembresEquipe.findOne({ where: { equipeId: equipe.id, utilisateurId: req.idUtilisateur } })) {
+            return res.json({ etat: true, detail: { ajouter: false, detail: "Vous êtes déjà membre de cette équipe" } });
+        }
+
+        await req.DemandesAdhesion.create({
+            utilisateurId: req.idUtilisateur,
+            equipeId: equipe.id,
+            type: "demande",
+        });
+
+        return res.json({ etat: true, detail: { ajouter: true } });
+    },
+    "controleurCreeDemandeAdhesion",
+    "Erreur lors de la création de la demande d'adhésion",
+);
+
+export const demandeAdhesion = gestionErreur(
+    async (req, res) => {
+        if (!req.idUtilisateur) {
+            return res.json({ etat: true, detail: { estConnecte: false } });
+        }
+        // Récupération des équipes dont je suis chef
+        const mesEquipes = await req.MembresEquipe.findAll({ where: { utilisateurId: req.idUtilisateur, estChef: true }, raw: true });
+
+        let demandesAdhesion = [];
+        for (const equipe of mesEquipes) {
+            const demandes = await req.DemandesAdhesion.findAll({ where: { traitee: false, type: "demande", equipeId: equipe.id } });
+            if (demandes) {
+                const detailsEquipe = await req.Equipes.findByPk(equipe.id);
+                for (const demande of demandes) {
+                    const utilisateur = await req.Utilisateurs.findByPk(demande.utilisateurId);
+
+                    demandesAdhesion.push({
+                        nom: utilisateur.nom,
+                        mail: utilisateur.mail,
+                        nomEquipe: detailsEquipe.nom,
+                        date: demande.date,
+                    });
+                }
+            }
+        }
+
+        return res.json({ etat: true, detail: { estConnecte: true, details: demandesAdhesion } });
+    },
+    "controleurRecuperationDemandeAdhesion",
+    "Erreur lors de la récupération des demandes d'adhésion",
+);
+
+export const reponseDemandeAdhesion = gestionErreur(
+    async (req, res) => {
+        const { etat, mail, date, nomEquipe } = req.body;
+        if (!etat || !mail || !date || !nomEquipe) {
+            return res.status(401).json({
+                etat: false,
+                detail: "Requête incorrecte",
+            });
+        }
+
+        await VerificationChef(nomEquipe, req, res);
+
+        const utilisateur = await req.Utilisateurs.findOne({ where: { mail }, raw: true });
+        const equipe = await req.Equipes.findOne({ where: { nom: nomEquipe }, raw: true });
+
+        const demande = await req.DemandesAdhesion.findOne({ where: { utilisateurId: utilisateur.id, equipeId: equipe.id, date: date } });
+
+        if (!utilisateur || !equipe || !demande) {
+            return res.status(404).json({
+                etat: false,
+                detail: "Ressource inexistante",
+            });
+        }
+        if (etat == "accepter") {
+            await req.DemandesAdhesion.update({ traitee: true }, { where: { id: demande.id } });
+            await req.MembresEquipe.create({
+                equipeId: equipe.id,
+                utilisateurId: utilisateur.id,
+            });
+        } else {
+            await req.DemandesAdhesion.update({ traitee: true }, { where: { id: demande.id } });
+        }
+        // il faut que je renvoye la liste mise a jour
+    },
+    "controleurReponseDemandeAdhesion",
+    "Erreur lors de l'envoi de la réponse pour la demande d'adhésion",
+);

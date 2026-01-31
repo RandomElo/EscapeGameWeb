@@ -44,6 +44,11 @@ export default function (bdd) {
                     isEmail: true,
                 },
             },
+            traitee: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: false,
+            },
 
             accepter: {
                 type: DataTypes.BOOLEAN,

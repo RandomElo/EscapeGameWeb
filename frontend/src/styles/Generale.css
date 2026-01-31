@@ -95,3 +95,57 @@
     margin: 0 20px;
     list-style: none;
 }
+.navbar .navLinks ul li.notificationDemandesAdhesion {
+    display: flex;
+    cursor: pointer;
+}
+.modalContenu {
+    width: 600px;
+
+    #modalGestionDemandesAdhesion {
+        text-align: center;
+        h1 {
+            text-align: center;
+        }
+        table {
+            margin: 0 auto;
+            border-collapse: collapse;
+            tr {
+                height: 30px;
+            }
+            td {
+                padding: 0 5px;
+            }
+            .tdMail {
+                text-decoration: underline;
+            }
+            .tdAccepter,
+            .tdRefuser {
+                padding-left: 10px;
+
+                text-align: center;
+                vertical-align: middle;
+                height: 100%;
+                cursor: pointer;
+                svg {
+                    height: 100%;
+                }
+            }
+
+            .tdAccepter {
+                color: #9ae630;
+                :hover {
+                    color: #497d15;
+                }
+            }
+            .tdRefuser {
+                color: #ff6467;
+                :hover {
+                    color: #e7180b;
+                }
+            }
+
+            /* .tdRefuser */
+        }
+    }
+}
