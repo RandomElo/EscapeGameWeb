@@ -1,3 +1,25 @@
 .InterfaceAdministration {
-    
+}
+#modalAjouterMission {
+    text-align: center;
+    form {
+        text-align: left;
+        margin-top: 10px;
+        #divinputNom,
+        #divinputDescription,
+        #divinputAdresseIp {
+            margin-bottom: 10px;
+        }
+
+        #divinputDescription {
+            height: 100px;
+            textarea {
+                height: 81px;
+                resize: none;
+            }
+        }
+        button {
+            margin-top: 10px;
+        }
+    }
 }

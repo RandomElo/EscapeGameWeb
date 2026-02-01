@@ -23,4 +23,8 @@
     input[type="number"] {
         -moz-appearance: textfield;
     }
+    .textarea {
+        padding: 5px;
+        font-size: 0.9em;
+    }
 }

@@ -7,9 +7,9 @@ import routeurClassementsAdmin from "./classements.js";
 
 const routeurAdmins = e.Router();
 
-routeurAdmins.use("/scenarios", routeurScenarios)
-routeurAdmins.use("/missions", routeurMissions)
-routeurAdmins.use("/cameras", routeurCameras)
-routeurAdmins.use("/classements", routeurClassementsAdmin)
+routeurAdmins.use("/scenarios", routeurScenarios);
+routeurAdmins.use("/missions", routeurMissions);
+routeurAdmins.use("/cameras", routeurCameras);
+routeurAdmins.use("/classements", routeurClassementsAdmin);
 
 export default routeurAdmins;
