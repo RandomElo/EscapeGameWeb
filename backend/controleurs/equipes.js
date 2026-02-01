@@ -60,6 +60,30 @@ async function RecuperationMesEquipes(req) {
     return tableauEquipes;
 }
 
+async function RecuperationMesDemandesAdhesion(req) {
+    // Récupération des équipes dont je suis chef
+    const mesEquipes = await req.MembresEquipe.findAll({ where: { utilisateurId: req.idUtilisateur, estChef: true }, raw: true });
+
+    let mesDemandesAdhesion = [];
+    for (const equipe of mesEquipes) {
+        const demandes = await req.DemandesAdhesion.findAll({ where: { traitee: false, type: "demande", equipeId: equipe.id } });
+        if (demandes) {
+            const detailsEquipe = await req.Equipes.findByPk(equipe.id);
+            for (const demande of demandes) {
+                const utilisateur = await req.Utilisateurs.findByPk(demande.utilisateurId);
+
+                mesDemandesAdhesion.push({
+                    nom: utilisateur.nom,
+                    mail: utilisateur.mail,
+                    nomEquipe: detailsEquipe.nom,
+                    date: demande.date,
+                });
+            }
+        }
+    }
+    return mesDemandesAdhesion;
+}
+
 async function VerificationChef(nomEquipe, req, res) {
     const equipe = await req.Equipes.findOne({ where: { nom: nomEquipe }, raw: true });
     if (!equipe) {
@@ -361,28 +385,10 @@ export const demandeAdhesion = gestionErreur(
         if (!req.idUtilisateur) {
             return res.json({ etat: true, detail: { estConnecte: false } });
         }
-        // Récupération des équipes dont je suis chef
-        const mesEquipes = await req.MembresEquipe.findAll({ where: { utilisateurId: req.idUtilisateur, estChef: true }, raw: true });
 
-        let demandesAdhesion = [];
-        for (const equipe of mesEquipes) {
-            const demandes = await req.DemandesAdhesion.findAll({ where: { traitee: false, type: "demande", equipeId: equipe.id } });
-            if (demandes) {
-                const detailsEquipe = await req.Equipes.findByPk(equipe.id);
-                for (const demande of demandes) {
-                    const utilisateur = await req.Utilisateurs.findByPk(demande.utilisateurId);
+        const mesDemandesAdhesion = await RecuperationMesDemandesAdhesion(req);
 
-                    demandesAdhesion.push({
-                        nom: utilisateur.nom,
-                        mail: utilisateur.mail,
-                        nomEquipe: detailsEquipe.nom,
-                        date: demande.date,
-                    });
-                }
-            }
-        }
-
-        return res.json({ etat: true, detail: { estConnecte: true, details: demandesAdhesion } });
+        return res.json({ etat: true, detail: { estConnecte: true, details: mesDemandesAdhesion } });
     },
     "controleurRecuperationDemandeAdhesion",
     "Erreur lors de la récupération des demandes d'adhésion",
@@ -420,7 +426,10 @@ export const reponseDemandeAdhesion = gestionErreur(
         } else {
             await req.DemandesAdhesion.update({ traitee: true }, { where: { id: demande.id } });
         }
-        // il faut que je renvoye la liste mise a jour
+
+        const mesDemandesAdhesion = await RecuperationMesDemandesAdhesion(req);
+        return res.json({ etat: true, detail: mesDemandesAdhesion });
+
     },
     "controleurReponseDemandeAdhesion",
     "Erreur lors de l'envoi de la réponse pour la demande d'adhésion",

@@ -69,6 +69,7 @@ export default function Generale({ children }: { children?: ReactNode }) {
     }
     async function reponseDemandeAdhesion({ etat, demande }: PropsDemandeAdhesion): Promise<any> {
         const reponse = await requete({ url: "/equipes/reponse-demande-adhesion", methode: "PATCH", corps: { etat, mail: demande.mail, date: demande.date, nomEquipe: demande.nomEquipe } });
+        setDemandesAdhesion(reponse);
     }
     return (
         <>
@@ -95,14 +96,14 @@ export default function Generale({ children }: { children?: ReactNode }) {
                                         </>
                                     ) : (
                                         <>
-                                            <NavLink to="/connexion">Interface d'administration</NavLink>
+                                            <NavLink to="/interface-administration">Interface d'administration</NavLink>
                                         </>
                                     )}
 
                                     <li>
                                         <NavLink to="/mon-compte">Mon compte</NavLink>
                                     </li>
-                                    {demandesAdhesion && (
+                                    {demandesAdhesion && demandesAdhesion?.length > 0 && (
                                         <li
                                             className="notificationDemandesAdhesion"
                                             onClick={() => {
@@ -144,34 +145,38 @@ export default function Generale({ children }: { children?: ReactNode }) {
                 {afficherModal && demandesAdhesion && (
                     <div id="modalGestionDemandesAdhesion">
                         <h1>Demandes d'adhésion</h1>
-                        <table>
-                            <tr>
-                                <th>Date</th>
-                                <th>Nom</th>
-                                <th>Mail</th>
-                                <th>Équipe</th>
-                                <th></th>
-                                <th></th>
-                            </tr>
-                            <tbody>
-                                {demandesAdhesion.map((demande, key) => (
-                                    <tr key={key}>
-                                        <td>{formattageDate(demande.date)}</td>
-                                        <td>{demande.nom}</td>
-                                        <td className="tdMail">
-                                            <a href={`mailto:${demande.mail}`}>{demande.mail}</a>
-                                        </td>
-                                        <td>{demande.nomEquipe}</td>
-                                        <td className="tdAccepter" onClick={() => reponseDemandeAdhesion({ etat: "accepter", demande })}>
-                                            <Check />
-                                        </td>
-                                        <td className="tdRefuser" onClick={() => reponseDemandeAdhesion({ etat: "accepter", demande })}>
-                                            <X />
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                        {demandesAdhesion.length > 0 ? (
+                            <table>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Nom</th>
+                                    <th>Mail</th>
+                                    <th>Équipe</th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                                <tbody>
+                                    {demandesAdhesion.map((demande, key) => (
+                                        <tr key={key}>
+                                            <td>{formattageDate(demande.date)}</td>
+                                            <td>{demande.nom}</td>
+                                            <td className="tdMail">
+                                                <a href={`mailto:${demande.mail}`}>{demande.mail}</a>
+                                            </td>
+                                            <td>{demande.nomEquipe}</td>
+                                            <td className="tdAccepter" onClick={() => reponseDemandeAdhesion({ etat: "accepter", demande })}>
+                                                <Check />
+                                            </td>
+                                            <td className="tdRefuser" onClick={() => reponseDemandeAdhesion({ etat: "accepter", demande })}>
+                                                <X />
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        ) : (
+                            <p>Vous avez actuellement aucune demande.</p>
+                        )}
                     </div>
                 )}
             </Modal>

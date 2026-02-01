@@ -8,6 +8,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import Identification from "./pages/Identification";
 import "./styles/Generale.css";
 import Equipe from "./pages/Equipe";
+import InterfaceAdministration from "./pages/InterfaceAdministration";
 
 const router = createBrowserRouter([
     {
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
                 element: <Equipe />,
             },
 
+            {
+                path: "/interface-administration",
+                element: <InterfaceAdministration />,
+            },
             {
                 path: "*",
                 element: <ErreurRoute />,

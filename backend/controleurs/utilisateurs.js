@@ -71,11 +71,11 @@ export const connexion = gestionErreur(
             return res.json({ etat: true, detail: { compte: false, detail: "Mail ou mot de passe incorrect" } });
         }
 
-        if (utilisateur.role == "controleur" && !utilisateur.doubleAuthentification) {
-            const token2FA = jwt.sign({ sub: utilisateur.id, scope: "2fa_config" }, process.env.CHAINE_JWT_CONFIG_2FA, { expiresIn: "15m" });
+        // if (utilisateur.role == "controleur" && !utilisateur.doubleAuthentification) {
+        //     const token2FA = jwt.sign({ sub: utilisateur.id, scope: "2fa_config" }, process.env.CHAINE_JWT_CONFIG_2FA, { expiresIn: "15m" });
 
-            return res.json({ etat: true, detail: { message: "Parametrage 2FA", token2FA } });
-        }
+        //     return res.json({ etat: true, detail: { message: "Parametrage 2FA", token2FA } });
+        // }
 
         if (utilisateur.doubleAuthentificationActive) {
             const valide2FA = await verifierCode2FA(utilisateur, req.body.token);

@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useRequete } from "../fonctions/requete";
 import Modal from "../composants/Modal";
 import ChampDonneesForm from "../composants/ChampDonneesForm";
-import { ClipboardSignature, Crown, EllipsisVertical, Trash2, TriangleAlert, UserPlus } from "lucide-react";
+import { Crown, EllipsisVertical, Trash2, TriangleAlert } from "lucide-react";
 
 export default function Equipe() {
     const { estAuth, chargement } = useAuth();
@@ -280,39 +280,49 @@ export default function Equipe() {
                         </form>
                     </div>
                 )}
-                {contenuModal == "menuListeMembres" && (
+                {contenuModal === "menuListeMembres" && (
                     <div id="modalListesMembres">
                         <h1>Liste des membres</h1>
-                        <table>
-                            <tbody>
-                                {equipesListe
-                                    ?.find((equipe) => equipe.nom === donneesModal)
-                                    ?.listeMembres.map((joueur) => (
-                                        <tr key={joueur.nom}>
-                                            <td className="tdNom">{joueur.nom}</td>
-                                            <td className="tdMail">{joueur.mail ?? ""}</td>
-                                            {joueur.mail ? (
+
+                        {equipesListe
+                            ?.find((equipe) => equipe.nom === donneesModal)
+                            ?.listeMembres.map((joueur, key) =>
+                                !joueur.mail ? (
+                                    <p key={key} className="nomSansMail">
+                                        {joueur.nom}
+                                    </p>
+                                ) : (
+                                    <table key={key}>
+                                        <tbody>
+                                            <tr>
+                                                <td className="tdNom">{joueur.nom}</td>
+                                                <td className="tdMail">{joueur.mail}</td>
                                                 <td
-                                                    className={`tdPoubelle${joueur.estChef ? ` interdit` : ""}`}
+                                                    className={`tdPoubelle${joueur.estChef ? " interdit" : ""}`}
                                                     onClick={async () => {
                                                         if (!joueur.estChef) {
-                                                            const reponse = await requete({ url: "/equipes/suppression-membre", methode: "DELETE", corps: { membre: joueur.mail, equipe: donneesModal } });
+                                                            const reponse = await requete({
+                                                                url: "/equipes/suppression-membre",
+                                                                methode: "DELETE",
+                                                                corps: {
+                                                                    membre: joueur.mail,
+                                                                    equipe: donneesModal,
+                                                                },
+                                                            });
                                                             setEquipesListe(reponse);
                                                         }
                                                     }}
                                                 >
                                                     <Trash2 />
                                                 </td>
-                                            ) : (
-                                                <td></td>
-                                            )}
-                                        </tr>
-                                    ))}
-                            </tbody>
-                        </table>
-                        {/* <p>Je suis chef {equipesListe.nom[donneesModal]}</p> */}
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                ),
+                            )}
                     </div>
                 )}
+
                 {contenuModal == "menuQuitterEquipe" && (
                     <div id="modalQuitterEquipe">
                         <h1>Quitter l'équipe</h1>

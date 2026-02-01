@@ -130,6 +130,9 @@
     h1 {
         text-align: center;
     }
+    .nomSansMail {
+        text-align: center;
+    }
     table {
         margin: 5px auto 0 auto;
         border-collapse: collapse;
