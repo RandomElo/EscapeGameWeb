@@ -14,6 +14,7 @@ import routeurEquipes from "./routeurs/equipes.js";
 import routeurClassements from "./routeurs/classements.js";
 import routeurAdmins from "./routeurs/admin/admins.js";
 import { verificationCookie } from "./middlewares/verificationCookie.js";
+import { accesAdmin } from "./middlewares/accesAdmin.js";
 
 // Routeurs
 
@@ -24,7 +25,6 @@ const app = e();
 
 // CORS
 app.use(
-
     cors({
         origin: IP_FRONTEND,
         methods: ["GET", "POST", "PATCH", "DELETE"],
@@ -41,6 +41,6 @@ app.use(verificationCookie);
 app.use("/utilisateurs", routeurUtilisateurs);
 app.use("/equipes", routeurEquipes);
 app.use("/classements", routeurClassements);
-app.use("/admins", routeurAdmins);
+app.use("/admins", accesAdmin, routeurAdmins);
 
 app.listen(PORT_EXPRESS, () => console.log("Serveur démarré => port " + PORT_EXPRESS));

@@ -2,6 +2,7 @@ const logger = require('./logger');
 
 let currentScenario = null;
 let currentMissionIndex = 0;
+let missionConfigs = {};
 
 function loadScenario(scenario) {
   currentScenario = scenario;
@@ -41,7 +42,24 @@ function completeMission(missionId) {
   }
 }
 
+
+function updateMissionConfig(missionId, config) {
+  missionConfigs[missionId] = config;
+  logger.info(`Config mission ${missionId} mise à jour: ${JSON.stringify(config)}`);
+
+  require('./mqttClient').publish(
+    `escape/mission/${missionId}/config`,
+    JSON.stringify(config)
+  );
+}
+
+function getMissionConfig(missionId) {
+  return missionConfigs[missionId];
+}
+
 module.exports = {
   loadScenario,
-  completeMission
+  completeMission,
+  updateMissionConfig,
+  getMissionConfig
 };

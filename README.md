@@ -37,12 +37,13 @@ chmod +x demarrer.sh
 Port `8100`
 
 ```
+DOTENV_CONFIG_QUIET=true
 PORT_EXPRESS=8100
 NODE_ENV=development ou production
-DOTENV_CONFIG_QUIET=true
 IP_FRONTEND=http://ipFrontend:5252
 CONTROLEUR_DEFAUT`= node -e "import('bcrypt').then(b=>b.hash(process.argv[1],12).then(console.log))"
 CHAINE_JWT_COOKIE=
+CHAINE_JWT_CONFIG_2FA=
 MAIL_UTILISATEUR=
 MAIL_MDP=
 

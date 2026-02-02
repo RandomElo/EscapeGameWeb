@@ -27,10 +27,15 @@ client.on('message', (topic, message) => {
     }
   }
 
-  const match = topic.match(/^escape\/mission\/(\d+)\/event$/);
-  if (match && msg === "SUCCESS") {
-    const missionId = match[1];
-    scenarioManager.completeMission(missionId);
+  const configMatch = topic.match(/^escape\/mission\/(\d+)\/config$/);
+  if (configMatch) {
+    const missionId = configMatch[1];
+    try {
+      const missionConfig = JSON.parse(msg);
+      scenarioManager.updateMissionConfig(missionId, missionConfig);
+    } catch (err) {
+      logger.error(`Config mission ${missionId} invalide`);
+    }
   }
 });
 
