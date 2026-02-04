@@ -11,10 +11,11 @@ export default function InterfaceAdministration() {
     const requete = useRequete();
 
     const [afficherModal, setAfficherModal] = useState<boolean>(false);
-    const [contenuModal, setContenuModal] = useState<"ajouterMission">();
+    const [contenuModal, setContenuModal] = useState<"ajouterMission" | "genererAudio">();
     const [erreur, setErreur] = useState<string>();
     // const [scenarios, setScenarios] = useState<>()
     const [missions, setMissions] = useState<{ nom: string; description: string; idAdresse: string }[]>();
+    const [tableauIP, setTableauIP] = useState<string[]>();
 
     useEffect(() => {
         if (!estAuth) {
@@ -23,6 +24,14 @@ export default function InterfaceAdministration() {
             async function recuperationMissions() {
                 const reponse = await requete({ url: "/admins/missions/liste" });
                 setMissions(reponse);
+                // je doit faire un tableau avec les adresse
+                let listeTableauIP: string[] = [];
+                for (const mission of reponse) {
+                    if (!listeTableauIP.includes(mission.ipAdresse)) {
+                        listeTableauIP.push(mission.ipAdresse);
+                    }
+                }
+                setTableauIP(listeTableauIP);
             }
             recuperationMissions();
         }
@@ -33,7 +42,14 @@ export default function InterfaceAdministration() {
             <main className="InterfaceAdministration">
                 <h1 id="titre">Interface d'administration</h1>
                 {/* Pour les pings */}
-                <div id="divCommunicationMissions"></div>
+                <div id="divCommunicationMissions">
+                    {tableauIP?.map((ip) => (
+                        <div className="divVerificationCommunication">
+                            <p id="pEtat">Connecté</p>
+                            <p id="pIP">{ip}</p>
+                        </div>
+                    ))}
+                </div>
                 <div id="divMissions">
                     <button
                         className="bouton"
@@ -43,6 +59,15 @@ export default function InterfaceAdministration() {
                         }}
                     >
                         Ajouter une mission
+                    </button>
+                    <button
+                        className="bouton"
+                        onClick={() => {
+                            setContenuModal("genererAudio");
+                            setAfficherModal(true);
+                        }}
+                    >
+                        Générer audio
                     </button>
                 </div>
                 <div id="divScenarios"></div>
@@ -88,6 +113,25 @@ export default function InterfaceAdministration() {
 
                             <button type="submit" className="bouton">
                                 Ajouter
+                            </button>
+                        </form>
+                    </div>
+                )}
+                {contenuModal == "genererAudio" && (
+                    <div id="divModalGenererAudio">
+                        <h1>Génération de l'audio</h1>
+                        <form
+                            onSubmit={async (e) => {
+                                e.preventDefault();
+                                const texte = document.querySelector<HTMLInputElement>("#inputTexte")!.value;
+
+                                const reponse = await requete({ url: "/admins/audios/generation", methode: "POST", corps: { texte } });
+                                console.log(reponse);
+                            }}
+                        >
+                            <ChampDonneesForm id="inputTexte" label="Texte à générer :" typeInput="textearea" focus={true} />
+                            <button type="submit" className="bouton">
+                                Envoyer
                             </button>
                         </form>
                     </div>

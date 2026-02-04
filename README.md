@@ -29,7 +29,13 @@ touch demarrer.sh
 chmod +x demarrer.sh
 ./demarrer.sh
 ```
-
+# Installation piper
+```bash
+wget https://github.com/rhasspy/piper/releases/download/2023.11.14-2/piper_linux_x86_64.tar.gz
+tar -xzf piper_linux_x86_64.tar.gz
+wget https://huggingface.co/rhasspy/piper-voices/resolve/main/fr/fr_FR/tom/medium/fr_FR-tom-medium.onnx
+wget https://huggingface.co/rhasspy/piper-voices/resolve/main/fr/fr_FR/tom/medium/fr_FR-tom-medium.onnx
+```
 # .env
 
 ## Backend

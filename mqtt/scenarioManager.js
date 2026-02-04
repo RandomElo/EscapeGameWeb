@@ -46,11 +46,6 @@ function completeMission(missionId) {
 function updateMissionConfig(missionId, config) {
   missionConfigs[missionId] = config;
   logger.info(`Config mission ${missionId} mise à jour: ${JSON.stringify(config)}`);
-
-  require('./mqttClient').publish(
-    `escape/mission/${missionId}/config`,
-    JSON.stringify(config)
-  );
 }
 
 function getMissionConfig(missionId) {

@@ -6,6 +6,7 @@ async function RecuperationMissions(req) {
 
 export const liste = gestionErreur(
     async (req, res) => {
+        
         return res.json({ etat: true, detail: await RecuperationMissions(req) });
     },
     "controleurRecuperationListeMission",

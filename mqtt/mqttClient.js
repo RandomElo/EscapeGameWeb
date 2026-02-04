@@ -37,10 +37,20 @@ client.on('message', (topic, message) => {
       logger.error(`Config mission ${missionId} invalide`);
     }
   }
-});
 
-client.on('error', (err) => {
-  logger.error(`Erreur MQTT: ${err.message}`);
-});
+  const requestMatch = topic.match(/^escape\/mission\/(\d+)\/config\/request$/);
+  if (requestMatch) {
+    const missionId = requestMatch[1];
+    const missionConfig = scenarioManager.getMissionConfig(missionId);
 
-module.exports = client;
+    if (missionConfig) {
+      logger.info(`Envoi config mission ${missionId} à la mission`);
+      client.publish(
+        `escape/mission/${missionId}/config`,
+        JSON.stringify(missionConfig)
+      );
+    } else {
+      logger.warn(`Aucune config trouvée pour mission ${missionId}`);
+    }
+  }
+});
