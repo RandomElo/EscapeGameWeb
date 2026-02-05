@@ -10,9 +10,9 @@ const __dirname = path.dirname(__filename);
 
 export const generation = gestionErreur(
     (req, res) => {
-        const { texte } = req.body;
+        const { texte, missionId, scenarioId } = req.body;
 
-        if (!texte || typeof texte !== "string") {
+        if (!texte || !missionId || !scenarioId) {
             return res.status(400).json({
                 etat: false,
                 detail: "Requête incorrecte",
@@ -36,13 +36,20 @@ export const generation = gestionErreur(
         piper.stdin.write(texte);
         piper.stdin.end();
 
-        piper.on("close", (code) => {
+        piper.on("close", async (code) => {
             if (code !== 0) {
                 return res.status(500).json({
                     etat: false,
                     detail: "Erreur lors de la génération audio",
                 });
             }
+
+            await req.MessagesAudio.create({
+                detail: texte,
+                scenarioId,
+                missionId,
+                nomFichier,
+            });
 
             return res.status(200).json({
                 etat: true,
@@ -53,3 +60,5 @@ export const generation = gestionErreur(
     "controleurGenerationAudio",
     "Erreur lors de la génération de l'audio",
 );
+
+export const suppression = gestionErreur(async (req, res) => {}, "controleurSuppressionAudio", "Erreur lors de la suppression de l'audio");

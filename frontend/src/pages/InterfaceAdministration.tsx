@@ -11,29 +11,26 @@ export default function InterfaceAdministration() {
     const requete = useRequete();
 
     const [afficherModal, setAfficherModal] = useState<boolean>(false);
-    const [contenuModal, setContenuModal] = useState<"ajouterMission" | "genererAudio">();
+    const [contenuModal, setContenuModal] = useState<"ajouterMission" | "genererAudio" | "ajouterScenario">();
     const [erreur, setErreur] = useState<string>();
     // const [scenarios, setScenarios] = useState<>()
-    const [missions, setMissions] = useState<{ nom: string; description: string; idAdresse: string }[]>();
+    const [missions, setMissions] = useState<{ id: number; nom: string; description: string; idAdresse: string }[]>();
+    const [scenarios, setScenarios] = useState<{ id: number; nom: string; description: string }[]>();
     const [tableauIP, setTableauIP] = useState<string[]>();
 
     useEffect(() => {
         if (!estAuth) {
             navigation("/connexion");
         } else {
-            async function recuperationMissions() {
-                const reponse = await requete({ url: "/admins/missions/liste" });
-                setMissions(reponse);
-                // je doit faire un tableau avec les adresse
-                let listeTableauIP: string[] = [];
-                for (const mission of reponse) {
-                    if (!listeTableauIP.includes(mission.ipAdresse)) {
-                        listeTableauIP.push(mission.ipAdresse);
-                    }
-                }
-                setTableauIP(listeTableauIP);
+            async function recuperationDonnees() {
+                const reponse = await requete({ url: "/admins/scenarios/configuration-complete" });
+
+                setScenarios(reponse.scenarios);
+                setMissions(reponse.missions);
             }
-            recuperationMissions();
+
+            // recuperationMissions();
+            recuperationDonnees();
         }
     }, [estAuth, navigation]);
 
@@ -59,6 +56,15 @@ export default function InterfaceAdministration() {
                         }}
                     >
                         Ajouter une mission
+                    </button>
+                    <button
+                        className="bouton"
+                        onClick={() => {
+                            setContenuModal("ajouterScenario");
+                            setAfficherModal(true);
+                        }}
+                    >
+                        Ajouter scénario
                     </button>
                     <button
                         className="bouton"
@@ -117,6 +123,26 @@ export default function InterfaceAdministration() {
                         </form>
                     </div>
                 )}
+                {contenuModal == "ajouterScenario" && (
+                    <div id="divModalAjouterScenario">
+                        <h1>Ajouter scénario</h1>
+                        <form
+                            onSubmit={async (e) => {
+                                e.preventDefault();
+                                const nom = document.querySelector<HTMLInputElement>("#inputNom")!.value;
+                                const description = document.querySelector<HTMLInputElement>("#inputDescription")!.value;
+
+                                await requete({ url: "/admins/scenarios/creation", methode: "POST", corps: { nom, description } });
+                            }}
+                        >
+                            <ChampDonneesForm id="inputNom" label="Nom :" typeInput="text" placeholder="Scénario alarme" focus={true} />
+                            <ChampDonneesForm id="inputDescription" label="Description :" typeInput="textearea" />
+                            <button type="submit" className="bouton">
+                                Ajouter
+                            </button>
+                        </form>
+                    </div>
+                )}
                 {contenuModal == "genererAudio" && (
                     <div id="divModalGenererAudio">
                         <h1>Génération de l'audio</h1>
@@ -125,11 +151,40 @@ export default function InterfaceAdministration() {
                                 e.preventDefault();
                                 const texte = document.querySelector<HTMLInputElement>("#inputTexte")!.value;
 
-                                const reponse = await requete({ url: "/admins/audios/generation", methode: "POST", corps: { texte } });
+                                const missionId = document.querySelector<HTMLInputElement>("#selectMission")!.value;
+
+                                const scenarioId = document.querySelector<HTMLInputElement>("#selectScenario")!.value;
+
+                                const reponse = await requete({ url: "/admins/audios/generation", methode: "POST", corps: { texte, missionId, scenarioId } });
                                 console.log(reponse);
                             }}
                         >
                             <ChampDonneesForm id="inputTexte" label="Texte à générer :" typeInput="textearea" focus={true} />
+
+                            <label htmlFor="selectMission">Mission :</label>
+                            <select id="selectMission" required>
+                                <option value="" selected disabled>
+                                    --- Sélectionnez une mission ---
+                                </option>
+                                {missions?.map((mission, key) => (
+                                    <option value={mission.id} key={key}>
+                                        {mission.nom}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <label htmlFor="selectScenario">Scénario :</label>
+                            <select id="selectScenario" required>
+                                <option value="" selected disabled>
+                                    --- Sélectionnez un scénario ---
+                                </option>
+                                {scenarios?.map((scenarios, key) => (
+                                    <option value={scenarios.id} key={key}>
+                                        {scenarios.nom}
+                                    </option>
+                                ))}
+                            </select>
+
                             <button type="submit" className="bouton">
                                 Envoyer
                             </button>
