@@ -446,3 +446,4 @@
 [2026-02-05T09:32:30.011Z] [INFO] MQTT | escape/mission/3/connected | ok
 [2026-02-05T09:46:22.028Z] [INFO] MQTT | escape/mission/3/connected | 
 [2026-02-05T09:46:33.683Z] [INFO] MQTT | escape/mission/3/led | ko
+[2026-02-05T12:16:17.122Z] [INFO] ENGINE MQTT démarré

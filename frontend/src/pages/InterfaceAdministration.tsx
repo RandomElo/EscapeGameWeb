@@ -5,32 +5,40 @@ import Modal from "../composants/Modal";
 import ChampDonneesForm from "../composants/ChampDonneesForm";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { Play, Trash2 } from "lucide-react";
 export default function InterfaceAdministration() {
     const { estAuth } = useAuth();
     const navigation = useNavigate();
     const requete = useRequete();
 
     const [afficherModal, setAfficherModal] = useState<boolean>(false);
-    const [contenuModal, setContenuModal] = useState<"ajouterMission" | "genererAudio" | "ajouterScenario">();
+    const [contenuModal, setContenuModal] = useState<"ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio">();
+    const [detailsModal, setDetailsModal] = useState<string>();
+
     const [erreur, setErreur] = useState<string>();
     // const [scenarios, setScenarios] = useState<>()
     const [missions, setMissions] = useState<{ id: number; nom: string; description: string; idAdresse: string }[]>();
     const [scenarios, setScenarios] = useState<{ id: number; nom: string; description: string }[]>();
     const [tableauIP, setTableauIP] = useState<string[]>();
+    const [messagesAudio, setMessagesAudio] = useState<{ nomFichier: string; detail: string }[]>();
+
+    async function recuperationDonnees(reponse) {
+        
+        setScenarios(reponse.scenarios);
+        setMissions(reponse.missions);
+        setMessagesAudio(reponse.messagesAudio);
+    }
 
     useEffect(() => {
         if (!estAuth) {
             navigation("/connexion");
         } else {
-            async function recuperationDonnees() {
+            async function recuperation() {
                 const reponse = await requete({ url: "/admins/scenarios/configuration-complete" });
 
-                setScenarios(reponse.scenarios);
-                setMissions(reponse.missions);
+                recuperationDonnees(reponse);
             }
-
-            // recuperationMissions();
-            recuperationDonnees();
+            recuperation();
         }
     }, [estAuth, navigation]);
 
@@ -57,6 +65,8 @@ export default function InterfaceAdministration() {
                     >
                         Ajouter une mission
                     </button>
+                </div>
+                <div id="divScenarios">
                     <button
                         className="bouton"
                         onClick={() => {
@@ -66,6 +76,9 @@ export default function InterfaceAdministration() {
                     >
                         Ajouter scénario
                     </button>
+                </div>
+                <div id="divMessagesAudio">
+                    <h1>Les audios</h1>
                     <button
                         className="bouton"
                         onClick={() => {
@@ -75,8 +88,28 @@ export default function InterfaceAdministration() {
                     >
                         Générer audio
                     </button>
+                    <table>
+                        <tbody>
+                            {messagesAudio?.map((audio, key) => (
+                                <tr key={key}>
+                                    <td>{audio.nomFichier}</td>
+                                    <td>
+                                        <Play />
+                                    </td>
+                                    <td
+                                        onClick={() => {
+                                            setDetailsModal(audio.nomFichier);
+                                            setContenuModal("supprimerAudio");
+                                            setAfficherModal(true);
+                                        }}
+                                    >
+                                        <Trash2 />
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
-                <div id="divScenarios"></div>
             </main>
             <Modal estOuvert={afficherModal} fermeture={() => setAfficherModal(false)}>
                 {contenuModal == "ajouterMission" && (
@@ -188,6 +221,29 @@ export default function InterfaceAdministration() {
                             <button type="submit" className="bouton">
                                 Envoyer
                             </button>
+                        </form>
+                    </div>
+                )}
+                {contenuModal == "supprimerAudio" && (
+                    <div id="divModalSupprimerAudio">
+                        <h1>Supprimer audio</h1>
+                        <form
+                            onSubmit={async (e) => {
+                                e.preventDefault();
+                                const reponse = await requete({ url: "/admins/audios/suppression", methode: "DELETE", corps: { nomFichier: detailsModal } });
+
+                                recuperationDonnees(reponse);
+                            }}
+                        >
+                            <p>Êtes-vous sur de vouloir supprimer l'audio ?</p>
+                            <div id="divBoutons">
+                                <button className="bouton" onClick={() => setAfficherModal(false)}>
+                                    Annuler
+                                </button>
+                                <button type="submit" className="bouton supprimer">
+                                    Supprimer
+                                </button>
+                            </div>
                         </form>
                     </div>
                 )}

@@ -1,3 +1,6 @@
 node_modules
 .env
 bdd/bdd.sqlite
+tts/audios
+tts/voices
+tts/piper

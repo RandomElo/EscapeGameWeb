@@ -28,7 +28,7 @@ export const creation = gestionErreur(
     async (req, res) => {
         const { nom, description } = req.body;
         if (!nom | !description) {
-            return res.status(400).json({
+            return res.status(401).json({
                 etat: false,
                 detail: "Requête incorrecte",
             });

@@ -73,4 +73,19 @@
         }
     }
 }
+#divModalSupprimerAudio {
+    text-align: center;
+    form {
+
+        #divBoutons {
+            width: 80%;
+            margin: 10px auto 0;
+            display: flex;
+            justify-content: space-between;
+            .supprimer {
+                background-color: red;
+            }
+        }
+    }
+}
 /* {"reader1": "Couronne"} */

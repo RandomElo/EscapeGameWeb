@@ -8,7 +8,7 @@ export default function gestionErreur(action, emplacement, detailReponse) {
                 source: "serveurWeb",
                 message: `${{ nom: erreur.name, message: erreur.message, stack: erreur.stack }}`,
             });
-            res.json({ operation: false, detail: detailReponse });
+            res.json({ etat: false, detail: detailReponse });
         }
     };
 }
