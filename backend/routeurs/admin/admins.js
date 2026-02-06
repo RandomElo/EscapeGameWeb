@@ -5,13 +5,13 @@ import routeurMissions from "./missions.js";
 import routeurCameras from "./cameras.js";
 import routeurClassementsAdmin from "./classements.js";
 import routeurAudios from "./audios.js";
-
+import { accesAdmin } from "../../middlewares/accesAdmin.js";
 const routeurAdmins = e.Router();
 
-routeurAdmins.use("/scenarios", routeurScenarios);
-routeurAdmins.use("/missions", routeurMissions);
-routeurAdmins.use("/cameras", routeurCameras);
-routeurAdmins.use("/classements", routeurClassementsAdmin);
+routeurAdmins.use("/scenarios", accesAdmin, routeurScenarios);
+routeurAdmins.use("/missions", accesAdmin, routeurMissions);
+routeurAdmins.use("/cameras", accesAdmin, routeurCameras);
+routeurAdmins.use("/classements", accesAdmin, routeurClassementsAdmin);
 routeurAdmins.use("/audios", routeurAudios);
 
 export default routeurAdmins;

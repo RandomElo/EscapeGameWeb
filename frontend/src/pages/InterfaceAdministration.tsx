@@ -23,7 +23,6 @@ export default function InterfaceAdministration() {
     const [messagesAudio, setMessagesAudio] = useState<{ nomFichier: string; detail: string }[]>();
 
     async function recuperationDonnees(reponse) {
-        
         setScenarios(reponse.scenarios);
         setMissions(reponse.missions);
         setMessagesAudio(reponse.messagesAudio);
@@ -93,7 +92,14 @@ export default function InterfaceAdministration() {
                             {messagesAudio?.map((audio, key) => (
                                 <tr key={key}>
                                     <td>{audio.nomFichier}</td>
-                                    <td>
+                                    <td
+                                        onClick={async () => {
+                                            const reponse = await requete({ url: "/admins/audios/recuperation-lien", methode: "POST", corps: { nomFichier: audio.nomFichier } });
+
+                                            const elementAudio = new Audio(reponse);
+                                            elementAudio.play();
+                                        }}
+                                    >
                                         <Play />
                                     </td>
                                     <td
@@ -124,8 +130,8 @@ export default function InterfaceAdministration() {
                                 const reponseInput = document.querySelector<HTMLInputElement>("#inputReponse")!.value;
 
                                 const reponse = await requete({ url: "/admins/missions/creation", methode: "POST", corps: { nom, description, ipAdresse, reponse: reponseInput } });
-                                setMissions(reponse);
                                 console.log(reponse);
+                                recuperationDonnees(reponse);
                             }}
                         >
                             <ChampDonneesForm id="inputNom" typeInput="text" placeholder="Mission 1" label="Nom :" />
@@ -165,7 +171,8 @@ export default function InterfaceAdministration() {
                                 const nom = document.querySelector<HTMLInputElement>("#inputNom")!.value;
                                 const description = document.querySelector<HTMLInputElement>("#inputDescription")!.value;
 
-                                await requete({ url: "/admins/scenarios/creation", methode: "POST", corps: { nom, description } });
+                                const reponse = await requete({ url: "/admins/scenarios/creation", methode: "POST", corps: { nom, description } });
+                                recuperationDonnees(reponse);
                             }}
                         >
                             <ChampDonneesForm id="inputNom" label="Nom :" typeInput="text" placeholder="Scénario alarme" focus={true} />
@@ -189,7 +196,7 @@ export default function InterfaceAdministration() {
                                 const scenarioId = document.querySelector<HTMLInputElement>("#selectScenario")!.value;
 
                                 const reponse = await requete({ url: "/admins/audios/generation", methode: "POST", corps: { texte, missionId, scenarioId } });
-                                console.log(reponse);
+                                recuperationDonnees(reponse);
                             }}
                         >
                             <ChampDonneesForm id="inputTexte" label="Texte à générer :" typeInput="textearea" focus={true} />

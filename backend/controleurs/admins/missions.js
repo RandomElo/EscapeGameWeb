@@ -1,4 +1,5 @@
 import gestionErreur from "../../middlewares/gestionErreur.js";
+import { ConfigurationInterfaceAdmin } from "./scenarios.js";
 
 async function RecuperationMissions(req) {
     return await req.Missions.findAll();
@@ -29,7 +30,7 @@ export const creation = gestionErreur(
             formatReponse: reponse,
         });
 
-        return res.json({ etat: true, detail: await RecuperationMissions(req) });
+        return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
     },
     "controleurCreationMission",
     "Erreur lors de la création de la mission",

@@ -447,3 +447,29 @@
 [2026-02-05T09:46:22.028Z] [INFO] MQTT | escape/mission/3/connected | 
 [2026-02-05T09:46:33.683Z] [INFO] MQTT | escape/mission/3/led | ko
 [2026-02-05T12:16:17.122Z] [INFO] ENGINE MQTT démarré
+[2026-02-06T09:07:34.376Z] [INFO] ENGINE MQTT démarré
+[2026-02-06T09:07:34.439Z] [INFO] ENGINE connecté au broker MQTT
+[2026-02-06T10:25:59.581Z] [INFO] ENGINE MQTT démarré
+[2026-02-06T10:25:59.635Z] [INFO] ENGINE connecté au broker MQTT
+[2026-02-06T10:52:53.861Z] [INFO] MQTT | escape/mission/3/event | {"reader1": "Artefact"}
+[2026-02-06T10:52:54.695Z] [INFO] MQTT | escape/mission/3/event | {"reader1": null}
+[2026-02-06T10:52:57.249Z] [INFO] MQTT | escape/mission/3/event | {"reader1": "Artefact"}
+[2026-02-06T10:52:58.455Z] [INFO] MQTT | escape/mission/3/event | {"reader1": null}
+[2026-02-06T10:52:58.850Z] [INFO] MQTT | escape/mission/3/event | {"reader1": "Artefact"}
+[2026-02-06T10:52:59.061Z] [INFO] MQTT | escape/mission/3/event | {"reader1": null}
+[2026-02-06T10:52:59.998Z] [INFO] MQTT | escape/mission/3/event | {"reader1": "Artefact"}
+[2026-02-06T10:53:00.933Z] [INFO] MQTT | escape/mission/3/event | {"reader1": null}
+[2026-02-06T10:53:03.974Z] [INFO] MQTT | escape/mission/3/event | {"reader1": "Artefact"}
+[2026-02-06T10:53:06.340Z] [INFO] MQTT | escape/mission/3/event | {"reader1": null}
+[2026-02-06T10:53:10.014Z] [INFO] MQTT | escape/mission/3/event | {"reader1": "Artefact"}
+[2026-02-06T10:53:10.455Z] [INFO] MQTT | escape/mission/3/event | {"reader1": null}
+[2026-02-06T10:53:10.898Z] [INFO] MQTT | escape/mission/3/event | {"reader1": "Artefact"}
+[2026-02-06T10:53:11.112Z] [INFO] MQTT | escape/mission/3/event | {"reader1": null}
+[2026-02-06T10:53:12.194Z] [INFO] MQTT | escape/mission/3/event | {"reader1": "Artefact"}
+[2026-02-06T10:53:12.896Z] [INFO] MQTT | escape/mission/3/event | {"reader1": null}
+[2026-02-06T10:53:15.249Z] [INFO] MQTT | escape/mission/3/event | {"reader1": "Tour"}
+[2026-02-06T10:53:15.917Z] [INFO] MQTT | escape/mission/3/event | {"reader1": null}
+[2026-02-06T10:53:16.149Z] [INFO] MQTT | escape/mission/3/event | {"reader1": "Tour"}
+[2026-02-06T10:53:16.594Z] [INFO] MQTT | escape/mission/3/event | {"reader1": null}
+[2026-02-06T10:53:16.829Z] [INFO] MQTT | escape/mission/3/event | {"reader1": "Tour"}
+[2026-02-06T10:53:17.980Z] [INFO] MQTT | escape/mission/3/event | {"reader1": null}

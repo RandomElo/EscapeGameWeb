@@ -5,9 +5,11 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { ConfigurationInterfaceAdmin } from "./scenarios.js";
+import jwt from "jsonwebtoken";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const cheminTTS = path.resolve(__dirname, "../../tts");
 
 export const generation = gestionErreur(
     (req, res) => {
@@ -19,8 +21,6 @@ export const generation = gestionErreur(
                 detail: "Requête incorrecte",
             });
         }
-
-        const cheminTTS = path.resolve(__dirname, "../../tts");
 
         const cheminPiper = path.join(cheminTTS, "piper", "piper");
         const cheminModeleVoix = path.join(cheminTTS, "voices", "fr_FR-tom-medium", "fr_FR-tom-medium.onnx");
@@ -81,7 +81,6 @@ export const suppression = gestionErreur(
             });
         }
 
-        const cheminTTS = path.resolve(__dirname, "../../tts");
         const cheminDossierAudio = path.join(cheminTTS, "audios");
         const cheminFichier = path.join(cheminDossierAudio, nomFichier);
 
@@ -98,4 +97,70 @@ export const suppression = gestionErreur(
     },
     "controleurSuppressionAudio",
     "Erreur lors de la suppression de l'audio",
+);
+
+export const recuperationLien = gestionErreur(
+    async (req, res) => {
+        const { nomFichier } = req.body;
+
+        if (!nomFichier) {
+            return res.status(401).json({
+                etat: false,
+                detail: "Requête incorrecte",
+            });
+        }
+
+        const fichier = await req.MessagesAudio.findOne({ where: { nomFichier }, raw: true });
+        if (!fichier) {
+            return res.status(404).json({
+                etat: false,
+                detail: "Ressource introuvable",
+            });
+        }
+
+        const cheminFichier = path.join(cheminTTS, "audios", nomFichier);
+        if (!fs.existsSync(cheminFichier)) {
+            return res.status(404).json({
+                etat: false,
+                detail: "Ressource introuvable",
+            });
+        }
+        const token = jwt.sign({ file: nomFichier }, process.env.SECRET_AUDIO, { expiresIn: "15s" });
+
+        res.json({
+            etat: true,
+            detail: `/admins/audios/lecture/${nomFichier}?token=${token}`,
+        });
+    },
+    "controleurRecuperationLienAudio",
+    "Erreur lors de la récupération du lien pour l'audio",
+);
+
+export const lecture = gestionErreur(
+    async (req, res) => {
+        console.log(req.params)
+        const nomFichier = req.params.nomFichier;
+        const token = req.query.token;
+
+        const verification = jwt.verify(token, process.env.SECRET_AUDIO);
+        if (verification.file !== nomFichier) {
+            return res.status(403).json({
+                etat: false,
+                detail: "Accès interdit",
+            });
+        }
+        const cheminFichier = path.join(cheminTTS, "audios", nomFichier);
+        if (!fs.existsSync(cheminFichier)) {
+            return res.status(404).json({ error: "Fichier audio introuvable" });
+        }
+
+        res.setHeader("Content-Type", "audio/wav");
+        res.setHeader("Accept-Ranges", "bytes");
+        res.setHeader("Access-Control-Allow-Origin", process.env.IP_FRONTEND);
+        res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+
+        fs.createReadStream(cheminFichier).pipe(res);
+    },
+    "controleurLectureAudio",
+    "Erreur lors de la lecture de l'audio",
 );

@@ -45,6 +45,7 @@ export const inscription = gestionErreur(
             mail: req.body.mail,
             motDePasse: motDePasseHash,
         });
+        
         if (req.body.doubleAuthentification) {
             const token2FA = jwt.sign({ sub: utilisateur.id, scope: "2fa_config" }, process.env.CHAINE_JWT_CONFIG_2FA, { expiresIn: "15m" });
             return res.json({ etat: true, detail: { message: "Parametrage 2FA", token2FA } });

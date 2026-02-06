@@ -14,7 +14,7 @@ export function useRequete() {
 
     return async function requete({ url, methode = "GET", corps, enTete = {} }: RequeteParametres): Promise<any> {
         try {
-            const req = await fetch(`${import.meta.env.VITE_API_URL_BACKEND + url}`, {
+            const req = await fetch(`${ url}`, {
                 method: methode,
                 headers: {
                     "Content-Type": "application/json",

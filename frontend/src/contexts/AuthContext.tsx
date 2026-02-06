@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [auth, setAuth] = useState(false);
     const [role, setRole] = useState<"joueur" | "controleur" | null>(null);
     const verificationConnexion = async () => {
-        const requete = await fetch(import.meta.env.VITE_API_URL_BACKEND + "/utilisateurs/verification", {
+        const requete = await fetch("/utilisateurs/verification", {
             method: "GET",
             headers: { "Content-Type": "application/json" },
             credentials: "include",
@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 setAuth(false);
             } else {
                 setAuth(true);
-                setRole(reponse.detail)
+                setRole(reponse.detail);
             }
         }
 
