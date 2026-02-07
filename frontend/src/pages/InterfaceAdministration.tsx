@@ -134,7 +134,7 @@ export default function InterfaceAdministration() {
                                 recuperationDonnees(reponse);
                             }}
                         >
-                            <ChampDonneesForm id="inputNom" typeInput="text" placeholder="Mission 1" label="Nom :" />
+                            <ChampDonneesForm id="inputNom" typeInput="text" placeholder="Mission 1" label="Nom :" focus={true} />
                             <ChampDonneesForm id="inputDescription" typeInput="textearea" label="Description :" />
                             <ChampDonneesForm
                                 id="inputAdresseIp"

@@ -39,6 +39,7 @@ export const generation = gestionErreur(
 
         piper.on("close", async (code) => {
             if (code !== 0) {
+                console.log("Code : " + code);
                 return res.status(500).json({
                     etat: false,
                     detail: "Erreur lors de la génération audio",
@@ -55,6 +56,16 @@ export const generation = gestionErreur(
             return res.status(200).json({
                 etat: true,
                 fichier: path.basename(nomFichier),
+            });
+        });
+
+        piper.on("error", (err) => {
+            console.error("Erreur spawn piper :", err);
+
+            return res.status(500).json({
+                etat: false,
+                detail: "Impossible de lancer Piper",
+                erreur: err.message,
             });
         });
     },
@@ -138,7 +149,7 @@ export const recuperationLien = gestionErreur(
 
 export const lecture = gestionErreur(
     async (req, res) => {
-        console.log(req.params)
+        console.log(req.params);
         const nomFichier = req.params.nomFichier;
         const token = req.query.token;
 

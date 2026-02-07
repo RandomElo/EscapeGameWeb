@@ -4,6 +4,7 @@ set -euo pipefail
 echo "Initialisation Text To Speech"
 
 echo "Création de l'architecture"
+mkdir -p tts
 cd tts
 mkdir -p audios voices/fr_FR-tom-medium
 
