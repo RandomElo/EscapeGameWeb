@@ -58,16 +58,6 @@ export const generation = gestionErreur(
                 fichier: path.basename(nomFichier),
             });
         });
-
-        piper.on("error", (err) => {
-            console.error("Erreur spawn piper :", err);
-
-            return res.status(500).json({
-                etat: false,
-                detail: "Impossible de lancer Piper",
-                erreur: err.message,
-            });
-        });
     },
     "controleurGenerationAudio",
     "Erreur lors de la génération de l'audio",
