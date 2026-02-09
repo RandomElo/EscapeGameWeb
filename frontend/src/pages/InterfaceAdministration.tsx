@@ -5,7 +5,7 @@ import Modal from "../composants/Modal";
 import ChampDonneesForm from "../composants/ChampDonneesForm";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { Play, Trash2 } from "lucide-react";
+import { EllipsisVertical, Play, Trash2 } from "lucide-react";
 export default function InterfaceAdministration() {
     const { estAuth } = useAuth();
     const navigation = useNavigate();
@@ -17,7 +17,7 @@ export default function InterfaceAdministration() {
 
     const [erreur, setErreur] = useState<string>();
     // const [scenarios, setScenarios] = useState<>()
-    const [missions, setMissions] = useState<{ id: number; nom: string; description: string; idAdresse: string }[]>();
+    const [missions, setMissions] = useState<{ id: number; nom: string; description: string; ipAdresse: string; formatReponse:string }[]>();
     const [scenarios, setScenarios] = useState<{ id: number; nom: string; description: string }[]>();
     const [tableauIP, setTableauIP] = useState<string[]>();
     const [messagesAudio, setMessagesAudio] = useState<{ nomFichier: string; detail: string }[]>();
@@ -26,6 +26,16 @@ export default function InterfaceAdministration() {
         setScenarios(reponse.scenarios);
         setMissions(reponse.missions);
         setMessagesAudio(reponse.messagesAudio);
+
+        // recuperation ip missions
+        const tableauIP: string[] = [];
+        for (const mission of reponse.missions) {
+            if (!tableauIP.includes(mission.ipAdresse)) {
+                tableauIP.push(mission.ipAdresse);
+            }
+        }
+        console.log(tableauIP);
+        setTableauIP(tableauIP);
     }
 
     useEffect(() => {
@@ -55,6 +65,7 @@ export default function InterfaceAdministration() {
                     ))}
                 </div>
                 <div id="divMissions">
+                    <h2>Les missions</h2>
                     <button
                         className="bouton"
                         onClick={() => {
@@ -64,8 +75,33 @@ export default function InterfaceAdministration() {
                     >
                         Ajouter une mission
                     </button>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Description</th>
+                                <th>Adresse IP</th>
+                                <th>Réponse</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {missions?.map((mission) => (
+                                <tr>
+                                    <td className="tdNom">{mission.nom}</td>
+                                    <td className="tdDescription">{mission.description}</td>
+                                    <td className="tdIpAdresse">{mission.ipAdresse}</td>
+                                    <td className="tdReponse">{mission.formatReponse}</td>
+                                    <td className="tdAction">
+                                        <EllipsisVertical />
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
                 <div id="divScenarios">
+                    <h2>Les scénarios</h2>
                     <button
                         className="bouton"
                         onClick={() => {
@@ -75,9 +111,29 @@ export default function InterfaceAdministration() {
                     >
                         Ajouter scénario
                     </button>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Description</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {scenarios?.map((scenario) => (
+                                <tr>
+                                    <td className="tdNom">{scenario.nom}</td>
+                                    <td className="tdDescription">{scenario.description}</td>
+                                    <td className="tdAction">
+                                        <EllipsisVertical />
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
                 <div id="divMessagesAudio">
-                    <h1>Les audios</h1>
+                    <h2>Les audios</h2>
                     <button
                         className="bouton"
                         onClick={() => {
@@ -88,11 +144,19 @@ export default function InterfaceAdministration() {
                         Générer audio
                     </button>
                     <table>
+                        <thead>
+                            <tr>
+                                <th>Texte de l'audio</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
                         <tbody>
                             {messagesAudio?.map((audio, key) => (
                                 <tr key={key}>
-                                    <td>{audio.nomFichier}</td>
+                                    <td className="tdTexte">{audio.detail}</td>
                                     <td
+                                        className="tdAction tdPlay"
                                         onClick={async () => {
                                             const reponse = await requete({ url: "/admins/audios/recuperation-lien", methode: "POST", corps: { nomFichier: audio.nomFichier } });
 
@@ -103,6 +167,7 @@ export default function InterfaceAdministration() {
                                         <Play />
                                     </td>
                                     <td
+                                        className="tdAction tdPoubelle"
                                         onClick={() => {
                                             setDetailsModal(audio.nomFichier);
                                             setContenuModal("supprimerAudio");

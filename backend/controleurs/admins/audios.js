@@ -39,7 +39,6 @@ export const generation = gestionErreur(
 
         piper.on("close", async (code) => {
             if (code !== 0) {
-                console.log("Code : " + code);
                 return res.status(500).json({
                     etat: false,
                     detail: "Erreur lors de la génération audio",
@@ -139,7 +138,6 @@ export const recuperationLien = gestionErreur(
 
 export const lecture = gestionErreur(
     async (req, res) => {
-        console.log(req.params);
         const nomFichier = req.params.nomFichier;
         const token = req.query.token;
 

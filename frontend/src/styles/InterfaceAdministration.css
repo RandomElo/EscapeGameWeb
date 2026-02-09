@@ -1,5 +1,58 @@
 .InterfaceAdministration {
+    table {
+        border-collapse: collapse;
+        margin: 0 auto;
+        td {
+            height: 35px;
+            line-height: 25px;
+        }
+
+        .tdAction {
+            cursor: pointer;
+            width: 50px;
+            text-align: center;
+        }
+    }
     .divVerificationCommunication {
+    }
+    #divMissions, #divScenarios {
+        table {
+            text-align: center;
+            .tdNom {
+                width: 100px;
+            }
+            .tdDescription {
+                width: 300px;
+            }
+            .tdIpAdresse {
+                width: 100px;
+            }
+        }
+    }
+    #divMissions {
+        table {
+            .tdReponse {
+                width: 200px;
+            }
+        }
+    }
+    #divMessagesAudio {
+        table {
+            .tdTexte {
+                width: 600px;
+            }
+            .tdAction {
+                cursor: pointer;
+                width: 50px;
+                text-align: center;
+            }
+            .tdPlay:hover {
+                color: green;
+            }
+            .tdPoubelle:hover {
+                color: red;
+            }
+        }
     }
 }
 #modalAjouterMission {
@@ -76,7 +129,6 @@
 #divModalSupprimerAudio {
     text-align: center;
     form {
-
         #divBoutons {
             width: 80%;
             margin: 10px auto 0;

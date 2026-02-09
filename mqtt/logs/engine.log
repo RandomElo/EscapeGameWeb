@@ -473,3 +473,12 @@
 [2026-02-06T10:53:16.594Z] [INFO] MQTT | escape/mission/3/event | {"reader1": null}
 [2026-02-06T10:53:16.829Z] [INFO] MQTT | escape/mission/3/event | {"reader1": "Tour"}
 [2026-02-06T10:53:17.980Z] [INFO] MQTT | escape/mission/3/event | {"reader1": null}
+[2026-02-09T07:08:06.867Z] [INFO] ENGINE MQTT démarré
+[2026-02-09T07:08:06.926Z] [INFO] ENGINE connecté au broker MQTT
+[2026-02-09T07:35:31.771Z] [INFO] MQTT | escape/mission/3/led | ko
+[2026-02-09T08:11:20.523Z] [INFO] ENGINE MQTT démarré
+[2026-02-09T08:11:20.553Z] [INFO] ENGINE connecté au broker MQTT
+[2026-02-09T08:31:48.795Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-02-09T08:32:22.102Z] [INFO] MQTT | escape/mission/3/event | {"reader2": null, "reader3": null, "reader1": null}
+[2026-02-09T10:27:53.520Z] [INFO] ENGINE MQTT démarré
+[2026-02-09T10:27:53.559Z] [INFO] ENGINE connecté au broker MQTT
