@@ -4,3 +4,4 @@ bdd/bdd.sqlite
 tts/audios
 tts/voices
 tts/piper
+mqtt/logs

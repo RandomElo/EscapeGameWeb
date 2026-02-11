@@ -47,7 +47,7 @@ export const creation = gestionErreur(
 export const modificationNom = gestionErreur(
     async (req, res) => {
         const { id } = req.params;
-        const {nom} = req.body;
+        const { nom } = req.body;
         if (!req.params.id || !nom) {
             return res.status(400).json({
                 etat: false,
@@ -71,6 +71,33 @@ export const modificationNom = gestionErreur(
     "Erreur lors de la modification du nom du scénario",
 );
 
+export const modificationDescription = gestionErreur(
+    async (req, res) => {
+        const { id } = req.params;
+        const { description } = req.body;
+        if (!req.params.id || !description) {
+            return res.status(400).json({
+                etat: false,
+                detail: "Requête incorrecte",
+            });
+        }
+
+        const scenario = await req.Scenarios.findByPk(id, { raw: true });
+        if (!scenario) {
+            return res.status(404).json({
+                etat: true,
+                detail: "Ressource introuvable",
+            });
+        }
+
+        await req.Scenarios.update({ description }, { where: { id } });
+
+        return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
+    },
+    "modificationDescription",
+    "Erreur lors de la modification du scénario",
+);
+
 export const modificationOrdre = gestionErreur((req, res) => {}, "controleurModificationOrdreScenario", "Erreur lors la modification de l'ordre de la mission");
 
 export const modificationEnTete = gestionErreur((req, res) => {}, "controleurModificationEnTete", "Erreur lors de la modification de l'en-tête du scénario");
@@ -81,4 +108,20 @@ export const suppressionMission = gestionErreur((req, res) => {}, "controleurSup
 
 export const modifierReponses = gestionErreur((req, res) => {}, "controleurModifierReponses", "Erreur lors de la mise a jour des réponses");
 
-export const suppression = gestionErreur((req, res) => {}, "controleurSuppressionScenario", "Erreur lors de la suppression du scénario");
+export const suppression = gestionErreur(
+    async (req, res) => {
+        const { id } = req.params;
+        if (!req.params.id) {
+            return res.status(400).json({
+                etat: false,
+                detail: "Requête incorrecte",
+            });
+        }
+
+        const sce
+
+        return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
+    },
+    "controleurSuppressionScenario",
+    "Erreur lors de la suppression du scénario",
+);

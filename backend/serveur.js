@@ -3,6 +3,7 @@ import e from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import "./mqtt/serveur.js";
 
 // Middlewares
 import { accessibiliteBdd } from "./middlewares/accessibiliteBdd.js";

@@ -18,10 +18,4 @@ echo "Démarrage backend..."
 (
   cd backend || exit 1
   nodemon 2>&1 | log BACK
-) &
-
-echo "Démarrage MQTT ENGINE..."
-(
-  cd mqtt || exit 1
-  node serveur.js 2>&1 | log MQTT
 )

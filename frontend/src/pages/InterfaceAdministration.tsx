@@ -391,6 +391,62 @@ export default function InterfaceAdministration() {
                 {contenuModal == "modifierDescriptionScenario" && (
                     <div id="divModalModifierDescriptionScenario">
                         <h2>Modifier la description du scénario</h2>
+                        <form
+                            onSubmit={async (e) => {
+                                e.preventDefault();
+                                const description = document.querySelector<HTMLInputElement>("#inputDescription")!.value;
+
+                                if (description == scenarios?.filter((scenario) => scenario.id == Number(detailsModal))[0].description) {
+                                    return setAfficherModal(false);
+                                }
+
+                                const reponse = await requete({ url: `/admins/scenarios/${detailsModal}/modification-description`, methode: "PATCH", corps: { description } });
+
+                                recuperationDonnees(reponse);
+
+                                setAfficherModal(false);
+                            }}
+                        >
+                            <ChampDonneesForm id="inputDescription" typeInput="textearea" label={"Nouvelle description :"} value={scenarios?.filter((scenario) => scenario.id == Number(detailsModal))[0].description} focus={true} />
+
+                            <button type="submit" className="bouton">
+                                Modifier
+                            </button>
+                        </form>
+                    </div>
+                )}
+                {contenuModal == "supprimerScenario" && (
+                    <div id="divModalSupprimerScenario">
+                        <h2>Supprimer le scénario</h2>
+                        <form
+                            onSubmit={async (e) => {
+                                e.preventDefault();
+                            }}
+                        >
+                            <p>Êtes vous sur de vouloir supprimer l'équipe ?</p>
+
+                            <div id="divChoix">
+                                <button
+                                    className="bouton"
+                                    onClick={() => {
+                                        setAfficherModal(false);
+                                    }}
+                                >
+                                    Annuler
+                                </button>
+                                <button
+                                    className="bouton boutonSupprimer"
+                                    onClick={async () => {
+                                        const reponse = await requete({ url: `/admins/scenarios/${detailsModal}/suppression`, methode: "DELETE" });
+                                        recuperationDonnees(reponse);
+
+                                        setAfficherModal(false);
+                                    }}
+                                >
+                                    Confirmer
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 )}
                 {/* {contenuModal == "" && <div id="divModal"></div>} */}

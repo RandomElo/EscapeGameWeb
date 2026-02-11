@@ -1,0 +1,52 @@
+import mqtt from "mqtt";
+import config from "./config.js";
+import logger from "./logger.js";
+import scenarioManager from "./scenarioManager.js";
+
+const client = mqtt.connect(config.mqtt.host, {
+    username: config.mqtt.username,
+    password: config.mqtt.password,
+});
+
+client.on("connect", () => {
+    logger.info("ENGINE connecté au broker MQTT");
+    client.subscribe(`${config.mqtt.baseTopic}/#`);
+});
+
+client.on("message", (topic, message) => {
+    const msg = message.toString();
+    logger.info(`MQTT | ${topic} | ${msg}`);
+
+    if (topic === "escape/scenario/config") {
+        try {
+            const scenario = JSON.parse(msg);
+            scenarioManager.loadScenario(scenario);
+        } catch (err) {
+            logger.error("Scénario invalide reçu");
+        }
+    }
+
+    const configMatch = topic.match(/^escape\/mission\/(\d+)\/config$/);
+    if (configMatch) {
+        const missionId = configMatch[1];
+        try {
+            const missionConfig = JSON.parse(msg);
+            scenarioManager.updateMissionConfig(missionId, missionConfig);
+        } catch (err) {
+            logger.error(`Config mission ${missionId} invalide`);
+        }
+    }
+
+    const requestMatch = topic.match(/^escape\/mission\/(\d+)\/config\/request$/);
+    if (requestMatch) {
+        const missionId = requestMatch[1];
+        const missionConfig = scenarioManager.getMissionConfig(missionId);
+
+        if (missionConfig) {
+            logger.info(`Envoi config mission ${missionId} à la mission`);
+            client.publish(`escape/mission/${missionId}/config`, JSON.stringify(missionConfig));
+        } else {
+            logger.warn(`Aucune config trouvée pour mission ${missionId}`);
+        }
+    }
+});
