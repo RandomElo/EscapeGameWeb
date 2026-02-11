@@ -3,7 +3,6 @@ import gestionErreur from "../../middlewares/gestionErreur.js";
 export async function ConfigurationInterfaceAdmin(req) {
     // mission
     const missionsListe = await req.Missions.findAll({ raw: true, attributes: ["id", "nom", "description", "ipAdresse", "formatReponse"] });
-    console.log(missionsListe);
     // scenarion
     const scenariosListe = await req.Scenarios.findAll({ raw: true });
     // message audio
@@ -43,6 +42,33 @@ export const creation = gestionErreur(
     },
     "controleurCreationScenario",
     "Erreur lors de la création du scénario",
+);
+
+export const modificationNom = gestionErreur(
+    async (req, res) => {
+        const { id } = req.params;
+        const {nom} = req.body;
+        if (!req.params.id || !nom) {
+            return res.status(400).json({
+                etat: false,
+                detail: "Requête incorrecte",
+            });
+        }
+
+        const scenario = await req.Scenarios.findByPk(id, { raw: true });
+        if (!scenario) {
+            return res.status(404).json({
+                etat: true,
+                detail: "Ressource introuvable",
+            });
+        }
+
+        await req.Scenarios.update({ nom }, { where: { id } });
+
+        return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
+    },
+    "controleurModificationNomScenario",
+    "Erreur lors de la modification du nom du scénario",
 );
 
 export const modificationOrdre = gestionErreur((req, res) => {}, "controleurModificationOrdreScenario", "Erreur lors la modification de l'ordre de la mission");

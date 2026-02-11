@@ -131,6 +131,7 @@ export default function InterfaceAdministration() {
                                     <td
                                         className="tdAction"
                                         onClick={() => {
+                                            setDetailsModal(scenario.id.toString());
                                             setContenuModal("menuScenario");
                                             setAfficherModal(true);
                                         }}
@@ -368,17 +369,31 @@ export default function InterfaceAdministration() {
                 )}
                 {contenuModal == "modifierNomScenario" && (
                     <div id="divModalModifierNomScenario">
-                        <h2>Modifier nom scénario</h2>
+                        <h2>Modifier le nom du scénario</h2>
                         <form
                             onSubmit={async (e) => {
                                 e.preventDefault();
+                                const nom = document.querySelector<HTMLInputElement>("#inputNom")!.value;
+
+                                const reponse = await requete({ url: `/admins/scenarios/${detailsModal}/modification-nom`, methode: "PATCH", corps: { nom } });
+
+                                recuperationDonnees(reponse);
                             }}
                         >
-                            <ChampDonneesForm id="inputNom" placeholder="Mission 1"/>
+                            <ChampDonneesForm id="inputNom" typeInput="text" placeholder="Nouveau nom" focus={true} />
+
+                            <button type="submit" className="bouton">
+                                Modifier
+                            </button>
                         </form>
                     </div>
                 )}
-                {/* {contenuModal == "modifierNomScenario" && <div id="divModal"></div>} */}
+                {contenuModal == "modifierDescriptionScenario" && (
+                    <div id="divModalModifierDescriptionScenario">
+                        <h2>Modifier la description du scénario</h2>
+                    </div>
+                )}
+                {/* {contenuModal == "" && <div id="divModal"></div>} */}
             </Modal>
         </>
     );
