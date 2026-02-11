@@ -1,26 +1,30 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRequete } from "../fonctions/requete";
 import "../styles/InterfaceAdministration.css";
 import Modal from "../composants/Modal";
 import ChampDonneesForm from "../composants/ChampDonneesForm";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { EllipsisVertical, Play, Trash2 } from "lucide-react";
+import { EllipsisVertical, Play, Square, Trash2 } from "lucide-react";
 export default function InterfaceAdministration() {
     const { estAuth } = useAuth();
     const navigation = useNavigate();
     const requete = useRequete();
 
     const [afficherModal, setAfficherModal] = useState<boolean>(false);
-    const [contenuModal, setContenuModal] = useState<"ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio">();
+    const [contenuModal, setContenuModal] = useState<"ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio" | "menuScenario" | "modifierNomScenario" | "modifierDescriptionScenario" | "supprimerScenario">();
     const [detailsModal, setDetailsModal] = useState<string>();
 
     const [erreur, setErreur] = useState<string>();
     // const [scenarios, setScenarios] = useState<>()
-    const [missions, setMissions] = useState<{ id: number; nom: string; description: string; ipAdresse: string; formatReponse:string }[]>();
+    const [missions, setMissions] = useState<{ id: number; nom: string; description: string; ipAdresse: string; formatReponse: string }[]>();
     const [scenarios, setScenarios] = useState<{ id: number; nom: string; description: string }[]>();
     const [tableauIP, setTableauIP] = useState<string[]>();
     const [messagesAudio, setMessagesAudio] = useState<{ nomFichier: string; detail: string }[]>();
+
+    const [idAudioEnCours, setIdAudioEnCours] = useState<number | null>(null);
+
+    const audioRef = useRef<HTMLAudioElement | null>(null);
 
     async function recuperationDonnees(reponse) {
         setScenarios(reponse.scenarios);
@@ -124,7 +128,13 @@ export default function InterfaceAdministration() {
                                 <tr>
                                     <td className="tdNom">{scenario.nom}</td>
                                     <td className="tdDescription">{scenario.description}</td>
-                                    <td className="tdAction">
+                                    <td
+                                        className="tdAction"
+                                        onClick={() => {
+                                            setContenuModal("menuScenario");
+                                            setAfficherModal(true);
+                                        }}
+                                    >
                                         <EllipsisVertical />
                                     </td>
                                 </tr>
@@ -156,15 +166,33 @@ export default function InterfaceAdministration() {
                                 <tr key={key}>
                                     <td className="tdTexte">{audio.detail}</td>
                                     <td
-                                        className="tdAction tdPlay"
+                                        className={`tdAction ${idAudioEnCours == key ? "tdStop" : "tdPlay"}`}
                                         onClick={async () => {
+                                            if (idAudioEnCours == key && audioRef.current) {
+                                                audioRef.current.pause();
+                                                audioRef.current.currentTime = 0;
+                                                setIdAudioEnCours(null);
+                                                return;
+                                            }
+
+                                            if (audioRef.current) {
+                                                audioRef.current.pause();
+                                                audioRef.current.currentTime = 0;
+                                            }
+
+                                            setIdAudioEnCours(key);
                                             const reponse = await requete({ url: "/admins/audios/recuperation-lien", methode: "POST", corps: { nomFichier: audio.nomFichier } });
 
                                             const elementAudio = new Audio(reponse);
+                                            audioRef.current = elementAudio;
                                             elementAudio.play();
+
+                                            elementAudio.addEventListener("ended", () => {
+                                                setIdAudioEnCours(null);
+                                            });
                                         }}
                                     >
-                                        <Play />
+                                        {idAudioEnCours == key ? <Square /> : <Play />}
                                     </td>
                                     <td
                                         className="tdAction tdPoubelle"
@@ -221,27 +249,6 @@ export default function InterfaceAdministration() {
 
                             {erreur && <p id="pErreur">{erreur}</p>}
 
-                            <button type="submit" className="bouton">
-                                Ajouter
-                            </button>
-                        </form>
-                    </div>
-                )}
-                {contenuModal == "ajouterScenario" && (
-                    <div id="divModalAjouterScenario">
-                        <h1>Ajouter scénario</h1>
-                        <form
-                            onSubmit={async (e) => {
-                                e.preventDefault();
-                                const nom = document.querySelector<HTMLInputElement>("#inputNom")!.value;
-                                const description = document.querySelector<HTMLInputElement>("#inputDescription")!.value;
-
-                                const reponse = await requete({ url: "/admins/scenarios/creation", methode: "POST", corps: { nom, description } });
-                                recuperationDonnees(reponse);
-                            }}
-                        >
-                            <ChampDonneesForm id="inputNom" label="Nom :" typeInput="text" placeholder="Scénario alarme" focus={true} />
-                            <ChampDonneesForm id="inputDescription" label="Description :" typeInput="textearea" />
                             <button type="submit" className="bouton">
                                 Ajouter
                             </button>
@@ -319,6 +326,59 @@ export default function InterfaceAdministration() {
                         </form>
                     </div>
                 )}
+
+                {/* Gestion des scénario */}
+
+                {contenuModal == "menuScenario" && (
+                    <div id="divModalMenuScenario">
+                        <h2>Menu scénario</h2>
+                        <div id="divOptions">
+                            <a className="bouton" onClick={() => setContenuModal("modifierNomScenario")}>
+                                Modifier le nom
+                            </a>
+                            <a className="bouton" onClick={() => setContenuModal("modifierDescriptionScenario")}>
+                                Modifier la description
+                            </a>
+                            <a className="bouton" onClick={() => setContenuModal("supprimerScenario")}>
+                                Supprimer le scénario
+                            </a>
+                        </div>
+                    </div>
+                )}
+                {contenuModal == "ajouterScenario" && (
+                    <div id="divModalAjouterScenario">
+                        <h1>Ajouter scénario</h1>
+                        <form
+                            onSubmit={async (e) => {
+                                e.preventDefault();
+                                const nom = document.querySelector<HTMLInputElement>("#inputNom")!.value;
+                                const description = document.querySelector<HTMLInputElement>("#inputDescription")!.value;
+
+                                const reponse = await requete({ url: "/admins/scenarios/creation", methode: "POST", corps: { nom, description } });
+                                recuperationDonnees(reponse);
+                            }}
+                        >
+                            <ChampDonneesForm id="inputNom" label="Nom :" typeInput="text" placeholder="Scénario alarme" focus={true} />
+                            <ChampDonneesForm id="inputDescription" label="Description :" typeInput="textearea" />
+                            <button type="submit" className="bouton">
+                                Ajouter
+                            </button>
+                        </form>
+                    </div>
+                )}
+                {contenuModal == "modifierNomScenario" && (
+                    <div id="divModalModifierNomScenario">
+                        <h2>Modifier nom scénario</h2>
+                        <form
+                            onSubmit={async (e) => {
+                                e.preventDefault();
+                            }}
+                        >
+                            <ChampDonneesForm id="inputNom" placeholder="Mission 1"/>
+                        </form>
+                    </div>
+                )}
+                {/* {contenuModal == "modifierNomScenario" && <div id="divModal"></div>} */}
             </Modal>
         </>
     );

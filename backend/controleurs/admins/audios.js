@@ -52,10 +52,7 @@ export const generation = gestionErreur(
                 nomFichier,
             });
 
-            return res.status(200).json({
-                etat: true,
-                fichier: path.basename(nomFichier),
-            });
+            return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
         });
     },
     "controleurGenerationAudio",

@@ -15,7 +15,8 @@
     }
     .divVerificationCommunication {
     }
-    #divMissions, #divScenarios {
+    #divMissions,
+    #divScenarios {
         table {
             text-align: center;
             .tdNom {
@@ -46,8 +47,14 @@
                 width: 50px;
                 text-align: center;
             }
-            .tdPlay:hover {
+            .tdPlay:hover svg {
+                fill: green;
+                stroke: green;
                 color: green;
+            }
+            .tdStop:hover svg {
+                fill: red;
+                stroke: red;
             }
             .tdPoubelle:hover {
                 color: red;
@@ -55,6 +62,7 @@
         }
     }
 }
+
 #modalAjouterMission {
     text-align: center;
     form {
@@ -139,5 +147,18 @@
             }
         }
     }
+}
+#divModalMenuScenario {
+    text-align: center;
+    #divOptions {
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        row-gap: 20px;
+    }
+}
+#divModalModifierNomScenario {
+    text-align: center;
 }
 /* {"reader1": "Couronne"} */
