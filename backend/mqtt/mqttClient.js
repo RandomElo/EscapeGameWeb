@@ -1,7 +1,7 @@
 import mqtt from "mqtt";
 import config from "./config.js";
 import logger from "./logger.js";
-import scenarioManager from "./scenarioManager.js";
+import CommunicationBDD from "./CommunicationBDD.js";
 
 const client = mqtt.connect(config.mqtt.host, {
     username: config.mqtt.username,
@@ -13,40 +13,116 @@ client.on("connect", () => {
     client.subscribe(`${config.mqtt.baseTopic}/#`);
 });
 
-client.on("message", (topic, message) => {
-    const msg = message.toString();
+client.on("message", async (topic, messageBuffer) => {
+
+    const msg = messageBuffer.toString();
     logger.info(`MQTT | ${topic} | ${msg}`);
 
-    if (topic === "escape/scenario/config") {
-        try {
-            const scenario = JSON.parse(msg);
-            scenarioManager.loadScenario(scenario);
-        } catch (err) {
-            logger.error("Scénario invalide reçu");
-        }
-    }
+    try {
 
-    const configMatch = topic.match(/^escape\/mission\/(\d+)\/config$/);
-    if (configMatch) {
-        const missionId = configMatch[1];
-        try {
+        // =====================================================
+        // CONNECTED (handshake)
+        // =====================================================
+
+        const connectedMatch = topic.match(/^escape\/mission\/(\d+)\/connected$/);
+        if (connectedMatch) {
+            const missionId = connectedMatch[1];
+
+            logger.info(`Mission ${missionId} connectée`);
+
+            client.publish(
+                `escape/mission/${missionId}/connected/reply`,
+                "ok"
+            );
+
+            client.publish(
+                `escape/mission/${missionId}/state`,
+                "config"
+            );
+
+            return;
+        }
+
+        // =====================================================
+        // WEB → SAVE CONFIG
+        // =====================================================
+
+        const configMatch = topic.match(/^escape\/mission\/(\d+)\/config$/);
+        if (configMatch) {
+            const missionId = configMatch[1];
+
             const missionConfig = JSON.parse(msg);
-            scenarioManager.updateMissionConfig(missionId, missionConfig);
-        } catch (err) {
-            logger.error(`Config mission ${missionId} invalide`);
+
+            await CommunicationBDD.updateMissionConfig(missionId, missionConfig);
+
+            logger.info(`Config mission ${missionId} sauvegardée`);
+
+            return;
         }
+
+        // =====================================================
+        // MISSION → CONFIG REQUEST
+        // =====================================================
+
+        const requestMatch = topic.match(/^escape\/mission\/(\d+)\/config\/request$/);
+        if (requestMatch) {
+            const missionId = requestMatch[1];
+
+            if (msg === "true") {
+
+                const missionConfig = await CommunicationBDD.getMissionConfig(missionId);
+
+                if (missionConfig) {
+                    client.publish(
+                        `escape/mission/${missionId}/config`,
+                        JSON.stringify(missionConfig)
+                    );
+
+                    client.publish(
+                        `escape/mission/${missionId}/state`,
+                        "start"
+                    );
+                } else {
+                    logger.warn(`Pas de config pour mission ${missionId}`);
+                }
+
+                return;
+            }
+
+            // OK / KO restent comme avant
+            if (msg === "ok") {
+                logger.info(`Mission ${missionId} validée`);
+                client.publish(
+                    `escape/mission/${missionId}/led`,
+                    "ok"
+                );
+                return;
+            }
+
+            if (msg === "ko") {
+                logger.warn(`Mission ${missionId} erreur`);
+                client.publish(
+                    `escape/mission/${missionId}/led`,
+                    "error"
+                );
+                return;
+            }
+        }
+
+        // =====================================================
+        // EVENT RFID
+        // =====================================================
+
+        const eventMatch = topic.match(/^escape\/mission\/(\d+)\/event$/);
+        if (eventMatch) {
+            logger.info(`Event mission ${eventMatch[1]} : ${msg}`);
+            return;
+        }
+
+    } catch (err) {
+        logger.error("Erreur MQTT : " + err.message);
     }
 
-    const requestMatch = topic.match(/^escape\/mission\/(\d+)\/config\/request$/);
-    if (requestMatch) {
-        const missionId = requestMatch[1];
-        const missionConfig = scenarioManager.getMissionConfig(missionId);
-
-        if (missionConfig) {
-            logger.info(`Envoi config mission ${missionId} à la mission`);
-            client.publish(`escape/mission/${missionId}/config`, JSON.stringify(missionConfig));
-        } else {
-            logger.warn(`Aucune config trouvée pour mission ${missionId}`);
-        }
-    }
 });
+
+export default client;

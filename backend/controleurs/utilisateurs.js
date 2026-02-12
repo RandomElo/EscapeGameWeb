@@ -45,7 +45,7 @@ export const inscription = gestionErreur(
             mail: req.body.mail,
             motDePasse: motDePasseHash,
         });
-        
+
         if (req.body.doubleAuthentification) {
             const token2FA = jwt.sign({ sub: utilisateur.id, scope: "2fa_config" }, process.env.CHAINE_JWT_CONFIG_2FA, { expiresIn: "15m" });
             return res.json({ etat: true, detail: { message: "Parametrage 2FA", token2FA } });
@@ -59,6 +59,7 @@ export const inscription = gestionErreur(
 
 export const connexion = gestionErreur(
     async (req, res) => {
+        console.log("je suis iciz");
         const utilisateur = await req.Utilisateurs.findOne({
             where: { mail: req.body.mail },
         });
@@ -183,7 +184,7 @@ export const detailsToken = gestionErreur(
         if (!lien) {
             return res.json({ etat: true, detail: { trouver: false } });
         }
-        if(lien.type != "creationCompte") {
+        if (lien.type != "creationCompte") {
             return res.status(403).json({
                 etat: false,
                 detail: "Erreur d'utilisation du token",
@@ -191,7 +192,7 @@ export const detailsToken = gestionErreur(
         }
         const detailLien = JSON.parse(lien.details);
 
-        return res.json({ etat: true, detail: { trouver: true, mail:detailLien } });
+        return res.json({ etat: true, detail: { trouver: true, mail: detailLien } });
     },
     "controleurDetailTokenAuthentification",
     "Erreur lors de la récupération des détails du lien de connexion",

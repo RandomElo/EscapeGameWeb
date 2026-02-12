@@ -148,7 +148,8 @@
         }
     }
 }
-#divModalMenuScenario {
+#divModalMenuScenario,
+#divModalMenuMission {
     text-align: center;
     #divOptions {
         margin-top: 10px;

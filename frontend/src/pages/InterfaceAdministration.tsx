@@ -12,7 +12,7 @@ export default function InterfaceAdministration() {
     const requete = useRequete();
 
     const [afficherModal, setAfficherModal] = useState<boolean>(false);
-    const [contenuModal, setContenuModal] = useState<"ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio" | "menuScenario" | "modifierNomScenario" | "modifierDescriptionScenario" | "supprimerScenario">();
+    const [contenuModal, setContenuModal] = useState<"ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio" | "menuScenario" | "modifierNomScenario" | "modifierDescriptionScenario" | "supprimerScenario" | "menuMission" | "" | "" | "" | "" | "">();
     const [detailsModal, setDetailsModal] = useState<string>();
 
     const [erreur, setErreur] = useState<string>();
@@ -85,18 +85,25 @@ export default function InterfaceAdministration() {
                                 <th>Nom</th>
                                 <th>Description</th>
                                 <th>Adresse IP</th>
-                                <th>Réponse</th>
+                                <th>Configuration</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             {missions?.map((mission) => (
-                                <tr>
+                                <tr key={mission.id}>
                                     <td className="tdNom">{mission.nom}</td>
                                     <td className="tdDescription">{mission.description}</td>
                                     <td className="tdIpAdresse">{mission.ipAdresse}</td>
                                     <td className="tdReponse">{mission.formatReponse}</td>
-                                    <td className="tdAction">
+                                    <td
+                                        className="tdAction"
+                                        onClick={() => {
+                                            setDetailsModal(mission.id.toString());
+                                            setContenuModal("menuMission");
+                                            setAfficherModal(true);
+                                        }}
+                                    >
                                         <EllipsisVertical />
                                     </td>
                                 </tr>
@@ -447,6 +454,20 @@ export default function InterfaceAdministration() {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                )}
+
+                {/* Gestion des missions */}
+                {contenuModal == "menuMission" && (
+                    <div id="divModalMenuMission">
+                        <h2>Menu mission</h2>
+                        <div id="divOptions">
+                            <a className="bouton">Modifier nom</a>
+                            <a className="bouton">Modifier description</a>
+                            <a className="bouton">Modifier adresse IP</a>
+                            <a className="bouton">Modifier configuration</a>
+                            <a className="bouton">Supprimer la mission</a>
+                        </div>
                     </div>
                 )}
                 {/* {contenuModal == "" && <div id="divModal"></div>} */}

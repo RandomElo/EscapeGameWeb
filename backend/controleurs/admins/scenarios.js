@@ -118,8 +118,14 @@ export const suppression = gestionErreur(
             });
         }
 
-        const sce
-
+        const scenario = await req.Scenarios.findByPk(id, { raw: true });
+        if (!scenario) {
+            return res.status(404).json({
+                etat: false,
+                detail: "Ressource introuvable",
+            });
+        }
+        await req.Scenarios.destroy({ where: { id } });
         return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
     },
     "controleurSuppressionScenario",
