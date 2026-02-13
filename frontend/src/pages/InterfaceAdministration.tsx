@@ -12,7 +12,7 @@ export default function InterfaceAdministration() {
     const requete = useRequete();
 
     const [afficherModal, setAfficherModal] = useState<boolean>(false);
-    const [contenuModal, setContenuModal] = useState<"ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio" | "menuScenario" | "modifierNomScenario" | "modifierDescriptionScenario" | "supprimerScenario" | "menuMission" | "" | "" | "" | "" | "">();
+    const [contenuModal, setContenuModal] = useState<"ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio" | "menuScenario" | "modifierNomScenario" | "modifierDescriptionScenario" | "supprimerScenario" | "menuMission" | "modifierAdresseIPMission" | "supprimerMission" | "modifierNomMission" | "modifierDescriptionMission" | "modifierConfigurationMission">();
     const [detailsModal, setDetailsModal] = useState<string>();
 
     const [erreur, setErreur] = useState<string>();
@@ -374,15 +374,20 @@ export default function InterfaceAdministration() {
                         </form>
                     </div>
                 )}
-                {contenuModal == "modifierNomScenario" && (
-                    <div id="divModalModifierNomScenario">
-                        <h2>Modifier le nom du scénario</h2>
+
+                {(contenuModal == "modifierNomScenario" || contenuModal == "modifierNomMission") && (
+                    <div id={contenuModal == "modifierNomScenario" ? "divModalModifierNomScenario" : "divModalModifierNomMission"}>
+                        <h2>Modifier le nom {contenuModal == "modifierNomScenario" ? "du scénario" : "de la mission"}</h2>
                         <form
                             onSubmit={async (e) => {
                                 e.preventDefault();
                                 const nom = document.querySelector<HTMLInputElement>("#inputNom")!.value;
 
-                                const reponse = await requete({ url: `/admins/scenarios/${detailsModal}/modification-nom`, methode: "PATCH", corps: { nom } });
+                                const reponse = await requete({
+                                    url: `/admins/${contenuModal == "modifierNomScenario" ? "scenarios" : "missions"}/${detailsModal}/modification-nom`,
+                                    methode: "PATCH",
+                                    corps: { nom },
+                                });
 
                                 recuperationDonnees(reponse);
                             }}
@@ -395,9 +400,10 @@ export default function InterfaceAdministration() {
                         </form>
                     </div>
                 )}
-                {contenuModal == "modifierDescriptionScenario" && (
-                    <div id="divModalModifierDescriptionScenario">
-                        <h2>Modifier la description du scénario</h2>
+
+                {(contenuModal == "modifierDescriptionScenario" || contenuModal == "modifierDescriptionMission") && (
+                    <div id={contenuModal == "modifierDescriptionScenario" ? "divModalModifierDescriptionScenario" : "divModalModifierDescriptionMission"}>
+                        <h2>Modifier la description {contenuModal == "modifierDescriptionScenario" ? "du scénario" : "de la mission"}</h2>
                         <form
                             onSubmit={async (e) => {
                                 e.preventDefault();
@@ -407,7 +413,7 @@ export default function InterfaceAdministration() {
                                     return setAfficherModal(false);
                                 }
 
-                                const reponse = await requete({ url: `/admins/scenarios/${detailsModal}/modification-description`, methode: "PATCH", corps: { description } });
+                                const reponse = await requete({ url: `/admins/${contenuModal == "modifierDescriptionScenario" ? "scenarios" : "missions"}/${detailsModal}/modification-description`, methode: "PATCH", corps: { description } });
 
                                 recuperationDonnees(reponse);
 
@@ -422,15 +428,16 @@ export default function InterfaceAdministration() {
                         </form>
                     </div>
                 )}
-                {contenuModal == "supprimerScenario" && (
-                    <div id="divModalSupprimerScenario">
-                        <h2>Supprimer le scénario</h2>
+
+                {(contenuModal == "supprimerScenario" || contenuModal == "supprimerMission") && (
+                    <div id={contenuModal == "supprimerScenario" ? "divModalSupprimerScenario" : "divModalSupprimerMission"}>
+                        <h2>Supprimer {contenuModal == "supprimerScenario" ? "le scénario" : "la mission"}</h2>
                         <form
                             onSubmit={async (e) => {
                                 e.preventDefault();
                             }}
                         >
-                            <p>Êtes vous sur de vouloir supprimer l'équipe ?</p>
+                            <p>Êtes vous sur de vouloir supprimer {contenuModal == "supprimerScenario" ? "le scénario" : "la mission"}</p>
 
                             <div id="divChoix">
                                 <button
@@ -444,7 +451,7 @@ export default function InterfaceAdministration() {
                                 <button
                                     className="bouton boutonSupprimer"
                                     onClick={async () => {
-                                        const reponse = await requete({ url: `/admins/scenarios/${detailsModal}/suppression`, methode: "DELETE" });
+                                        const reponse = await requete({ url: `/admins/${contenuModal == "supprimerScenario" ? "scenarios" : "missions"}/${detailsModal}/suppression`, methode: "DELETE" });
                                         recuperationDonnees(reponse);
 
                                         setAfficherModal(false);
@@ -462,11 +469,21 @@ export default function InterfaceAdministration() {
                     <div id="divModalMenuMission">
                         <h2>Menu mission</h2>
                         <div id="divOptions">
-                            <a className="bouton">Modifier nom</a>
-                            <a className="bouton">Modifier description</a>
-                            <a className="bouton">Modifier adresse IP</a>
-                            <a className="bouton">Modifier configuration</a>
-                            <a className="bouton">Supprimer la mission</a>
+                            <a className="bouton" onClick={() => setContenuModal("modifierNomMission")}>
+                                Modifier nom
+                            </a>
+                            <a className="bouton" onClick={() => setContenuModal("modifierDescriptionMission")}>
+                                Modifier description
+                            </a>
+                            <a className="bouton" onClick={() => setContenuModal}>
+                                Modifier adresse IP
+                            </a>
+                            <a className="bouton" onClick={() => setContenuModal}>
+                                Modifier configuration
+                            </a>
+                            <a className="bouton" onClick={() => setContenuModal("supprimerMission")}>
+                                Supprimer la mission
+                            </a>
                         </div>
                     </div>
                 )}

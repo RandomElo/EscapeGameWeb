@@ -159,7 +159,8 @@
         row-gap: 20px;
     }
 }
-#divModalModifierNomScenario {
+#divModalModifierNomScenario,
+#divModalModifierNomMission {
     text-align: center;
     form {
         display: flex;
@@ -169,7 +170,8 @@
     }
 }
 
-#divModalModifierDescriptionScenario {
+#divModalModifierDescriptionScenario,
+#divModalModifierDescriptionMission {
     text-align: center;
     form {
         display: flex;
@@ -188,7 +190,8 @@
         }
     }
 }
-#divModalSupprimerScenario {
+#divModalSupprimerScenario,
+#divModalSupprimerMission {
     text-align: center;
     form {
         p {
