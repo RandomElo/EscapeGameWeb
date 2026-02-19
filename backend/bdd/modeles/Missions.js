@@ -24,7 +24,7 @@ export default function (bdd) {
                     isIP: true,
                 },
             },
-            formatReponse: {
+            configuration: {
                 type: DataTypes.STRING(255),
                 allowNull: false,
             },

@@ -160,7 +160,7 @@
     }
 }
 #divModalModifierNomScenario,
-#divModalModifierNomMission {
+#divModalModifierNomMission, #divModalmodifierAdresseIPMission {
     text-align: center;
     form {
         display: flex;
@@ -171,7 +171,7 @@
 }
 
 #divModalModifierDescriptionScenario,
-#divModalModifierDescriptionMission {
+#divModalModifierDescriptionMission, #divModalmodifierConfigurationMission {
     text-align: center;
     form {
         display: flex;
@@ -190,6 +190,14 @@
         }
     }
 }
+
+#divModalmodifierConfigurationMission {
+    form > #divinputDescription {
+        margin-top: 0px;
+        height: 71px;
+    }
+}
+
 #divModalSupprimerScenario,
 #divModalSupprimerMission {
     text-align: center;

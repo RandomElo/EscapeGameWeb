@@ -115,6 +115,12 @@ client.on("message", async (topic, messageBuffer) => {
 
         const eventMatch = topic.match(/^escape\/mission\/(\d+)\/event$/);
         if (eventMatch) {
+            const missionId = eventMatch[1];
+            const data = JSON.parse(msg);
+
+            if (data.type === "mission_success") {
+                await completeMission(missionId);
+            }
             logger.info(`Event mission ${eventMatch[1]} : ${msg}`);
             return;
         }

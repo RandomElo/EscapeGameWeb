@@ -2,7 +2,7 @@ import gestionErreur from "../../middlewares/gestionErreur.js";
 
 export async function ConfigurationInterfaceAdmin(req) {
     // mission
-    const missionsListe = await req.Missions.findAll({ raw: true, attributes: ["id", "nom", "description", "ipAdresse", "formatReponse"] });
+    const missionsListe = await req.Missions.findAll({ raw: true, attributes: ["id", "nom", "description", "ipAdresse", "configuration"] });
     // scenarion
     const scenariosListe = await req.Scenarios.findAll({ raw: true });
     // message audio

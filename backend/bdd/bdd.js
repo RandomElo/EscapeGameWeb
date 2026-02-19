@@ -22,6 +22,7 @@ import MessagesAudio from "./modeles/MessagesAudio.js";
 import JournauxEvenements from "./modeles/JournauxEvenements.js";
 import LiensMail from "./modeles/LiensMail.js";
 import DemandesAdhesion from "./modeles/DemandesAdhesion.js";
+import MorseAudios from "./modeles/MorseAudios.js";
 const cheminBDD = "./bdd/bdd.sqlite";
 const enDeveloppement = process.env.NODE_ENV != "production";
 
@@ -52,6 +53,7 @@ const bdd = {
     JournauxEvenements: JournauxEvenements(sequelize),
     LiensMail: LiensMail(sequelize),
     DemandesAdhesion: DemandesAdhesion(sequelize),
+    MorseAudios: MorseAudios(sequelize),
 };
 
 // Initialisation de la bdd

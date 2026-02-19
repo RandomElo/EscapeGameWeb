@@ -17,7 +17,7 @@ export default function InterfaceAdministration() {
 
     const [erreur, setErreur] = useState<string>();
     // const [scenarios, setScenarios] = useState<>()
-    const [missions, setMissions] = useState<{ id: number; nom: string; description: string; ipAdresse: string; formatReponse: string }[]>();
+    const [missions, setMissions] = useState<{ id: number; nom: string; description: string; ipAdresse: string; configuration: string }[]>();
     const [scenarios, setScenarios] = useState<{ id: number; nom: string; description: string }[]>();
     const [tableauIP, setTableauIP] = useState<string[]>();
     const [messagesAudio, setMessagesAudio] = useState<{ nomFichier: string; detail: string }[]>();
@@ -95,7 +95,7 @@ export default function InterfaceAdministration() {
                                     <td className="tdNom">{mission.nom}</td>
                                     <td className="tdDescription">{mission.description}</td>
                                     <td className="tdIpAdresse">{mission.ipAdresse}</td>
-                                    <td className="tdReponse">{mission.formatReponse}</td>
+                                    <td className="tdReponse">{mission.configuration}</td>
                                     <td
                                         className="tdAction"
                                         onClick={() => {
@@ -392,7 +392,7 @@ export default function InterfaceAdministration() {
                                 recuperationDonnees(reponse);
                             }}
                         >
-                            <ChampDonneesForm id="inputNom" typeInput="text" placeholder="Nouveau nom" focus={true} />
+                            <ChampDonneesForm id="inputNom" typeInput="text" value={contenuModal == "modifierNomScenario" ? scenarios?.filter((scenario) => scenario.id == Number(detailsModal))[0].nom : missions?.filter((scenario) => scenario.id == Number(detailsModal))[0].nom} focus={true} />
 
                             <button type="submit" className="bouton">
                                 Modifier
@@ -409,10 +409,6 @@ export default function InterfaceAdministration() {
                                 e.preventDefault();
                                 const description = document.querySelector<HTMLInputElement>("#inputDescription")!.value;
 
-                                if (description == scenarios?.filter((scenario) => scenario.id == Number(detailsModal))[0].description) {
-                                    return setAfficherModal(false);
-                                }
-
                                 const reponse = await requete({ url: `/admins/${contenuModal == "modifierDescriptionScenario" ? "scenarios" : "missions"}/${detailsModal}/modification-description`, methode: "PATCH", corps: { description } });
 
                                 recuperationDonnees(reponse);
@@ -420,7 +416,7 @@ export default function InterfaceAdministration() {
                                 setAfficherModal(false);
                             }}
                         >
-                            <ChampDonneesForm id="inputDescription" typeInput="textearea" label={"Nouvelle description :"} value={scenarios?.filter((scenario) => scenario.id == Number(detailsModal))[0].description} focus={true} />
+                            <ChampDonneesForm id="inputDescription" typeInput="textearea" label={"Nouvelle description :"} value={contenuModal == "modifierDescriptionScenario" ? scenarios?.filter((scenario) => scenario.id == Number(detailsModal))[0].description : missions?.filter((scenario) => scenario.id == Number(detailsModal))[0].description} focus={true} />
 
                             <button type="submit" className="bouton">
                                 Modifier
@@ -475,16 +471,65 @@ export default function InterfaceAdministration() {
                             <a className="bouton" onClick={() => setContenuModal("modifierDescriptionMission")}>
                                 Modifier description
                             </a>
-                            <a className="bouton" onClick={() => setContenuModal}>
+                            <a className="bouton" onClick={() => setContenuModal("modifierAdresseIPMission")}>
                                 Modifier adresse IP
                             </a>
-                            <a className="bouton" onClick={() => setContenuModal}>
+                            <a className="bouton" onClick={() => setContenuModal("modifierConfigurationMission")}>
                                 Modifier configuration
                             </a>
                             <a className="bouton" onClick={() => setContenuModal("supprimerMission")}>
                                 Supprimer la mission
                             </a>
                         </div>
+                    </div>
+                )}
+                {contenuModal == "modifierConfigurationMission" && (
+                    <div id="divModalmodifierConfigurationMission">
+                        <h2>Modifier la configuration</h2>
+                        <form
+                            onSubmit={async (e) => {
+                                e.preventDefault();
+                                const description = document.querySelector<HTMLInputElement>("#inputDescription")!.value;
+
+                                const reponse = await requete({ url: `/admins/missions/${detailsModal}/modification-configuration`, methode: "PATCH", corps: { description } });
+
+                                recuperationDonnees(reponse);
+
+                                setAfficherModal(false);
+                            }}
+                        >
+                            <ChampDonneesForm id="inputDescription" typeInput="textearea" value={missions?.filter((scenario) => scenario.id == Number(detailsModal))[0].configuration} focus={true} />
+
+                            <button type="submit" className="bouton">
+                                Modifier
+                            </button>
+                        </form>
+                    </div>
+                )}
+                {contenuModal == "modifierAdresseIPMission" && (
+                    <div id="divModalmodifierAdresseIPMission">
+                        <h2>Modifier adresse IP</h2>
+
+                        <form
+                            onSubmit={async (e) => {
+                                e.preventDefault();
+                                const adresseIp = document.querySelector<HTMLInputElement>("#inputAdresseIP")!.value;
+
+                                const reponse = await requete({
+                                    url: `/admins/missions/${detailsModal}/modification-adresse-ip`,
+                                    methode: "PATCH",
+                                    corps: { adresseIp },
+                                });
+
+                                recuperationDonnees(reponse);
+                            }}
+                        >
+                            <ChampDonneesForm id="inputAdresseIP" typeInput="text" value={ missions?.filter((scenario) => scenario.id == Number(detailsModal))[0].ipAdresse} focus={true} />
+
+                            <button type="submit" className="bouton">
+                                Modifier
+                            </button>
+                        </form>
                     </div>
                 )}
                 {/* {contenuModal == "" && <div id="divModal"></div>} */}
