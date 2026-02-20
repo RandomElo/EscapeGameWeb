@@ -189,7 +189,7 @@ export const ajoutUtilisateur = gestionErreur(
 
             const token = genererToken(10);
 
-            await req.LiensMail.create({
+            await req.Tokens.create({
                 token,
                 type: "creationCompte",
                 details: mail,

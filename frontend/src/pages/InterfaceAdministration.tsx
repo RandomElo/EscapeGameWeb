@@ -489,16 +489,16 @@ export default function InterfaceAdministration() {
                         <form
                             onSubmit={async (e) => {
                                 e.preventDefault();
-                                const description = document.querySelector<HTMLInputElement>("#inputDescription")!.value;
+                                const configuration = document.querySelector<HTMLInputElement>("#inputConfiguration")!.value;
 
-                                const reponse = await requete({ url: `/admins/missions/${detailsModal}/modification-configuration`, methode: "PATCH", corps: { description } });
+                                const reponse = await requete({ url: `/admins/missions/${detailsModal}/modification-configuration`, methode: "PATCH", corps: { configuration } });
 
                                 recuperationDonnees(reponse);
 
                                 setAfficherModal(false);
                             }}
                         >
-                            <ChampDonneesForm id="inputDescription" typeInput="textearea" value={missions?.filter((scenario) => scenario.id == Number(detailsModal))[0].configuration} focus={true} />
+                            <ChampDonneesForm id="inputConfiguration" typeInput="textearea" value={missions?.filter((scenario) => scenario.id == Number(detailsModal))[0].configuration} focus={true} />
 
                             <button type="submit" className="bouton">
                                 Modifier

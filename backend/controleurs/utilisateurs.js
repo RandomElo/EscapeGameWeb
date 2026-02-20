@@ -179,7 +179,7 @@ export const detailsToken = gestionErreur(
                 detail: "Requête incorrecte",
             });
         }
-        const lien = await req.LiensMail.findOne({ where: { token }, raw: true });
+        const lien = await req.Tokens.findOne({ where: { token }, raw: true });
 
         if (!lien) {
             return res.json({ etat: true, detail: { trouver: false } });

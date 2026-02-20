@@ -20,7 +20,7 @@ import MissionsScenario from "./modeles/MissionsScenario.js";
 import Scores from "./modeles/Scores.js";
 import MessagesAudio from "./modeles/MessagesAudio.js";
 import JournauxEvenements from "./modeles/JournauxEvenements.js";
-import LiensMail from "./modeles/LiensMail.js";
+import Tokens from "./modeles/Tokens.js";
 import DemandesAdhesion from "./modeles/DemandesAdhesion.js";
 import MorseAudios from "./modeles/MorseAudios.js";
 const cheminBDD = "./bdd/bdd.sqlite";
@@ -51,7 +51,7 @@ const bdd = {
     Scores: Scores(sequelize),
     MessagesAudio: MessagesAudio(sequelize),
     JournauxEvenements: JournauxEvenements(sequelize),
-    LiensMail: LiensMail(sequelize),
+    Tokens: Tokens(sequelize),
     DemandesAdhesion: DemandesAdhesion(sequelize),
     MorseAudios: MorseAudios(sequelize),
 };

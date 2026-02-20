@@ -21,20 +21,21 @@ client.on("message", async (topic, messageBuffer) => {
     try {
 
         // =====================================================
-        // CONNECTED (handshake)
+        // CONNECTED HANDSHAKE (Mission 2 & 3)
         // =====================================================
 
         const connectedMatch = topic.match(/^escape\/mission\/(\d+)\/connected$/);
         if (connectedMatch) {
             const missionId = connectedMatch[1];
 
-            logger.info(`Mission ${missionId} connectée`);
+            logger.info(`Mission ${missionId} handshake`);
 
             client.publish(
                 `escape/mission/${missionId}/connected/reply`,
                 "ok"
             );
 
+            // Demande config immédiatement
             client.publish(
                 `escape/mission/${missionId}/state`,
                 "config"
@@ -44,18 +45,18 @@ client.on("message", async (topic, messageBuffer) => {
         }
 
         // =====================================================
-        // WEB → SAVE CONFIG
+        // WEB → SAVE CONFIG (Mission 2 & 3)
         // =====================================================
 
         const configMatch = topic.match(/^escape\/mission\/(\d+)\/config$/);
         if (configMatch) {
-            const missionId = configMatch[1];
 
+            const missionId = configMatch[1];
             const missionConfig = JSON.parse(msg);
 
             await CommunicationBDD.updateMissionConfig(missionId, missionConfig);
 
-            logger.info(`Config mission ${missionId} sauvegardée`);
+            logger.info(`Config mission ${missionId} sauvegardée en BDD`);
 
             return;
         }
@@ -66,13 +67,16 @@ client.on("message", async (topic, messageBuffer) => {
 
         const requestMatch = topic.match(/^escape\/mission\/(\d+)\/config\/request$/);
         if (requestMatch) {
+
             const missionId = requestMatch[1];
 
+            // Demande initiale de config
             if (msg === "true") {
 
                 const missionConfig = await CommunicationBDD.getMissionConfig(missionId);
 
                 if (missionConfig) {
+
                     client.publish(
                         `escape/mission/${missionId}/config`,
                         JSON.stringify(missionConfig)
@@ -82,46 +86,68 @@ client.on("message", async (topic, messageBuffer) => {
                         `escape/mission/${missionId}/state`,
                         "start"
                     );
+
+                    logger.info(`Config envoyée à mission ${missionId}`);
+
                 } else {
-                    logger.warn(`Pas de config pour mission ${missionId}`);
+                    logger.warn(`Aucune config trouvée pour mission ${missionId}`);
                 }
 
                 return;
             }
 
-            // OK / KO restent comme avant
+            // Validation Mission 3 (LED feedback)
             if (msg === "ok") {
-                logger.info(`Mission ${missionId} validée`);
+
+                logger.info(`Mission ${missionId} validation OK`);
+
                 client.publish(
                     `escape/mission/${missionId}/led`,
                     "ok"
                 );
+
                 return;
             }
 
             if (msg === "ko") {
-                logger.warn(`Mission ${missionId} erreur`);
+
+                logger.warn(`Mission ${missionId} validation KO`);
+
                 client.publish(
                     `escape/mission/${missionId}/led`,
                     "error"
                 );
+
                 return;
             }
         }
 
         // =====================================================
-        // EVENT RFID
+        // EVENT (Mission 2 & 3)
         // =====================================================
 
         const eventMatch = topic.match(/^escape\/mission\/(\d+)\/event$/);
         if (eventMatch) {
-            const missionId = eventMatch[1];
-            const data = JSON.parse(msg);
 
-            if (data.type === "mission_success") {
-                await completeMission(missionId);
+            const missionId = eventMatch[1];
+            logger.info(`Event mission ${missionId} : ${msg}`);
+
+            return;
+        }
+
+        // =====================================================
+        // RESULT (Mission 2 SUCCESS)
+        // =====================================================
+
+        const resultMatch = topic.match(/^escape\/mission\/(\d+)\/result$/);
+        if (resultMatch) {
+
+            const missionId = resultMatch[1];
+
+            if (msg === "success") {
+                logger.info(`Mission ${missionId} SUCCESS`);
             }
-            logger.info(`Event mission ${eventMatch[1]} : ${msg}`);
+
             return;
         }
 

@@ -7,7 +7,6 @@ async function RecuperationMissions(req) {
 
 export const liste = gestionErreur(
     async (req, res) => {
-        
         return res.json({ etat: true, detail: await RecuperationMissions(req) });
     },
     "controleurRecuperationListeMission",
@@ -35,7 +34,136 @@ export const creation = gestionErreur(
     "controleurCreationMission",
     "Erreur lors de la création de la mission",
 );
-export const suppression = gestionErreur((req, res) => {}, "controleurSuppressionMission", "Erreur lors de la suppression de la mission");
-export const modifierEnTete = gestionErreur((req, res) => {}, "controleurModificationEnTete", "Erreur lors de la mise à jour de l'en-tête");
-export const modifierConfiguration = gestionErreur((req, res) => {}, "controleurModificationConfiguration", "Erreur lors de la modification de la configuration");
-export const modifierconfiguration = gestionErreur((req, res) => {}, "controleurModificationFormat Reponse", "Erreur lors de la modification du format réponse");
+export const suppression = gestionErreur(
+    async (req, res) => {
+        const { id } = req.params;
+        if (!req.params.id) {
+            return res.status(400).json({
+                etat: false,
+                detail: "Requête incorrecte",
+            });
+        }
+
+        const mission = await req.Missions.findByPk(id, { raw: true });
+        if (!mission) {
+            return res.status(404).json({
+                etat: false,
+                detail: "Ressource introuvable",
+            });
+        }
+
+        await req.Missions.destroy({ where: { id } });
+        return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
+    },
+    "controleurSuppressionMission",
+    "Erreur lors de la suppression de la mission",
+);
+
+export const modificationNom = gestionErreur(
+    async (req, res) => {
+        const { id } = req.params;
+        const { nom } = req.body;
+        if (!req.params.id || !nom) {
+            return res.status(400).json({
+                etat: false,
+                detail: "Requête incorrecte",
+            });
+        }
+
+        const mission = await req.Missions.findByPk(id, { raw: true });
+        if (!mission) {
+            return res.status(404).json({
+                etat: true,
+                detail: "Ressource introuvable",
+            });
+        }
+
+        await req.Missions.update({ nom }, { where: { id } });
+
+        return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
+    },
+    "controleurModificationNom",
+    "Erreur lors de la modification du nom",
+);
+
+export const modificationDescription = gestionErreur(
+    async (req, res) => {
+        const { id } = req.params;
+        const { description } = req.body;
+        if (!req.params.id || !description) {
+            return res.status(400).json({
+                etat: false,
+                detail: "Requête incorrecte",
+            });
+        }
+
+        const mission = await req.Missions.findByPk(id, { raw: true });
+        if (!mission) {
+            return res.status(404).json({
+                etat: true,
+                detail: "Ressource introuvable",
+            });
+        }
+
+        await req.Missions.update({ description }, { where: { id } });
+
+        return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
+    },
+    "controleurModificationDescription",
+    "Erreur lors de la modification de la description",
+);
+
+export const modificationConfiguration = gestionErreur(
+    async (req, res) => {
+        const { id } = req.params;
+        const { configuration } = req.body;
+
+        if (!req.params.id || !configuration) {
+            return res.status(400).json({
+                etat: false,
+                detail: "Requête incorrecte",
+            });
+        }
+
+        const mission = await req.Missions.findByPk(id, { raw: true });
+        if (!mission) {
+            return res.status(404).json({
+                etat: true,
+                detail: "Ressource introuvable",
+            });
+        }
+
+        await req.Missions.update({ configuration }, { where: { id } });
+
+        return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
+    },
+    "controleurModificationConfiguration",
+    "Erreur lors de la modification de la configuration",
+);
+
+export const modificationAdresseIp = gestionErreur(
+    async (req, res) => {
+        const { id } = req.params;
+        const { adresseIp } = req.body;
+        if (!req.params.id || !adresseIp) {
+            return res.status(400).json({
+                etat: false,
+                detail: "Requête incorrecte",
+            });
+        }
+
+        const mission = await req.Missions.findByPk(id, { raw: true });
+        if (!mission) {
+            return res.status(404).json({
+                etat: true,
+                detail: "Ressource introuvable",
+            });
+        }
+
+        await req.Missions.update({ ipAdresse: adresseIp }, { where: { id } });
+
+        return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
+    },
+    "controleurModificationAdresseIp",
+    "Erreur lors de la modification de la adresse IP",
+);

@@ -1,8 +1,8 @@
 import { DataTypes } from "sequelize";
 
 export default function (bdd) {
-    const LiensMail = bdd.define(
-        "LiensMail",
+    const Tokens = bdd.define(
+        "Tokens",
         {
             id: {
                 type: DataTypes.INTEGER,
@@ -18,7 +18,7 @@ export default function (bdd) {
                 },
             },
             type: {
-                type: DataTypes.ENUM("recapPartie", "resetMdp", "invitationEquipe", "validationCompte", "demandeAdhesion", "creationCompte"),
+                type: DataTypes.ENUM("recapPartie", "resetMdp", "invitationEquipe", "validationCompte", "demandeAdhesion", "creationCompte", 'accesBackendAudio'),
                 allowNull: false,
             },
             details: {
@@ -28,8 +28,8 @@ export default function (bdd) {
             },
         },
         {
-            tableName: "LiensMail",
+            tableName: "Tokens",
         },
     );
-    return LiensMail;
+    return Tokens;
 }
