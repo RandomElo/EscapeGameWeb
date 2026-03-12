@@ -9,6 +9,7 @@ import Identification from "./pages/Identification";
 import "./styles/Generale.css";
 import Equipe from "./pages/Equipe";
 import InterfaceAdministration from "./pages/InterfaceAdministration";
+import SuiviPartie from "./pages/SuiviPartie";
 
 const router = createBrowserRouter([
     {
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
             {
                 path: "/interface-administration",
                 element: <InterfaceAdministration />,
+            },
+            {
+                path: "/suivi-partie",
+                element: <SuiviPartie />,
             },
             {
                 path: "*",

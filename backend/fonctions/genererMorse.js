@@ -1,6 +1,7 @@
 import { fileURLToPath } from "url";
 import fs from "fs";
 import path from "path";
+import bdd from "../bdd/bdd.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -98,7 +99,6 @@ function createWavFile(filePath, audioBuffer) {
 // ================= EXPORT PRINCIPAL =================
 
 export default async function generateMorseAudio(text) {
-
     if (!text || typeof text !== "string") {
         throw new Error("Texte Morse invalide");
     }
@@ -134,9 +134,11 @@ export default async function generateMorseAudio(text) {
 
     createWavFile(wavPath, audioBuffer);
 
+    await bdd.MorseAudios.create({ reponse: cleanText, nomFichier });
+
     return {
         fileName: nomFichier,
         filePath: wavPath,
-        texte: cleanText
+        texte: cleanText,
     };
 }

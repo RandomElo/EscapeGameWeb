@@ -6,6 +6,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { ConfigurationInterfaceAdmin } from "./scenarios.js";
 import jwt from "jsonwebtoken";
+import generateMorseAudio from "../../fonctions/genererMorse.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,7 +17,7 @@ export const generation = gestionErreur(
         const { texte, missionId, scenarioId } = req.body;
 
         if (!texte || !missionId || !scenarioId) {
-            return res.status(401).json({
+            return res.status(400).json({
                 etat: false,
                 detail: "Requête incorrecte",
             });
@@ -159,4 +160,26 @@ export const lecture = gestionErreur(
     },
     "controleurLectureAudio",
     "Erreur lors de la lecture de l'audio",
+);
+
+export const recuperationMorse = gestionErreur(
+    async (req, res) => {
+        const { nomFichier } = req.query;
+
+        if (!nomFichier) {
+            return res.status(400).json({
+                etat: false,
+                detail: "Requête incorrecte",
+            });
+        }
+        const filePath = path.resolve("morseAudios/" + nomFichier);
+
+        res.sendFile(filePath, {
+            headers: {
+                "Content-Type": "audio/wav",
+            },
+        });
+    },
+    "controleurRecuperationMorse",
+    "Erreur lors de la récupération du fichier morse",
 );

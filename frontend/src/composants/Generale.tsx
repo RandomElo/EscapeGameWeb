@@ -96,7 +96,12 @@ export default function Generale({ children }: { children?: ReactNode }) {
                                         </>
                                     ) : (
                                         <>
-                                            <NavLink to="/interface-administration">Interface d'administration</NavLink>
+                                            <li>
+                                                <NavLink to="/suivi-partie">Suivi partie</NavLink>
+                                            </li>
+                                            <li>
+                                                <NavLink to="/interface-administration">Interface d'administration</NavLink>
+                                            </li>
                                         </>
                                     )}
 

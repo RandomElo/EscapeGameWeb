@@ -16,8 +16,8 @@ class CommunicationBDD {
                 return false;
             }
 
-            // On stocke en JSON dans formatReponse
-            mission.formatReponse = JSON.stringify(config);
+            // On stocke en JSON dans configuration
+            mission.configuration = JSON.stringify(config);
 
             await mission.save();
 
@@ -43,13 +43,13 @@ class CommunicationBDD {
                 return null;
             }
 
-            if (!mission.formatReponse) {
+            if (!mission.configuration) {
                 logger.warn(`Mission ${missionId} sans configuration`);
                 return null;
             }
 
             try {
-                return JSON.parse(mission.formatReponse);
+                return JSON.parse(mission.configuration);
             } catch (parseError) {
                 logger.error(`Config mission ${missionId} invalide en BDD`);
                 return null;

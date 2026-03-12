@@ -21,7 +21,8 @@ export function useRequete() {
                     ...enTete,
                 },
                 credentials: "include",
-                body: corps ? JSON.stringify(corps) : undefined,
+                body: corps ? JSON
+                .stringify(corps) : undefined,
             });
 
             if (!req.ok) {
