@@ -21,28 +21,28 @@ export default function SuiviPartie() {
             id: 1,
             title: "Mission 1",
             description: "Diapo + RFID",
-            tag: "Terminée",
+            tags: ["Terminée"],
             etat: "Terminee",
         },
         {
             id: 2,
             title: "Mission 2",
             description: "Morse",
-            tag: "En cours",
+            tags: ["En cours", "1 coordonnée sur 4"],
             etat: "EnCours",
         },
         {
             id: 3,
             title: "Mission 3",
             description: "Map-monde + RFID",
-            tag: "En attente",
+            tags: ["En attente"],
             etat: "EnAttente",
         },
         {
             id: 4,
             title: "Mission 4",
             description: "Cablage mot",
-            tag: "Final",
+            tags: ["Final"],
             etat: "EnAttente",
         },
     ];
@@ -71,16 +71,22 @@ export default function SuiviPartie() {
                                     <div className="missionHeader">
                                         <h3>{mission.title}</h3>
 
-                                        <span className="badge">
-                                            <Tag size={14} />
-                                            {mission.tag}
-                                        </span>
+                                        <div className="divBadges">
+                                            {(mission.tags.includes("Terminée") ? ["Terminée"] : mission.tags.includes("En attente") ? ["En attente"] : mission.tags.filter((tag) => tag !== "En cours")).map((tag) => (
+                                                <span className="badge" key={tag}>
+                                                    <Tag size={14} />
+                                                    {tag}
+                                                </span>
+                                            ))}
+                                        </div>
                                     </div>
                                     <div className="missionSecondeLigne">
                                         <p>{mission.description}</p>
-                                        <span className="aideAudio">
-                                            <Megaphone size={18} className="primaryButton" />
-                                        </span>
+                                        {mission.etat != "Terminee" && (
+                                            <span className="aideAudio">
+                                                <Megaphone size={18} className="primaryButton" />
+                                            </span>
+                                        )}
                                     </div>
                                 </div>
 

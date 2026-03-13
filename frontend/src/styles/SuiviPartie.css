@@ -123,6 +123,10 @@
                         justify-content: space-between;
                         align-items: center;
                         margin-bottom: 12px;
+                        .divBadges {
+                            display: flex;
+                            gap: 10px;
+                        }
                     }
                     .missionSecondeLigne {
                         display: flex;
@@ -154,10 +158,26 @@
                 }
 
                 .missionTerminee {
-                    opacity: 0.6;
+                    cursor: not-allowed;
+                    border-color: #eff0f2;
+                    .missionHeader {
+                        h3 {
+                            color: #656565;
+                        }
+                        .divBadges .badge {
+                            cursor: not-allowed;
+                            background: #ecf7fe;
+                            color: #82b5d1;
+                            border: 1px solid #6ec8f1;
+                        }
+                    }
+                    .aideAudio:hover {
+                        cursor: not-allowed;
+                        background: #0ea5e9;
+                    }
                 }
 
-                .missioEnAttente {
+                .missionCard.missionTerminee .missioEnAttente {
                     opacity: 0.85;
                 }
 
@@ -232,6 +252,7 @@
 
             background: #e0f2fe;
             color: #0369a1;
+            border: 1px solid #0ea5e9;
 
             padding: 4px 8px;
             border-radius: 6px;

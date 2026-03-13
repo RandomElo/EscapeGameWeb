@@ -3,6 +3,7 @@ import config from "./config.js";
 import logger from "./logger.js";
 import CommunicationBDD from "./CommunicationBDD.js";
 import verifierMorseConfig from "../fonctions/verifierMorseConfig.js";
+// Téléchargement : http://172.18.201.101:8100/admins/audios/recuperation-morse?nomFichier=morse_1773393734861.wav
 
 const client = mqtt.connect(config.mqtt.host, {
     username: config.mqtt.username,

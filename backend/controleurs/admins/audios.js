@@ -1,12 +1,15 @@
 import gestionErreur from "../../middlewares/gestionErreur.js";
 
 import { spawn } from "child_process";
-import fs from "fs";
+import fs from "fs/promises";
+import fsSync from "fs";
+
 import path from "path";
 import { fileURLToPath } from "url";
 import { ConfigurationInterfaceAdmin } from "./scenarios.js";
 import jwt from "jsonwebtoken";
 import generateMorseAudio from "../../fonctions/genererMorse.js";
+import logger from "../../mqtt/logger.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -172,7 +175,18 @@ export const recuperationMorse = gestionErreur(
                 detail: "Requête incorrecte",
             });
         }
-        const filePath = path.resolve("morseAudios/" + nomFichier);
+
+        const filePath = path.join(process.cwd(), "morseAudios", nomFichier);
+
+        try {
+            await fs.access(filePath, fsSync.constants.R_OK);
+        } catch {
+            return res.status(404).json({
+                etat: false,
+                detail: "Fichier introuvable",
+            });
+        }
+
 
         res.sendFile(filePath, {
             headers: {
