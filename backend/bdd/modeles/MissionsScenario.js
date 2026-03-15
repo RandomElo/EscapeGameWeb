@@ -33,7 +33,7 @@ export default function (bdd) {
                 type: DataTypes.INTEGER,
                 allowNull: false,
             },
-            reponse: {
+            configuration: {
                 type: DataTypes.JSON,
                 allowNull: false,
                 defaultValue: {},

@@ -5,19 +5,18 @@ import Modal from "../composants/Modal";
 import ChampDonneesForm from "../composants/ChampDonneesForm";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { EllipsisVertical, Play, Square, Trash2 } from "lucide-react";
+import { EllipsisVertical, GripVertical, Play, Square, Trash2 } from "lucide-react";
 export default function InterfaceAdministration() {
     const { estAuth } = useAuth();
     const navigation = useNavigate();
     const requete = useRequete();
 
     const [afficherModal, setAfficherModal] = useState<boolean>(false);
-    const [contenuModal, setContenuModal] = useState<"ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio" | "menuScenario" | "modifierNomScenario" | "modifierDescriptionScenario" | "supprimerScenario" | "menuMission" | "modifierAdresseIPMission" | "supprimerMission" | "modifierNomMission" | "modifierDescriptionMission" | "modifierConfigurationMission">();
+    const [contenuModal, setContenuModal] = useState<"ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio" | "menuScenario" | "gererMissionsScenario" | "modifierNomScenario" | "modifierDescriptionScenario" | "supprimerScenario" | "menuMission" | "modifierAdresseIPMission" | "supprimerMission" | "modifierNomMission" | "modifierDescriptionMission" | "modifierConfigurationMission" | "ajouterMissionScenario">();
     const [detailsModal, setDetailsModal] = useState<string>();
-
+    const [details2Modal, setDetails2Modal] = useState<number[]>([]);
     const [erreur, setErreur] = useState<string>();
-    // const [scenarios, setScenarios] = useState<>()
-    const [missions, setMissions] = useState<{ id: number; nom: string; description: string; ipAdresse: string; configuration: string }[]>();
+    const [missions, setMissions] = useState<{ id: number; nom: string; description: string; ipAdresse: string; configuration: string; scenarios: { scenarioId: number; ordre: number; configuration: string }[] }[]>();
     const [scenarios, setScenarios] = useState<{ id: number; nom: string; description: string }[]>();
     const [tableauIP, setTableauIP] = useState<string[]>();
     const [messagesAudio, setMessagesAudio] = useState<{ nomFichier: string; detail: string }[]>();
@@ -27,6 +26,7 @@ export default function InterfaceAdministration() {
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
     async function recuperationDonnees(reponse) {
+        console.log(reponse);
         setScenarios(reponse.scenarios);
         setMissions(reponse.missions);
         setMessagesAudio(reponse.messagesAudio);
@@ -38,7 +38,6 @@ export default function InterfaceAdministration() {
                 tableauIP.push(mission.ipAdresse);
             }
         }
-        console.log(tableauIP);
         setTableauIP(tableauIP);
     }
 
@@ -61,8 +60,8 @@ export default function InterfaceAdministration() {
                 <h1 id="titre">Interface d'administration</h1>
                 {/* Pour les pings */}
                 <div id="divCommunicationMissions">
-                    {tableauIP?.map((ip) => (
-                        <div className="divVerificationCommunication">
+                    {tableauIP?.map((ip, key) => (
+                        <div className="divVerificationCommunication" key={key}>
                             <p id="pEtat">Connecté</p>
                             <p id="pIP">{ip}</p>
                         </div>
@@ -90,8 +89,8 @@ export default function InterfaceAdministration() {
                             </tr>
                         </thead>
                         <tbody>
-                            {missions?.map((mission) => (
-                                <tr key={mission.id}>
+                            {missions?.map((mission, key) => (
+                                <tr key={key}>
                                     <td className="tdNom">{mission.nom}</td>
                                     <td className="tdDescription">{mission.description}</td>
                                     <td className="tdIpAdresse">{mission.ipAdresse}</td>
@@ -131,8 +130,8 @@ export default function InterfaceAdministration() {
                             </tr>
                         </thead>
                         <tbody>
-                            {scenarios?.map((scenario) => (
-                                <tr>
+                            {scenarios?.map((scenario, key) => (
+                                <tr key={key}>
                                     <td className="tdNom">{scenario.nom}</td>
                                     <td className="tdDescription">{scenario.description}</td>
                                     <td
@@ -341,6 +340,9 @@ export default function InterfaceAdministration() {
                     <div id="divModalMenuScenario">
                         <h2>Menu scénario</h2>
                         <div id="divOptions">
+                            <a className="bouton" onClick={() => setContenuModal("gererMissionsScenario")}>
+                                Gérer les missions
+                            </a>
                             <a className="bouton" onClick={() => setContenuModal("modifierNomScenario")}>
                                 Modifier le nom
                             </a>
@@ -371,6 +373,159 @@ export default function InterfaceAdministration() {
                             <button type="submit" className="bouton">
                                 Ajouter
                             </button>
+                        </form>
+                    </div>
+                )}
+                {contenuModal == "gererMissionsScenario" &&
+                    (() => {
+                        const scenarioId = Number(detailsModal);
+
+                        const missionsTriees = missions
+                            ?.filter((mission) => mission.scenarios.some((scenario) => scenario.scenarioId === scenarioId))
+                            .sort((a, b) => {
+                                const ordreA = a.scenarios.find((s) => s.scenarioId === scenarioId)?.ordre ?? 0;
+                                const ordreB = b.scenarios.find((s) => s.scenarioId === scenarioId)?.ordre ?? 0;
+                                return ordreA - ordreB;
+                            });
+
+                        const changerOrdre = (missionId: number, nouvelOrdre: number, scenarioId: number) => {
+                            setMissions((prev) => {
+                                const missionsTriees = prev!
+                                    .filter((m) => m.scenarios.some((s) => s.scenarioId === scenarioId))
+                                    .sort((a, b) => {
+                                        const ordreA = a.scenarios.find((s) => s.scenarioId === scenarioId)?.ordre ?? 0;
+                                        const ordreB = b.scenarios.find((s) => s.scenarioId === scenarioId)?.ordre ?? 0;
+                                        return ordreA - ordreB;
+                                    });
+
+                                const indexActuel = missionsTriees.findIndex((m) => m.id === missionId);
+
+                                const mission = missionsTriees.splice(indexActuel, 1)[0];
+                                missionsTriees.splice(nouvelOrdre, 0, mission);
+
+                                // recalcul des ordres
+                                missionsTriees.forEach((m, i) => {
+                                    const scenario = m.scenarios.find((s) => s.scenarioId === scenarioId);
+                                    if (scenario) scenario.ordre = i;
+                                });
+
+                                return [...prev!];
+                            });
+                        };
+                        return (
+                            <div id="divModallisteMissionScenario">
+                                <h1>Les missions</h1>
+
+                                <div id="divListeMission">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Ordre</th>
+                                                <th>Nom</th>
+                                                <th>Configuration</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {missionsTriees?.map((mission) => {
+                                                const scenario = mission.scenarios.find((s) => s.scenarioId === scenarioId);
+
+                                                return (
+                                                    <tr key={mission.id}>
+                                                        <td>
+                                                            <select
+                                                                value={scenario?.ordre}
+                                                                onChange={async (e) => {
+                                                                    changerOrdre(mission.id, Number(e.target.value), scenarioId);
+
+                                                                    const reponse = await requete({ url: `/admins/scenarios/${detailsModal}/modification-ordre`, methode: "PATCH", corps: { missions: missionsTriees } });
+                                                                    console.log(reponse);
+                                                                    recuperationDonnees(reponse);
+                                                                }}
+                                                            >
+                                                                {missionsTriees.map((_, index) => (
+                                                                    <option key={index} value={index}>
+                                                                        {index + 1}
+                                                                    </option>
+                                                                ))}
+                                                            </select>
+                                                        </td>
+
+                                                        <td>{mission.nom}</td>
+                                                        <td>
+                                                            <ChampDonneesForm id="inputConfiguration" value={scenario?.configuration} />
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <button
+                                    className="bouton"
+                                    onClick={() => {
+                                        setDetails2Modal([]);
+                                        setContenuModal("ajouterMissionScenario");
+                                    }}
+                                >
+                                    Ajouter une mission
+                                </button>
+                            </div>
+                        );
+                    })()}
+
+                {contenuModal == "ajouterMissionScenario" && (
+                    <div id="divModallisteMissionScenario">
+                        <h1>Ajouter des mission au scénario</h1>
+                        <form
+                            onSubmit={async (e) => {
+                                e.preventDefault();
+                                const reponse = await requete({ url: `/admins/scenarios/${detailsModal}/ajout-mission`, methode: "POST", corps: { listeMissions: details2Modal } });
+                                console.log(reponse);
+                                recuperationDonnees(reponse);
+                                setContenuModal("gererMissionsScenario");
+                            }}
+                        >
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Ajouter</th>
+                                        <th>Nom</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {missions
+                                        ?.filter((mission) => !mission.scenarios.some((scenario) => scenario.scenarioId === Number(detailsModal)))
+                                        .map((mission, key) => (
+                                            <tr key={key}>
+                                                <td>
+                                                    <input
+                                                        type="checkbox"
+                                                        onChange={() => {
+                                                            if (!details2Modal.includes(mission.id)) {
+                                                                setDetails2Modal((prev) => [...prev, mission.id]);
+                                                            } else {
+                                                                setDetails2Modal(details2Modal.filter((id) => id !== mission.id));
+                                                            }
+                                                        }}
+                                                    />
+                                                </td>
+                                                <td>{mission.nom}</td>
+                                                <td>{mission.description}</td>
+                                            </tr>
+                                        ))}
+                                </tbody>
+                            </table>
+                            {details2Modal.length > 0 ? (
+                                <button type="submit" className="bouton">
+                                    Ajouter {details2Modal.length} mission{details2Modal.length > 1 && "s"}
+                                </button>
+                            ) : (
+                                <button className="bouton" disabled>
+                                    Ajouter 0 mission
+                                </button>
+                            )}
                         </form>
                     </div>
                 )}
@@ -524,7 +679,7 @@ export default function InterfaceAdministration() {
                                 recuperationDonnees(reponse);
                             }}
                         >
-                            <ChampDonneesForm id="inputAdresseIP" typeInput="text" value={ missions?.filter((scenario) => scenario.id == Number(detailsModal))[0].ipAdresse} focus={true} />
+                            <ChampDonneesForm id="inputAdresseIP" typeInput="text" value={missions?.filter((scenario) => scenario.id == Number(detailsModal))[0].ipAdresse} focus={true} />
 
                             <button type="submit" className="bouton">
                                 Modifier

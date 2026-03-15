@@ -2,12 +2,14 @@ import e from "express";
 import { ajoutMission, configurationComplete, creation, details, liste, modificationDescription, modificationEnTete, modificationNom, modificationOrdre, modifierReponses, suppression, suppressionMission } from "../../controleurs/admins/scenarios.js";
 
 const routeurScenarios = e.Router();
+
 routeurScenarios.get("/configuration-complete", configurationComplete);
 routeurScenarios.get("/liste", liste);
 routeurScenarios.get("/:id/details", details);
 routeurScenarios.post("/creation", creation);
-routeurScenarios.patch("/:id/modification-nom", modificationNom)
-routeurScenarios.patch("/:id/modification-description", modificationDescription)
+
+routeurScenarios.patch("/:id/modification-nom", modificationNom);
+routeurScenarios.patch("/:id/modification-description", modificationDescription);
 routeurScenarios.patch("/:id/modification-ordre", modificationOrdre);
 routeurScenarios.patch("/:id/modification-en-tete", modificationEnTete);
 routeurScenarios.post("/:id/ajout-mission", ajoutMission);

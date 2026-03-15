@@ -1,0 +1,96 @@
+.Notifications {
+    .divNotif {
+        position: fixed;
+        top: 24px;
+        right: 24px;
+        padding: 16px 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        font-weight: 500;
+        font-size: 14px;
+        z-index: 1000;
+        width: 200px;
+        animation: slideInNotif 0.3s ease;
+
+        .croix {
+            position: absolute;
+            top: 10px;
+            right: 13px;
+            cursor: pointer;
+        }
+        .croix:hover {
+            color: red;
+        }
+
+        .icone {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 4px; /* aligne l’icône avec le texte */
+        }
+
+        .contenu {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .titre {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .description {
+            font-weight: 400;
+            font-size: 13px;
+        }
+    }
+    .divNotif.succes {
+        color: #15803d;
+        background: #dcfce7;
+    }
+    .divNotif.warn {
+        color: #b45309;
+        background: #fef3c7;
+    }
+    .divNotif.erreur {
+        color: #b91c1c;
+        background: #fee2e2;
+    }
+}
+
+@keyframes slideInNotif {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* @keyframes slideInNotif {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutNotif {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+        } */
