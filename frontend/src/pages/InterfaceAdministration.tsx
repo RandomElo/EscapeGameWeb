@@ -468,7 +468,7 @@ export default function InterfaceAdministration() {
                                                         <td>{mission.nom}</td>
 
                                                         <td>
-                                                            <ChampDonneesForm id="inputConfiguration" value={scenario?.configuration} onChange={(valeur) => modifierConfiguration(mission.id, scenarioId, valeur)} />
+                                                            <ChampDonneesForm typeInput="texteOnChange" id="inputConfiguration" value={scenario?.configuration} onChange={(valeur) => modifierConfiguration(mission.id, scenarioId, valeur)} />
                                                         </td>
                                                     </tr>
                                                 );

@@ -1,6 +1,7 @@
 import e from "express";
-import { partiesEnCours } from "../../controleurs/admins/parties";
+import { lancer, partiesEnCours } from "../../controleurs/admins/parties.js";
 
 const routeurParties = e.Router();
-routeurParties.get("/parties-en-cours", partiesEnCours)
+routeurParties.get("/parties-en-cours", partiesEnCours);
+routeurParties.post("/lancer", lancer);
 export default routeurParties;
