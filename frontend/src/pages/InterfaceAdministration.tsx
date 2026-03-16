@@ -58,7 +58,7 @@ export default function InterfaceAdministration() {
     }, [estAuth, navigation]);
 
     useEffect(() => {
-        function gestion() {
+        if (contenuModal === "gererMissionsScenario") {
             const scenarioId = Number(detailsModal);
 
             const liste =
@@ -72,8 +72,7 @@ export default function InterfaceAdministration() {
 
             setMissionsTriees(liste);
         }
-        gestion();
-    }, [missions, detailsModal]);
+    }, [contenuModal, detailsModal, missions]);
 
     return (
         <>
@@ -401,32 +400,28 @@ export default function InterfaceAdministration() {
                     (() => {
                         const scenarioId = Number(detailsModal);
 
-                        const missionsTriees = missions
-                            ?.filter((mission) => mission.scenarios.some((scenario) => scenario.scenarioId === scenarioId))
-                            .sort((a, b) => {
-                                const ordreA = a.scenarios.find((s) => s.scenarioId === scenarioId)?.ordre ?? 0;
-                                const ordreB = b.scenarios.find((s) => s.scenarioId === scenarioId)?.ordre ?? 0;
-                                return ordreA - ordreB;
-                            });
                         const changerOrdre = (missionId: number, nouvelOrdre: number, scenarioId: number) => {
                             setMissionsTriees((prev) => {
                                 const liste = [...prev];
 
                                 const indexActuel = liste.findIndex((m) => m.id === missionId);
-                                const mission = liste.splice(indexActuel, 1)[0];
+                                if (indexActuel === -1) return prev;
 
+                                const [mission] = liste.splice(indexActuel, 1);
                                 liste.splice(nouvelOrdre, 0, mission);
 
-                                liste.forEach((m, i) => {
-                                    const scenario = m.scenarios.find((s) => s.scenarioId === scenarioId);
-                                    if (scenario) scenario.ordre = i;
-                                });
+                                const nouvelleListe = liste.map((mission, i) => ({
+                                    ...mission,
+                                    scenarios: mission.scenarios.map((s) => (s.scenarioId === scenarioId ? { ...s, ordre: i } : s)),
+                                }));
+
                                 setModificationmissionsScenarios(true);
 
-                                return liste;
+                                return nouvelleListe;
                             });
                         };
-                        const modifierConfiguration = (missionId: number, scenarioId: number, valeur: ChangeEvent<HTMLInputElement | HTMLTextAreaElement, Element>) => {
+
+                        const modifierConfiguration = (missionId: number, scenarioId: number, valeur: string) => {
                             setMissionsTriees((prev) =>
                                 prev.map((mission) => {
                                     if (mission.id !== missionId) return mission;
@@ -437,6 +432,7 @@ export default function InterfaceAdministration() {
                                     };
                                 }),
                             );
+
                             setModificationmissionsScenarios(true);
                         };
 
@@ -460,12 +456,7 @@ export default function InterfaceAdministration() {
                                                 return (
                                                     <tr key={mission.id}>
                                                         <td>
-                                                            <select
-                                                                value={scenario?.ordre}
-                                                                onChange={async (e) => {
-                                                                    changerOrdre(mission.id, Number(e.target.value), scenarioId);
-                                                                }}
-                                                            >
+                                                            <select value={scenario?.ordre} onChange={(e) => changerOrdre(mission.id, Number(e.target.value), scenarioId)}>
                                                                 {missionsTriees.map((_, index) => (
                                                                     <option key={index} value={index}>
                                                                         {index + 1}
@@ -475,14 +466,9 @@ export default function InterfaceAdministration() {
                                                         </td>
 
                                                         <td>{mission.nom}</td>
+
                                                         <td>
-                                                            <ChampDonneesForm
-                                                                id="inputConfiguration"
-                                                                value={scenario?.configuration}
-                                                                onChange={(valeur) => {
-                                                                    modifierConfiguration(mission.id, scenarioId, valeur);
-                                                                }}
-                                                            />
+                                                            <ChampDonneesForm id="inputConfiguration" value={scenario?.configuration} onChange={(valeur) => modifierConfiguration(mission.id, scenarioId, valeur)} />
                                                         </td>
                                                     </tr>
                                                 );
@@ -490,8 +476,33 @@ export default function InterfaceAdministration() {
                                         </tbody>
                                     </table>
                                 </div>
-                                {modificationMissionsScenarios.toString()}
-                                {modificationMissionsScenarios && <button className="bouton">Enregistrer les modifications</button>}
+
+                                {modificationMissionsScenarios && (
+                                    <button
+                                        className="bouton"
+                                        onClick={async () => {
+                                            const donnees = missionsTriees.map((mission) => {
+                                                const scenario = mission.scenarios.find((s) => s.scenarioId === scenarioId);
+
+                                                return {
+                                                    missionId: mission.id,
+                                                    scenarioId: scenarioId,
+                                                    ordre: scenario?.ordre ?? 0,
+                                                    configuration: scenario?.configuration ?? null,
+                                                };
+                                            });
+
+                                            console.log(donnees)
+
+                                            const reponse = await requete({ url: `/admins/scenarios/${detailsModal}/modification-missions`, methode: "PATCH", corps: { donnees } });
+
+                                            console.log(reponse);
+                                            recuperationDonnees(reponse);
+                                        }}
+                                    >
+                                        Enregistrer les modifications
+                                    </button>
+                                )}
 
                                 <button
                                     className="bouton"

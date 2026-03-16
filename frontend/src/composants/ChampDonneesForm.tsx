@@ -8,9 +8,9 @@ type PropsChampDonneesForm = {
     classe?: string;
     label?: string;
     placeholder?: string;
-    typeInput?: "text" | "password" | "number" | "date" | "textearea";
+    typeInput?: "text" | "password" | "number" | "date" | "textarea";
     onBlur?: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-    onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+    onChange?: (valeur: string) => void; // <-- renvoie directement la valeur
     min?: string;
     value?: string;
     pas?: number;
@@ -28,23 +28,28 @@ export default function ChampDonneesForm({ id, classe, label, typeInput = "text"
         }
     }, [focus]);
 
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        onChange && onChange(e.target.value); // renvoie la valeur directement
+    };
+
     return (
         <div id={"div" + id} className="ChampDonneesForm">
             {label && <label htmlFor={id}>{label}</label>}
 
             {typeInput === "password" && (
                 <div id="divInputMdp">
-                    <input type={afficherMdp ? "texte" : "password"} id={id} className={`input${classe ? ` ${classe}` : ""}`} placeholder={placeholder} onBlur={onBlur} onChange={onChange} required defaultValue={value} ref={inputRef} />
+                    <input type={afficherMdp ? "text" : "password"} id={id} className={`input${classe ? ` ${classe}` : ""}`} placeholder={placeholder} onBlur={onBlur} onChange={handleChange} value={value || ""} ref={inputRef} disabled={modificationDesactiver} />
                     {afficherMdp ? <EyeOff color="#bfbfbf" onClick={() => setAfficherMdp(false)} /> : <Eye color="#bfbfbf" onClick={() => setAfficherMdp(true)} />}
                 </div>
             )}
-            {typeInput == "number" && <input type="number" id={id} className={`input${classe ? ` ${classe}` : ""}`} placeholder={placeholder} onBlur={onBlur} onChange={onChange} required min={1} step={pas} defaultValue={value} ref={inputRef} />}
 
-            {typeInput == "date" && <input type="date" id={id} className={`input${classe ? ` ${classe}` : ""}`} required min={min} max={new Date().toISOString().split("T")[0]} defaultValue={value} ref={inputRef} onChange={onChange} />}
+            {typeInput === "number" && <input type="number" id={id} className={`input${classe ? ` ${classe}` : ""}`} placeholder={placeholder} onBlur={onBlur} onChange={handleChange} value={value || ""} min={min || "1"} step={pas} ref={inputRef} disabled={modificationDesactiver} />}
 
-            {typeInput == "text" && <input type="text" id={id} className={`input${classe ? ` ${classe}` : ""}`} placeholder={placeholder} onBlur={onBlur} onChange={onChange} required defaultValue={value} disabled={modificationDesactiver} ref={inputRef} />}
+            {typeInput === "date" && <input type="date" id={id} className={`input${classe ? ` ${classe}` : ""}`} onBlur={onBlur} onChange={handleChange} value={value || ""} min={min} max={new Date().toISOString().split("T")[0]} ref={inputRef} disabled={modificationDesactiver} />}
 
-            {typeInput == "textearea" && <textarea id={id} className={`textarea input${classe ? ` ${classe}` : ""}`} placeholder={placeholder} onBlur={onBlur} onChange={onChange} required defaultValue={value} disabled={modificationDesactiver} ref={inputRef} />}
+            {typeInput === "text" && <input type="text" id={id} className={`input${classe ? ` ${classe}` : ""}`} placeholder={placeholder} onBlur={onBlur} onChange={handleChange} value={value || ""} ref={inputRef} disabled={modificationDesactiver} />}
+
+            {typeInput === "textarea" && <textarea id={id} className={`textarea input${classe ? ` ${classe}` : ""}`} placeholder={placeholder} onBlur={onBlur} onChange={handleChange} value={value || ""} ref={inputRef} disabled={modificationDesactiver} />}
         </div>
     );
 }

@@ -30,8 +30,8 @@ export const generation = gestionErreur(
         const cheminModeleVoix = path.join(cheminTTS, "voices", "fr_FR-tom-medium", "fr_FR-tom-medium.onnx");
         const cheminDossierAudio = path.join(cheminTTS, "audios");
 
-        if (!fs.existsSync(cheminDossierAudio)) {
-            fs.mkdirSync(cheminDossierAudio, { recursive: true });
+        if (!fsSync.existsSync(cheminDossierAudio)) {
+            fsSync.mkdirSync(cheminDossierAudio, { recursive: true });
         }
         const nomFichier = `${Date.now()}.wav`;
         const cheminFichier = path.join(cheminDossierAudio, nomFichier);
@@ -120,7 +120,7 @@ export const recuperationLien = gestionErreur(
         }
 
         const cheminFichier = path.join(cheminTTS, "audios", nomFichier);
-        if (!fs.existsSync(cheminFichier)) {
+        if (!fsSync.existsSync(cheminFichier)) {
             return res.status(404).json({
                 etat: false,
                 detail: "Ressource introuvable",
@@ -150,7 +150,7 @@ export const lecture = gestionErreur(
             });
         }
         const cheminFichier = path.join(cheminTTS, "audios", nomFichier);
-        if (!fs.existsSync(cheminFichier)) {
+        if (!fsSync.existsSync(cheminFichier)) {
             return res.status(404).json({ error: "Fichier audio introuvable" });
         }
 
@@ -159,7 +159,7 @@ export const lecture = gestionErreur(
         res.setHeader("Access-Control-Allow-Origin", process.env.IP_FRONTEND);
         res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
 
-        fs.createReadStream(cheminFichier).pipe(res);
+        fsSync.createReadStream(cheminFichier).pipe(res);
     },
     "controleurLectureAudio",
     "Erreur lors de la lecture de l'audio",

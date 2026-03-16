@@ -126,54 +126,6 @@ export const modificationDescription = gestionErreur(
     "Erreur lors de la modification du scénario",
 );
 
-export const modificationOrdre = gestionErreur(
-    async (req, res) => {
-        const { id } = req.params;
-        const { missions } = req.body;
-        if (!missions || !id) {
-            return res.status(400).json({
-                etat: false,
-                detail: "Requête incorrecte",
-            });
-        }
-
-        const scenario = await req.Scenarios.findByPk(id, { raw: true });
-        if (!scenario) {
-            return res.status(404).json({
-                etat: false,
-                detail: "Ressource inexistante 1",
-            });
-        }
-
-        const listeMissions = await req.MissionsScenario.findAll({ where: { scenarioId: id }, raw: true });
-
-        if (listeMissions.length !== missions.length) {
-            return res.status(400).json({
-                etat: false,
-                detail: "Requête incorrecte",
-            });
-        }
-
-        for (const mission of missions) {
-            if (listeMissions.filter((element) => element.missionId == mission.id).length == 0) {
-                return res.status(404).json({
-                    etat: false,
-                    detail: "Ressource inexistante",
-                });
-            }
-        }
-
-        for (const idMission in missions) {
-            const mission = missions[idMission];
-            await req.MissionsScenario.update({ ordre: idMission + 1 }, { where: { id: mission.id } });
-        }
-
-        return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
-    },
-    "controleurModificationOrdreScenario",
-    "Erreur lors la modification de l'ordre de la mission",
-);
-
 export const modificationEnTete = gestionErreur((req, res) => {}, "controleurModificationEnTete", "Erreur lors de la modification de l'en-tête du scénario");
 
 export const ajoutMission = gestionErreur(
@@ -210,7 +162,6 @@ export const ajoutMission = gestionErreur(
                     scenarioId: id,
                     missionId,
                     ordre: idTableau,
-                    configuration: '{ "etat": true }',
                 });
             }
         }
@@ -218,6 +169,48 @@ export const ajoutMission = gestionErreur(
     },
     "controleurAjoutMissionScenario",
     "Erreur lors de l'ajout de mission dans la scénario",
+);
+
+export const modificationMissions = gestionErreur(
+    async (req, res) => {
+        const { id } = req.params;
+        const { donnees } = req.body;
+        if (!donnees || !id) {
+            return res.status(400).json({
+                etat: false,
+                detail: "Requête incorrecte",
+            });
+        }
+
+        const scenario = await req.Scenarios.findByPk(id);
+        if (!scenario) {
+            return res.status(404).json({
+                etat: false,
+                detail: "Ressource inexistante",
+            });
+        }
+
+        const listeMissionsEnregistrees = await req.MissionsScenario.findAll({ where: { scenarioId: id }, raw: true });
+
+        for (let idTableau in donnees) {
+            const missionId = donnees[idTableau];
+
+            if (listeMissionsEnregistrees.filter((item) => item.missionId == missionId).length > 0) {
+                return res.status(400).json({
+                    etat: false,
+                    detail: "Requête incorrecte",
+                });
+            }
+        }
+
+        for (const mission of donnees) {
+            await req.MissionsScenario.update({ ordre: mission.ordre, configuration: JSON.parse(mission.configuration) }, { where: { missionId: mission.missionId, scenarioId:mission.scenarioId } });
+        }
+
+        return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
+    },
+    "controleurModificationMissionScenario",
+    "Erreur lors de la modification des mission dans la scénario",
 );
 
 export const suppressionMission = gestionErreur((req, res) => {}, "controleurSuppressionMissionScenario", "Erreur lors de la suppression de mission dans la scénario");
