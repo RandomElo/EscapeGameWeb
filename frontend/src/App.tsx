@@ -48,6 +48,10 @@ const router = createBrowserRouter([
                 element: <SuiviPartie />,
             },
             {
+                path: "/suivi-partie/:partieId",
+                element: <SuiviPartie />,
+            },
+            {
                 path: "*",
                 element: <ErreurRoute />,
             },
