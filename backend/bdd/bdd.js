@@ -23,8 +23,9 @@ import JournauxEvenements from "./modeles/JournauxEvenements.js";
 import Tokens from "./modeles/Tokens.js";
 import DemandesAdhesion from "./modeles/DemandesAdhesion.js";
 import MorseAudios from "./modeles/MorseAudios.js";
+import QuizAudios from "./modeles/QuizAudios.js";
+import QuizQuestions from "./modeles/QuizQuestions.js";
 const cheminBDD = "./bdd/bdd.sqlite";
-const enDeveloppement = process.env.NODE_ENV != "production";
 
 // Initialisation de l'ORM
 const sequelize = new Sequelize({
@@ -54,6 +55,8 @@ const bdd = {
     Tokens: Tokens(sequelize),
     DemandesAdhesion: DemandesAdhesion(sequelize),
     MorseAudios: MorseAudios(sequelize),
+    QuizAudios: QuizAudios(sequelize),
+    QuizQuestions: QuizQuestions(sequelize),
 };
 
 // Initialisation de la bdd

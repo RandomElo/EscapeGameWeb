@@ -204,7 +204,7 @@ export const modificationMissions = gestionErreur(
         }
 
         for (const mission of donnees) {
-            await req.MissionsScenario.update({ ordre: mission.ordre, configuration: JSON.parse(mission.configuration) }, { where: { missionId: mission.missionId, scenarioId:mission.scenarioId } });
+            await req.MissionsScenario.update({ ordre: mission.ordre, configuration: JSON.parse(mission.configuration) }, { where: { missionId: mission.missionId, scenarioId: mission.scenarioId } });
         }
 
         return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });

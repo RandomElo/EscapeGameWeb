@@ -366,9 +366,34 @@ export default function InterfaceAdministration() {
                         </form>
                     </div>
                 )}
-                {contenuModal == "genererAudioQuiz" &&
+                {contenuModal == "genererAudioQuiz" && (
                     <div id="divModalGenererAudioQuiz">
-                        <h2>Générer audios quizz</h2>
+                        <h2>Générer audios quiz</h2>
+                        <form
+                            onSubmit={async (e) => {
+                                e.preventDefault();
+                                const valeur = document.querySelector<HTMLInputElement>("#inputTexte")!.value;
+                                const type = document.querySelector<HTMLInputElement>("#selectScenario")!.value;
+                                console.log({ valeur, type })
+                                const reponse = await requete({ url: "/admins/audios/generation-quiz", methode: "POST", corps: { valeur, type } });
+                                console.log(reponse)
+                            }}
+                        >
+                            <ChampDonneesForm id="inputTexte" label="Texte :" typeInput="textearea" />
+
+                            <select id="selectScenario" required>
+                                <option value="" selected disabled>
+                                    --- Sélectionnez un type ---
+                                </option>
+                                <option value="bonneReponse">Bonne réponse</option>
+                                <option value="mauvaiseReponse">Mauvaise réponse</option>
+                                <option value="serieErreurs">Série de 7 erreurs</option>
+                                <option value="finQuiz">Quiz réussi</option>
+                                <option value="questionsJSON">Questions JSON</option>
+                            </select>
+
+                            <button className="bouton">Générer</button>
+                        </form>
                         {/* Bonne réponse
                             mauvaise réponse
                             serie de 7 raté combo fail
@@ -376,7 +401,7 @@ export default function InterfaceAdministration() {
                             question json
                         */}
                     </div>
-                }
+                )}
                 {/* Gestion des scénario */}
 
                 {contenuModal == "menuScenario" && (

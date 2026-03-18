@@ -160,7 +160,8 @@
     }
 }
 #divModalModifierNomScenario,
-#divModalModifierNomMission, #divModalmodifierAdresseIPMission {
+#divModalModifierNomMission,
+#divModalmodifierAdresseIPMission {
     text-align: center;
     form {
         display: flex;
@@ -171,7 +172,8 @@
 }
 
 #divModalModifierDescriptionScenario,
-#divModalModifierDescriptionMission, #divModalmodifierConfigurationMission {
+#divModalModifierDescriptionMission,
+#divModalmodifierConfigurationMission {
     text-align: center;
     form {
         display: flex;
@@ -217,5 +219,26 @@
     }
 }
 #divModalGenererAudioQuiz {
+    text-align: center;
+    form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: left;
+        margin-top: 10px;
 
+        #divinputTexte {
+            margin-bottom: 20px;
+            width: 80%;
+            height: 150px;
+            textarea {
+                width: 100%;
+                height: 100%;
+                resize: none;
+            }
+        }
+        button {
+            margin-top: 15px;
+        }
+    }
 }

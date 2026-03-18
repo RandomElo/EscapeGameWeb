@@ -1,4 +1,5 @@
 import gestionErreur from "../../middlewares/gestionErreur.js";
+import { randomUUID } from "crypto";
 
 import { spawn } from "child_process";
 import fs from "fs/promises";
@@ -8,15 +9,47 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { ConfigurationInterfaceAdmin } from "./scenarios.js";
 import jwt from "jsonwebtoken";
-import generateMorseAudio from "../../fonctions/genererMorse.js";
-import logger from "../../mqtt/logger.js";
+import pLimit from "p-limit";
+
+const limit = pLimit(3); // max 3 TTS en parallèle
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const cheminDossierAudios = path.resolve(__dirname, "../../audios");
+// Chemin modele TTS
 const cheminTTS = path.resolve(__dirname, "../../tts");
+const cheminPiper = path.join(cheminTTS, "piper", "piper");
+const cheminModeleVoix = path.join(cheminTTS, "voices", "fr_FR-tom-medium", "fr_FR-tom-medium.onnx");
+
+function generationTTS(cheminDossier, nomFichier, texte) {
+    return new Promise((resolve, reject) => {
+        fsSync.mkdirSync(cheminDossier, { recursive: true });
+
+        const cheminFichier = path.join(cheminDossier, nomFichier);
+
+        const piper = spawn(cheminPiper, ["--model", cheminModeleVoix, "--output_file", cheminFichier]);
+
+        piper.stdin.write(texte);
+        piper.stdin.end();
+
+        piper.on("close", (code) => {
+            if (code !== 0) {
+                return reject(new Error("Erreur génération audio"));
+            }
+
+            resolve({
+                cheminFichier,
+                nomFichier,
+            });
+        });
+
+        piper.on("error", reject);
+    });
+}
 
 export const generation = gestionErreur(
-    (req, res) => {
+    async (req, res) => {
         const { texte, missionId, scenarioId } = req.body;
 
         if (!texte || !missionId || !scenarioId) {
@@ -26,28 +59,10 @@ export const generation = gestionErreur(
             });
         }
 
-        const cheminPiper = path.join(cheminTTS, "piper", "piper");
-        const cheminModeleVoix = path.join(cheminTTS, "voices", "fr_FR-tom-medium", "fr_FR-tom-medium.onnx");
         const cheminDossierAudio = path.join(cheminTTS, "audios");
-
-        if (!fsSync.existsSync(cheminDossierAudio)) {
-            fsSync.mkdirSync(cheminDossierAudio, { recursive: true });
-        }
         const nomFichier = `${Date.now()}.wav`;
-        const cheminFichier = path.join(cheminDossierAudio, nomFichier);
-
-        const piper = spawn(cheminPiper, ["--model", cheminModeleVoix, "--output_file", cheminFichier]);
-
-        piper.stdin.write(texte);
-        piper.stdin.end();
-
-        piper.on("close", async (code) => {
-            if (code !== 0) {
-                return res.status(500).json({
-                    etat: false,
-                    detail: "Erreur lors de la génération audio",
-                });
-            }
+        try {
+            await generationTTS(cheminDossierAudio, nomFichier, texte);
 
             await req.MessagesAudio.create({
                 detail: texte,
@@ -56,8 +71,16 @@ export const generation = gestionErreur(
                 nomFichier,
             });
 
-            return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
-        });
+            return res.json({
+                etat: true,
+                detail: await ConfigurationInterfaceAdmin(req),
+            });
+        } catch (err) {
+            return res.status(500).json({
+                etat: false,
+                detail: err.message,
+            });
+        }
     },
     "controleurGenerationAudio",
     "Erreur lors de la génération de l'audio",
@@ -195,4 +218,111 @@ export const recuperationMorse = gestionErreur(
     },
     "controleurRecuperationMorse",
     "Erreur lors de la récupération du fichier morse",
+);
+
+async function generationAudiosSimple(entree, type, req) {
+    const valeurs = entree
+        .split("\n")
+        .map((v) => v.trim())
+        .filter((v) => v.length > 0);
+
+    const cheminDossier = path.join(cheminDossierAudios, "quiz", type);
+
+    const resultats = await Promise.allSettled(
+        valeurs.map((element) =>
+            limit(async () => {
+                const nomFichier = `${randomUUID()}.wav`;
+
+                await generationTTS(cheminDossier, nomFichier, element);
+
+                return req.QuizAudios.create({
+                    type,
+                    texte: element,
+                    cheminFichier: path.join(type, nomFichier),
+                });
+            }),
+        ),
+    );
+
+    return resultats;
+}
+
+async function generationQuestion(entree, req) {
+    let entreeMiseEnForme;
+
+    try {
+        entreeMiseEnForme = JSON.parse(entree);
+    } catch {
+        throw new Error("JSON invalide");
+    }
+
+    const cheminDossier = path.join(cheminDossierAudios, "quiz", "questions");
+
+    const resultats = await Promise.allSettled(
+        entreeMiseEnForme.map((element) =>
+            limit(async () => {
+                if (!element.question || !element.type || !element.reponse) {
+                    throw new Error("Format question invalide");
+                }
+
+                const nomFichier = `${randomUUID()}.wav`;
+
+                await generationTTS(cheminDossier, nomFichier, element.question);
+
+                return req.QuizAudios.create({
+                    question: element.question,
+                    type: element.type,
+                    reponse: element.reponse,
+                    difficulte: element.difficulte,
+                    nomFichier: path.join("audios/quiz/questions", nomFichier),
+                });
+            }),
+        ),
+    );
+
+    return resultats;
+}
+
+export const generationQuiz = gestionErreur(
+    async (req, res) => {
+        const { type, valeur } = req.body;
+        if (!type || !valeur) {
+            return res.status(400).json({
+                etat: false,
+                detail: "Requête incorrecte",
+            });
+        }
+        const typesValides = ["bonneReponse", "mauvaiseReponse", "serieErreurs", "finQuiz", "questionsJSON"];
+        if (!typesValides.includes(type)) {
+            return res.status(400).json({
+                etat: false,
+                detail: "Requête incorrecte",
+            });
+        }
+        let resultats;
+        if (type == "questionsJSON") {
+            try {
+                resultats = await generationQuestion(valeur, req);
+            } catch (err) {
+                return res.status(400).json({
+                    etat: false,
+                    detail: err.message,
+                });
+            }
+        } else {
+            resultats = await generationAudiosSimple(valeur, type, req);
+        }
+        const succes = resultats.filter((r) => r.status === "fulfilled").map((r) => r.value);
+        const erreurs = resultats.filter((r) => r.status === "rejected").map((r) => r.reason?.message);
+
+        return res.json({
+            etat: true,
+            detail: {
+                succes: succes.length,
+                erreurs,
+            },
+        });
+    },
+    "controleurGenerationQuiz",
+    "Erreur lors de la génération de l'audio pour le quiz",
 );
