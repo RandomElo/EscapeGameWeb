@@ -12,7 +12,7 @@ export default function InterfaceAdministration() {
     const requete = useRequete();
 
     const [afficherModal, setAfficherModal] = useState<boolean>(false);
-    const [contenuModal, setContenuModal] = useState<"ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio" | "menuScenario" | "gererMissionsScenario" | "modifierNomScenario" | "modifierDescriptionScenario" | "supprimerScenario" | "menuMission" | "modifierAdresseIPMission" | "supprimerMission" | "modifierNomMission" | "modifierDescriptionMission" | "modifierConfigurationMission" | "ajouterMissionScenario">();
+    const [contenuModal, setContenuModal] = useState<"ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio" | "menuScenario" | "gererMissionsScenario" | "modifierNomScenario" | "modifierDescriptionScenario" | "supprimerScenario" | "menuMission" | "modifierAdresseIPMission" | "supprimerMission" | "modifierNomMission" | "modifierDescriptionMission" | "modifierConfigurationMission" | "ajouterMissionScenario" | "genererAudioQuiz">();
     const [detailsModal, setDetailsModal] = useState<string>();
     const [details2Modal, setDetails2Modal] = useState<number[]>([]);
     const [erreur, setErreur] = useState<string>();
@@ -236,6 +236,19 @@ export default function InterfaceAdministration() {
                         </tbody>
                     </table>
                 </div>
+
+                <div id="divMessagesQuiz">
+                    <h2>Audios boîtes à quiz</h2>
+                    <button
+                        className="bouton"
+                        onClick={() => {
+                            setContenuModal("genererAudioQuiz");
+                            setAfficherModal(true);
+                        }}
+                    >
+                        Générer des audios
+                    </button>
+                </div>
             </main>
             <Modal estOuvert={afficherModal} fermeture={() => setAfficherModal(false)}>
                 {contenuModal == "ajouterMission" && (
@@ -353,7 +366,17 @@ export default function InterfaceAdministration() {
                         </form>
                     </div>
                 )}
-
+                {contenuModal == "genererAudioQuiz" &&
+                    <div id="divModalGenererAudioQuiz">
+                        <h2>Générer audios quizz</h2>
+                        {/* Bonne réponse
+                            mauvaise réponse
+                            serie de 7 raté combo fail
+                            combo réussi (fin)
+                            question json
+                        */}
+                    </div>
+                }
                 {/* Gestion des scénario */}
 
                 {contenuModal == "menuScenario" && (
@@ -492,7 +515,7 @@ export default function InterfaceAdministration() {
                                                 };
                                             });
 
-                                            console.log(donnees)
+                                            console.log(donnees);
 
                                             const reponse = await requete({ url: `/admins/scenarios/${detailsModal}/modification-missions`, methode: "PATCH", corps: { donnees } });
 

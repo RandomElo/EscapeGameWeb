@@ -29,20 +29,21 @@ type Props = {
 
     setPartiesEnCours: React.Dispatch<React.SetStateAction<boolean>>;
 
-    setDetailsParties: React.Dispatch<
+    setDetailsPartie: React.Dispatch<
         React.SetStateAction<
-            {
-                equipeNom: string;
-                nbrMembres: number;
-                scenarioNom: string;
-                nbrMissions: number;
-                dateDebut: Date;
-            }[]
+            | {
+                  equipeNom: string;
+                  nbrMembres: number;
+                  scenarioNom: string;
+                  nbrMissions: number;
+                  dateDebut: string;
+              }
+            | undefined
         >
     >;
 };
 
-export default function CreationPartie({ lancementPartie, setLancementPartie, scenarios, equipes, erreur, setErreur, setPartiesEnCours, setDetailsParties }: Props) {
+export default function CreationPartie({ lancementPartie, setLancementPartie, scenarios, equipes, erreur, setErreur, setPartiesEnCours, setDetailsPartie }: Props) {
     const requete = useRequete();
 
     return (
@@ -116,7 +117,7 @@ export default function CreationPartie({ lancementPartie, setLancementPartie, sc
                     const reponse = await requete({ url: "/admins/parties/lancer", methode: "POST", corps: lancementPartie });
                     console.log(reponse);
                     if (reponse.partieLancer) {
-                        setDetailsParties(reponse.details);
+                        setDetailsPartie(reponse.details);
                         setPartiesEnCours(true);
                     } else {
                         setErreur(reponse.details);

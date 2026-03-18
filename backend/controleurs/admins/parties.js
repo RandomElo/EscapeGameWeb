@@ -1,64 +1,60 @@
 import gestionErreur from "../../middlewares/gestionErreur.js";
+async function recuperationDetailsPartie(partie, req) {
+    if (!partie?.equipeId || !partie?.scenarioId) {
+        throw new Error("Données partie invalides");
+    }
 
-async function recuperationDetailsParties(parties, req) {
-    const equipesIds = [...new Set(parties.map((p) => p.equipeId))];
-    const scenariosIds = [...new Set(parties.map((p) => p.scenarioId))];
-
-    const [equipes, membres, scenarios, missions] = await Promise.all([
-        req.Equipes.findAll({
-            where: { id: equipesIds },
-            attributes: ["id", "nom"],
+    const [equipe, membres, scenario, missionsScenario] = await Promise.all([
+        req.Equipes.findOne({
+            where: { id: partie.equipeId },
+            attributes: ["nom"],
             raw: true,
         }),
-        req.MembresEquipe.findAll({
-            where: { equipeId: equipesIds },
-            attributes: ["equipeId"],
-            raw: true,
+        req.MembresEquipe.count({
+            where: { equipeId: partie.equipeId },
         }),
-        req.Scenarios.findAll({
-            where: { id: scenariosIds },
-            attributes: ["id", "nom"],
+        req.Scenarios.findOne({
+            where: { id: partie.scenarioId },
+            attributes: ["nom"],
             raw: true,
         }),
         req.MissionsScenario.findAll({
-            where: { scenarioId: scenariosIds },
-            attributes: ["scenarioId"],
+            where: { scenarioId: partie.scenarioId },
+            attributes: ["missionId"],
             raw: true,
         }),
     ]);
 
-    const equipesMap = Object.fromEntries(equipes.map((e) => [e.id, e]));
-    const scenariosMap = Object.fromEntries(scenarios.map((s) => [s.id, s]));
+    const missionIds = missionsScenario.map((m) => m.missionId);
 
-    const membresCount = {};
-    for (const m of membres) {
-        membresCount[m.equipeId] = (membresCount[m.equipeId] || 0) + 1;
-    }
-
-    const missionsCount = {};
-    for (const m of missions) {
-        missionsCount[m.scenarioId] = (missionsCount[m.scenarioId] || 0) + 1;
-    }
-
-    return parties.map((partie) => ({
-        equipeNom: equipesMap[partie.equipeId]?.nom || null,
-        nbrMembres: membresCount[partie.equipeId] || 0,
-        scenarioNom: scenariosMap[partie.scenarioId]?.nom || null,
-        nbrMissions: missionsCount[partie.scenarioId] || 0,
-        dateDebut: partie.dateDebut,
+    const missions = await req.Missions.findAll({
+        where: { id: missionIds },
+        attributes: ["id", "nom", "description"],
+        raw: true,
+    });
+    const missionsAvecTags = missions.map((m) => ({
+        ...m,
+        tags: [],
     }));
+    return {
+        equipeNom: equipe?.nom || null,
+        nbrMembres: membres,
+        scenarioNom: scenario?.nom || null,
+        nbrMissions: missions.length,
+        missions: missionsAvecTags,
+        dateDebut: partie.dateDebut,
+    };
 }
-
-export const partiesEnCours = gestionErreur(
+export const partieEnCours = gestionErreur(
     async (req, res) => {
-        const parties = await req.Parties.findAll({ where: { statut: "enCours" } });
-        if (parties.length > 0) {
-            return res.json({ etat: true, detail: { partiesEnCours: true, details: await recuperationDetailsParties(parties, req) } });
+        const partie = await req.Parties.findOne({ where: { statut: "enCours" } });
+        if (partie) {
+            return res.json({ etat: true, detail: { partieEnCours: true, details: await recuperationDetailsPartie(partie, req) } });
         } else {
             const equipes = await req.Equipes.findAll();
             const scenarios = await req.Scenarios.findAll();
 
-            return res.json({ etat: true, detail: { partiesEnCours: false, details: { equipes, scenarios } } });
+            return res.json({ etat: true, detail: { partieEnCours: false, details: { equipes, scenarios } } });
 
             // je doit récupérer les scénarios et les equipes
         }
@@ -145,7 +141,7 @@ export const lancer = gestionErreur(
 
         console.log("JE DOIT ENVOYER UN MESSAGE EN MQTT");
 
-        return res.json({ etat: true, detail: { partieLancer: true, details: await recuperationDetailsParties(await req.Parties.findAll({ where: { statut: "enCours" } }), req) } });
+        return res.json({ etat: true, detail: { partieLancer: true, details: await recuperationDetailsPartie(await req.Parties.findOne({ where: { statut: "enCours" } }), req) } });
     },
     "controleurLancerPartie",
     "Erreur lors du lancement de la partie",

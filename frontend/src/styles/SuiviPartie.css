@@ -263,10 +263,6 @@
             }
             /* GRID = clé du design */
             .detailsGrid {
-                display: flex;
-                justify-content: space-between;
-
-                /* BLOCS */
                 .bloc {
                     display: flex;
                     flex-direction: column;
@@ -296,8 +292,17 @@
                         color: var(--text-secondary);
                     }
                 }
-                .bloc.scenario {
-                    text-align: right;
+                .premiereLigne {
+                    display: flex;
+                    justify-content: space-between;
+
+                    .bloc.scenario {
+                        text-align: right;
+                    }
+                }
+                .bloc.duree {
+                    margin-top: 20px;
+                    text-align: center;
                 }
             }
         }

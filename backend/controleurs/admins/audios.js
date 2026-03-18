@@ -187,7 +187,6 @@ export const recuperationMorse = gestionErreur(
             });
         }
 
-
         res.sendFile(filePath, {
             headers: {
                 "Content-Type": "audio/wav",

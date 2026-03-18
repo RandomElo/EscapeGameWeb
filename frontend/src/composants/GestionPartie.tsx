@@ -1,8 +1,10 @@
 import { CircleAlert, Megaphone, Mic, Tag, Volume2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 type Props = {
-    missions: { id: number; title: string; description: string; tags: string[]; etat: string }[];
-    detailsParties: { equipeNom: string; nbrMembres: number; scenarioNom: string; nbrMissions: number; dateDebut: Date }[];
+    missions: { id: number; nom: string; description: string; tags: string[]; etat: string }[];
+
+    detailsPartie: { equipeNom: string; nbrMembres: number; scenarioNom: string; nbrMissions: number; dateDebut: string } | undefined;
     setListeNotifications: React.Dispatch<
         React.SetStateAction<
             {
@@ -14,7 +16,32 @@ type Props = {
     >;
 };
 
-export default function GestionPartie({ missions, detailsParties, setListeNotifications }: Props) {
+function formatDureeDepuis(dateDebut: string, now: number): string {
+    const debut = new Date(dateDebut).getTime();
+    const diffMs = now - debut;
+
+    const minutes = Math.floor(diffMs / 60000);
+    const heures = Math.floor(minutes / 60);
+
+    if (heures === 0) {
+        return `${minutes} min`;
+    }
+
+    const resteMinutes = minutes % 60;
+    return `${heures}h${resteMinutes.toString().padStart(2, "0")}`;
+}
+
+export default function GestionPartie({ missions, detailsPartie, setListeNotifications }: Props) {
+    const [now, setNow] = useState(Date.now());
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setNow(Date.now());
+        }, 60000);
+
+        return () => clearInterval(interval);
+    }, []);
+
     return (
         <div className="gestionPartie">
             {/* LEFT PANEL */}
@@ -36,7 +63,7 @@ export default function GestionPartie({ missions, detailsParties, setListeNotifi
                             {/* Mission card */}
                             <div className={"card missionCard mission" + mission.etat}>
                                 <div className="missionHeader">
-                                    <h3>{mission.title}</h3>
+                                    <h3>{mission.nom}</h3>
 
                                     <div className="divBadges">
                                         {(mission.tags.includes("Terminée") ? ["Terminée"] : mission.tags.includes("En attente") ? ["En attente"] : mission.tags.filter((tag) => tag !== "En cours")).map((tag) => (
@@ -80,24 +107,32 @@ export default function GestionPartie({ missions, detailsParties, setListeNotifi
                             Étape 1 / 5
                         </span>
                     </div>
+                    {detailsPartie && (
+                        <div className="detailsGrid">
+                            <div className="premiereLigne">
+                                <div className="bloc">
+                                    <span className="label">Équipe</span>
+                                    <span className="valeur">{detailsPartie.equipeNom}</span>
+                                    <span className="meta">
+                                        {detailsPartie?.nbrMembres} membre{detailsPartie.nbrMembres > 1 ? "s" : ""}
+                                    </span>
+                                </div>
 
-                    <div className="detailsGrid">
-                        <div className="bloc">
-                            <span className="label">Équipe</span>
-                            <span className="valeur">{detailsParties[0].equipeNom}</span>
-                            <span className="meta">
-                                {detailsParties[0].nbrMembres} membre{detailsParties[0].nbrMembres > 1 ? "s" : ""}
-                            </span>
-                        </div>
+                                <div className="bloc scenario">
+                                    <span className="label">Scénario</span>
+                                    <span className="valeur">{detailsPartie.scenarioNom}</span>
+                                    <span className="meta">
+                                        {detailsPartie?.nbrMissions} mission{detailsPartie.nbrMissions > 1 ? "s" : ""}
+                                    </span>
+                                </div>
+                            </div>
 
-                        <div className="bloc scenario">
-                            <span className="label">Scénario</span>
-                            <span className="valeur">{detailsParties[0].scenarioNom}</span>
-                            <span className="meta">
-                                {detailsParties[0].nbrMissions} mission{detailsParties[0].nbrMissions > 1 ? "s" : ""}
-                            </span>
+                            <div className="bloc duree">
+                                <span className="label">Durée</span>
+                                <span className="valeur">{formatDureeDepuis(detailsPartie.dateDebut, now)}</span>
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
 
                 <div className="card audioControl">

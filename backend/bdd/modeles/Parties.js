@@ -1,12 +1,5 @@
 import { DataTypes } from "sequelize";
-function genererId() {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let id = "";
-    for (let i = 0; i < 5; i++) {
-        id += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return id;
-}
+
 export default function (bdd) {
     const Parties = bdd.define(
         "Parties",
@@ -38,12 +31,6 @@ export default function (bdd) {
             },
             dateDebut: { type: DataTypes.DATE, allowNull: true },
             dateFin: { type: DataTypes.DATE, allowNull: true },
-            token: {
-                type: DataTypes.STRING(5),
-                allowNull: false,
-                unique: true,
-                defaultValue: () => genererId(),
-            },
             statut: {
                 type: DataTypes.STRING(20),
                 allowNull: false,

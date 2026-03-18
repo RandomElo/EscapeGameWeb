@@ -50,7 +50,7 @@ export default function ChampDonneesForm({ id, classe, label, typeInput = "text"
 
             {typeInput === "texteOnChange" && <input type="text" id={id} className={`input${classe ? ` ${classe}` : ""}`} placeholder={placeholder} onBlur={onBlur} onChange={handleChange} value={value || ""} ref={inputRef} disabled={modificationDesactiver} />}
 
-            {typeInput == "textearea" && <textarea id={id} className={`textarea input${classe ? ` ${classe}` : ""}`} placeholder={placeholder} onBlur={onBlur} onChange={onChange} required defaultValue={value} disabled={modificationDesactiver} ref={inputRef} />}
+            {typeInput == "textearea" && <textarea id={id} className={`textarea input${classe ? ` ${classe}` : ""}`} placeholder={placeholder} onBlur={onBlur} required defaultValue={value} disabled={modificationDesactiver} ref={inputRef} />}
         </div>
     );
 }
