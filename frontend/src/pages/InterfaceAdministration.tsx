@@ -374,9 +374,10 @@ export default function InterfaceAdministration() {
                                 e.preventDefault();
                                 const valeur = document.querySelector<HTMLInputElement>("#inputTexte")!.value;
                                 const type = document.querySelector<HTMLInputElement>("#selectScenario")!.value;
-                                console.log({ valeur, type })
+                                console.log({ valeur, type });
                                 const reponse = await requete({ url: "/admins/audios/generation-quiz", methode: "POST", corps: { valeur, type } });
-                                console.log(reponse)
+                                console.log(reponse);
+                                setAfficherModal(false);
                             }}
                         >
                             <ChampDonneesForm id="inputTexte" label="Texte :" typeInput="textearea" />
@@ -394,12 +395,6 @@ export default function InterfaceAdministration() {
 
                             <button className="bouton">Générer</button>
                         </form>
-                        {/* Bonne réponse
-                            mauvaise réponse
-                            serie de 7 raté combo fail
-                            combo réussi (fin)
-                            question json
-                        */}
                     </div>
                 )}
                 {/* Gestion des scénario */}

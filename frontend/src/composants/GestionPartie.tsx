@@ -1,5 +1,7 @@
-import { CircleAlert, Megaphone, Mic, Tag, Volume2 } from "lucide-react";
+import { CircleAlert, Megaphone, Mic, Power, Tag, Volume2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import mqtt from "mqtt";
+import { useRequete } from "../fonctions/requete";
 
 type Props = {
     missions: { id: number; nom: string; description: string; tags: string[]; etat: string }[];
@@ -14,6 +16,7 @@ type Props = {
             }[]
         >
     >;
+    setPartiesEnCours: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 function formatDureeDepuis(dateDebut: string, now: number): string {
@@ -31,8 +34,20 @@ function formatDureeDepuis(dateDebut: string, now: number): string {
     return `${heures}h${resteMinutes.toString().padStart(2, "0")}`;
 }
 
-export default function GestionPartie({ missions, detailsPartie, setListeNotifications }: Props) {
+export default function GestionPartie({ missions, detailsPartie, setListeNotifications, setPartiesEnCours }: Props) {
     const [now, setNow] = useState(Date.now());
+    const [messages, setMessages] = useState([]);
+    const [status, setStatus] = useState("Déconnecté");
+    const requete = useRequete();
+
+    const config = {
+        mqtt: {
+            host: import.meta.env.VITE_WS_MQTT_HOST,
+            username: import.meta.env.VITE_WS_MQTT_USERNAME,
+            password: import.meta.env.VITE_WS_MQTT_MDP,
+            baseTopic: "escape",
+        },
+    };
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -41,6 +56,65 @@ export default function GestionPartie({ missions, detailsPartie, setListeNotific
 
         return () => clearInterval(interval);
     }, []);
+
+    useEffect(() => {
+        // Connexion au broker MQTT via WebSocket
+        const client = mqtt.connect(config.mqtt.host, {
+            username: config.mqtt.username,
+            password: config.mqtt.password,
+            clean: true, // connexion propre
+            connectTimeout: 4000, // timeout connexion
+            reconnectPeriod: 1000, // reconnexion auto si perdu
+        });
+
+        // Quand la connexion est établie
+        client.on("connect", () => {
+            setStatus("Connecté");
+            console.log("MQTT connecté");
+
+            // S'abonner au topic principal
+            client.subscribe(`${config.mqtt.baseTopic}/#`, (err) => {
+                if (err) console.error("Erreur d'abonnement :", err);
+            });
+        });
+
+        // Quand un message est reçu
+        client.on("message", (topic, payload) => {
+            const msg = payload.toString();
+            console.log("Message reçu :", topic, msg);
+            setMessages((prev) => [...prev, { topic, msg }]);
+        });
+
+        client.on("error", (err) => {
+            console.error("MQTT error:", err);
+            setStatus("Erreur");
+        });
+
+        client.on("reconnect", () => {
+            setStatus("Reconnexion...");
+        });
+
+        client.on("close", () => {
+            setStatus("Déconnecté");
+        });
+
+        // Cleanup à la fermeture du composant
+        return () => {
+            client.end(true);
+        };
+    }, []);
+
+    const envoyerMessage = (topicSuffix, message) => {
+        const client = mqtt.connect(config.mqtt.host, {
+            username: config.mqtt.username,
+            password: config.mqtt.password,
+        });
+        const topic = `${config.mqtt.baseTopic}/${topicSuffix}`;
+        client.publish(topic, message, { qos: 0 }, (err) => {
+            if (err) console.error("Erreur envoi message:", err);
+            client.end();
+        });
+    };
 
     return (
         <div className="gestionPartie">
@@ -131,6 +205,17 @@ export default function GestionPartie({ missions, detailsPartie, setListeNotific
                                 <span className="label">Durée</span>
                                 <span className="valeur">{formatDureeDepuis(detailsPartie.dateDebut, now)}</span>
                             </div>
+
+                            <button
+                                className="primaryButton boutonTerminerPartie"
+                                onClick={async () => {
+                                    await requete({ url: "/admins/parties/avorter-partie", methode: "PATCH" });
+                                    setPartiesEnCours(false)
+                                }}
+                            >
+                                <Power />
+                                Terminer la partie
+                            </button>
                         </div>
                     )}
                 </div>
@@ -147,6 +232,8 @@ export default function GestionPartie({ missions, detailsPartie, setListeNotific
 
                     {/* TEST */}
                     <button onClick={() => setListeNotifications((prev) => [...prev, { niveau: "erreur", titre: "Test 2", description: "Licorne" }])}>Envoyer notif</button>
+                    <button onClick={() => envoyerMessage("test", "Hello MQTT")}>Envoyer "Hello MQTT"</button>
+
                     {/* FIN TEST */}
                 </div>
             </div>

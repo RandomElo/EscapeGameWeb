@@ -261,6 +261,14 @@
                     margin: 0; /* important */
                 }
             }
+            .boutonTerminerPartie {
+                margin-top: 15px;
+                background: #ef4444;
+                width: 100%;
+            }
+            .boutonTerminerPartie:hover {
+                background: #b91c1c;
+            }
             /* GRID = clé du design */
             .detailsGrid {
                 .bloc {

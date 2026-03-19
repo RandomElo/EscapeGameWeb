@@ -1,6 +1,6 @@
 const config = {
     mqtt: {
-        host: "mqtt://localhost:1883",
+        host: "ws://172.18.201.101:9001",
         username: "engine",
         password: "escapegame",
         baseTopic: "escape",

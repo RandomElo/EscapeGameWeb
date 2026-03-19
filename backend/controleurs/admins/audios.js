@@ -11,7 +11,7 @@ import { ConfigurationInterfaceAdmin } from "./scenarios.js";
 import jwt from "jsonwebtoken";
 import pLimit from "p-limit";
 
-const limit = pLimit(3); // max 3 TTS en parallèle
+const limit = pLimit(2); // max 3 TTS en parallèle
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -264,7 +264,7 @@ async function generationQuestion(entree, req) {
                 if (!element.question || !element.type || !element.reponse) {
                     throw new Error("Format question invalide");
                 }
-
+                console.log(element.question)
                 const nomFichier = `${randomUUID()}.wav`;
 
                 await generationTTS(cheminDossier, nomFichier, element.question);

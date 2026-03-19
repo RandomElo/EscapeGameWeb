@@ -89,7 +89,7 @@ export default function SuiviPartie() {
     // ];
     return (
         <main className="SuiviPartie">
-            {partiesEnCours ? <GestionPartie missions={missions} detailsPartie={detailsPartie} setListeNotifications={setListeNotifications} /> : <CreationPartie lancementPartie={lancementPartie} setLancementPartie={setLancementPartie} scenarios={scenarios} equipes={equipes} erreur={erreur} setErreur={setErreur} setPartiesEnCours={setPartiesEnCours} setDetailsPartie={setDetailsPartie} />}
+            {partiesEnCours ? <GestionPartie missions={missions} detailsPartie={detailsPartie} setListeNotifications={setListeNotifications} setPartiesEnCours={setPartiesEnCours}/> : <CreationPartie lancementPartie={lancementPartie} setLancementPartie={setLancementPartie} scenarios={scenarios} equipes={equipes} erreur={erreur} setErreur={setErreur} setPartiesEnCours={setPartiesEnCours} setDetailsPartie={setDetailsPartie} />}
 
             <Notifications liste={listeNotifications} setListe={setListeNotifications} />
         </main>

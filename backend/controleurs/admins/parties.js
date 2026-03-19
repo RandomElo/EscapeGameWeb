@@ -146,3 +146,18 @@ export const lancer = gestionErreur(
     "controleurLancerPartie",
     "Erreur lors du lancement de la partie",
 );
+
+export const avorterPartie = gestionErreur(
+    async (req, res) => {
+        const partie = await req.Parties.findOne({ where: { statut: "enCours" } });
+        if (!partie) {
+            return res.status(400).json({
+                etat: false,
+                detail: "Requête incorrecte",
+            });
+        }
+        await req.Parties.update({ statut: "abandonnee" }, { where: { id: partie.id } });
+    },
+    "controleurAvorterPartie",
+    "Erreur lors de l'arrêt de la partie",
+);
