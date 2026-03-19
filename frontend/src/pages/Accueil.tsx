@@ -1,3 +1,4 @@
+import Chargement from "../composants/Chargement";
 import { useAuth } from "../contexts/AuthContext";
 
 export default function Accueil() {

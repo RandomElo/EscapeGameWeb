@@ -17,11 +17,17 @@
         animation: fadeIn 0.5s ease;
     }
 
-    .Modal h1 {
+    h1 {
         margin-top: 0;
         margin-bottom: 1rem;
     }
-
+    .boutonRetourArriere {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        cursor: pointer;
+        color: #888;
+    }
     .boutonFermer {
         position: absolute;
         top: 10px;

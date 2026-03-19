@@ -48,53 +48,13 @@ export default function SuiviPartie() {
             }
             recuperation();
         }
-    }, [estAuth, navigation]);
-    // const [listeNotifications, setListeNotifications] = useState<{ niveau: "succes" | "warn" | "erreur"; titre: string; description: string }[]>([
-    //     { niveau: "succes", titre: "Test", description: "Licorne" },
-    //     { niveau: "warn", titre: "Test 2", description: "Licorne" },
-    //     { niveau: "erreur", titre: "Test 2", description: "Licorne" },
-    //     { niveau: "erreur", titre: "Test 2", description: "Licorne" },
-    //     { niveau: "erreur", titre: "Test 2", description: "Licorne" },
-    // ]);
+    }, [estAuth, navigation, partiesEnCours]);
 
-    // const missions = [
-    //     {
-    //         id: 1,
-    //         title: "Mission 1",
-    //         description: "Diapo + RFID",
-    //         tags: ["Terminée"],
-    //         etat: "Terminee",
-    //     },
-    //     {
-    //         id: 2,
-    //         title: "Mission 2",
-    //         description: "Morse",
-    //         tags: ["En cours", "1 coordonnée sur 4"],
-    //         etat: "EnCours",
-    //     },
-    //     {
-    //         id: 3,
-    //         title: "Mission 3",
-    //         description: "Map-monde + RFID",
-    //         tags: ["En attente"],
-    //         etat: "EnAttente",
-    //     },
-    //     {
-    //         id: 4,
-    //         title: "Mission 4",
-    //         description: "Cablage mot",
-    //         tags: ["Final"],
-    //         etat: "EnAttente",
-    //     },
-    // ];
     return (
         <main className="SuiviPartie">
-            {partiesEnCours ? <GestionPartie missions={missions} detailsPartie={detailsPartie} setListeNotifications={setListeNotifications} setPartiesEnCours={setPartiesEnCours}/> : <CreationPartie lancementPartie={lancementPartie} setLancementPartie={setLancementPartie} scenarios={scenarios} equipes={equipes} erreur={erreur} setErreur={setErreur} setPartiesEnCours={setPartiesEnCours} setDetailsPartie={setDetailsPartie} />}
+            {partiesEnCours ? <GestionPartie missions={missions} detailsPartie={detailsPartie} setListeNotifications={setListeNotifications} setPartiesEnCours={setPartiesEnCours} /> : <CreationPartie lancementPartie={lancementPartie} setLancementPartie={setLancementPartie} scenarios={scenarios} equipes={equipes} erreur={erreur} setErreur={setErreur} setPartiesEnCours={setPartiesEnCours} setDetailsPartie={setDetailsPartie} />}
 
             <Notifications liste={listeNotifications} setListe={setListeNotifications} />
         </main>
     );
-}
-{
-    /* <GestionPartie missions={missions} detailsParties={detailsParties} setListeNotifications={setListeNotifications} /> */
 }

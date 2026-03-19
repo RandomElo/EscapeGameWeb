@@ -6,13 +6,34 @@ import ChampDonneesForm from "../composants/ChampDonneesForm";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { EllipsisVertical, GripVertical, Play, Square, Trash2 } from "lucide-react";
+import RetourArriere from "../composants/RetourArriere";
+import Chargement from "../composants/Chargement";
+import GererAudiosScenario from "../composants/interfaceAdministration/GererAudiosScenario";
+
+export type RecuperationDonnees = {
+    scenarios: { id: number; nom: string; description: string }[];
+    missions: {
+        id: number;
+        nom: string;
+        description: string;
+        ipAdresse: string;
+        configuration: string;
+        scenarios: {
+            scenarioId: number;
+            ordre: number;
+            configuration: string;
+        }[];
+    }[];
+    messagesAudio: { nomFichier: string; detail: string }[];
+};
+
 export default function InterfaceAdministration() {
     const { estAuth } = useAuth();
     const navigation = useNavigate();
     const requete = useRequete();
 
     const [afficherModal, setAfficherModal] = useState<boolean>(false);
-    const [contenuModal, setContenuModal] = useState<"ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio" | "menuScenario" | "gererMissionsScenario" | "modifierNomScenario" | "modifierDescriptionScenario" | "supprimerScenario" | "menuMission" | "modifierAdresseIPMission" | "supprimerMission" | "modifierNomMission" | "modifierDescriptionMission" | "modifierConfigurationMission" | "ajouterMissionScenario" | "genererAudioQuiz">();
+    const [contenuModal, setContenuModal] = useState<"ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio" | "menuScenario" | "gererMissionsScenario" | "modifierNomScenario" | "modifierDescriptionScenario" | "supprimerScenario" | "menuMission" | "modifierAdresseIPMission" | "supprimerMission" | "modifierNomMission" | "modifierDescriptionMission" | "modifierConfigurationMission" | "ajouterMissionScenario" | "genererAudioQuiz" | "gererAudiosScenario">();
     const [detailsModal, setDetailsModal] = useState<string>();
     const [details2Modal, setDetails2Modal] = useState<number[]>([]);
     const [erreur, setErreur] = useState<string>();
@@ -22,14 +43,14 @@ export default function InterfaceAdministration() {
     const [messagesAudio, setMessagesAudio] = useState<{ nomFichier: string; detail: string }[]>();
 
     const [idAudioEnCours, setIdAudioEnCours] = useState<number | null>(null);
-
+    const [chargementRequete, setChargementRequete] = useState<boolean>(false);
     // useState pour la gestion des missions pour un scénario
     const [missionsTriees, setMissionsTriees] = useState<any[]>([]);
     const [modificationMissionsScenarios, setModificationmissionsScenarios] = useState<boolean>(false);
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
-    async function recuperationDonnees(reponse) {
+    async function recuperationDonnees(reponse: RecuperationDonnees) {
         console.log(reponse);
         setScenarios(reponse.scenarios);
         setMissions(reponse.missions);
@@ -257,14 +278,19 @@ export default function InterfaceAdministration() {
                         <form
                             onSubmit={async (e) => {
                                 e.preventDefault();
+                                setChargementRequete(true);
+
                                 const nom = document.querySelector<HTMLInputElement>("#inputNom")!.value;
                                 const description = document.querySelector<HTMLInputElement>("#inputDescription")!.value;
                                 const ipAdresse = document.querySelector<HTMLInputElement>("#inputAdresseIp")!.value;
                                 const reponseInput = document.querySelector<HTMLInputElement>("#inputReponse")!.value;
 
                                 const reponse = await requete({ url: "/admins/missions/creation", methode: "POST", corps: { nom, description, ipAdresse, reponse: reponseInput } });
-                                console.log(reponse);
-                                recuperationDonnees(reponse);
+                                setTimeout(() => {
+                                    recuperationDonnees(reponse);
+                                    setChargementRequete(false);
+                                    setAfficherModal(false);
+                                }, 1000);
                             }}
                         >
                             <ChampDonneesForm id="inputNom" typeInput="text" placeholder="Mission 1" label="Nom :" focus={true} />
@@ -290,7 +316,7 @@ export default function InterfaceAdministration() {
                             {erreur && <p id="pErreur">{erreur}</p>}
 
                             <button type="submit" className="bouton">
-                                Ajouter
+                                {chargementRequete ? <Chargement variant="button" /> : "Ajouter"}
                             </button>
                         </form>
                     </div>
@@ -301,6 +327,8 @@ export default function InterfaceAdministration() {
                         <form
                             onSubmit={async (e) => {
                                 e.preventDefault();
+                                setChargementRequete(true);
+
                                 const texte = document.querySelector<HTMLInputElement>("#inputTexte")!.value;
 
                                 const missionId = document.querySelector<HTMLInputElement>("#selectMission")!.value;
@@ -308,7 +336,11 @@ export default function InterfaceAdministration() {
                                 const scenarioId = document.querySelector<HTMLInputElement>("#selectScenario")!.value;
 
                                 const reponse = await requete({ url: "/admins/audios/generation", methode: "POST", corps: { texte, missionId, scenarioId } });
-                                recuperationDonnees(reponse);
+                                setTimeout(() => {
+                                    recuperationDonnees(reponse);
+                                    setChargementRequete(false);
+                                    setAfficherModal(false);
+                                }, 1000);
                             }}
                         >
                             <ChampDonneesForm id="inputTexte" label="Texte à générer :" typeInput="textearea" focus={true} />
@@ -349,9 +381,15 @@ export default function InterfaceAdministration() {
                         <form
                             onSubmit={async (e) => {
                                 e.preventDefault();
+                                setChargementRequete(true);
+
                                 const reponse = await requete({ url: "/admins/audios/suppression", methode: "DELETE", corps: { nomFichier: detailsModal } });
 
-                                recuperationDonnees(reponse);
+                                setTimeout(() => {
+                                    recuperationDonnees(reponse);
+                                    setChargementRequete(false);
+                                    setAfficherModal(false);
+                                }, 1000);
                             }}
                         >
                             <p>Êtes-vous sur de vouloir supprimer l'audio ?</p>
@@ -372,11 +410,17 @@ export default function InterfaceAdministration() {
                         <form
                             onSubmit={async (e) => {
                                 e.preventDefault();
+                                setChargementRequete(true);
+
                                 const valeur = document.querySelector<HTMLInputElement>("#inputTexte")!.value;
                                 const type = document.querySelector<HTMLInputElement>("#selectScenario")!.value;
                                 console.log({ valeur, type });
-                                const reponse = await requete({ url: "/admins/audios/generation-quiz", methode: "POST", corps: { valeur, type } });
-                                console.log(reponse);
+                                await requete({ url: "/admins/audios/generation-quiz", methode: "POST", corps: { valeur, type } });
+                                setTimeout(() => {
+                                    setChargementRequete(false);
+                                    setAfficherModal(false);
+                                }, 1000);
+
                                 setAfficherModal(false);
                             }}
                         >
@@ -406,6 +450,9 @@ export default function InterfaceAdministration() {
                             <a className="bouton" onClick={() => setContenuModal("gererMissionsScenario")}>
                                 Gérer les missions
                             </a>
+                            <a className="bouton" onClick={() => setContenuModal("gererAudiosScenario")}>
+                                Gérer les audios
+                            </a>
                             <a className="bouton" onClick={() => setContenuModal("modifierNomScenario")}>
                                 Modifier le nom
                             </a>
@@ -424,11 +471,18 @@ export default function InterfaceAdministration() {
                         <form
                             onSubmit={async (e) => {
                                 e.preventDefault();
+                                setChargementRequete(true);
+
                                 const nom = document.querySelector<HTMLInputElement>("#inputNom")!.value;
                                 const description = document.querySelector<HTMLInputElement>("#inputDescription")!.value;
 
                                 const reponse = await requete({ url: "/admins/scenarios/creation", methode: "POST", corps: { nom, description } });
-                                recuperationDonnees(reponse);
+
+                                setTimeout(() => {
+                                    recuperationDonnees(reponse);
+                                    setChargementRequete(false);
+                                    setAfficherModal(false);
+                                }, 1000);
                             }}
                         >
                             <ChampDonneesForm id="inputNom" label="Nom :" typeInput="text" placeholder="Scénario alarme" focus={true} />
@@ -480,7 +534,9 @@ export default function InterfaceAdministration() {
                         };
 
                         return (
-                            <div id="divModallisteMissionScenario">
+                            <div id="divModalListeMissionScenario">
+                                <RetourArriere clique={() => setContenuModal("menuScenario")} />
+
                                 <h1>Les missions</h1>
 
                                 <div id="divListeMission">
@@ -524,6 +580,8 @@ export default function InterfaceAdministration() {
                                     <button
                                         className="bouton"
                                         onClick={async () => {
+                                            setChargementRequete(true);
+
                                             const donnees = missionsTriees.map((mission) => {
                                                 const scenario = mission.scenarios.find((s) => s.scenarioId === scenarioId);
 
@@ -535,12 +593,13 @@ export default function InterfaceAdministration() {
                                                 };
                                             });
 
-                                            console.log(donnees);
-
                                             const reponse = await requete({ url: `/admins/scenarios/${detailsModal}/modification-missions`, methode: "PATCH", corps: { donnees } });
 
-                                            console.log(reponse);
-                                            recuperationDonnees(reponse);
+                                            setTimeout(() => {
+                                                recuperationDonnees(reponse);
+                                                setChargementRequete(false);
+                                                setAfficherModal(false);
+                                            }, 1000);
                                         }}
                                     >
                                         Enregistrer les modifications
@@ -559,17 +618,23 @@ export default function InterfaceAdministration() {
                             </div>
                         );
                     })()}
+                {contenuModal == "gererAudiosScenario" && <GererAudiosScenario />}
 
                 {contenuModal == "ajouterMissionScenario" && (
-                    <div id="divModallisteMissionScenario">
+                    <div id="divModalAjouterMissionScenario">
                         <h1>Ajouter des mission au scénario</h1>
                         <form
                             onSubmit={async (e) => {
                                 e.preventDefault();
+                                setChargementRequete(true);
+
                                 const reponse = await requete({ url: `/admins/scenarios/${detailsModal}/ajout-mission`, methode: "POST", corps: { listeMissions: details2Modal } });
                                 console.log(reponse);
-                                recuperationDonnees(reponse);
-                                setContenuModal("gererMissionsScenario");
+                                setTimeout(() => {
+                                    recuperationDonnees(reponse);
+                                    setChargementRequete(false);
+                                    setContenuModal("gererMissionsScenario");
+                                }, 1000);
                             }}
                         >
                             <table>
@@ -618,10 +683,22 @@ export default function InterfaceAdministration() {
 
                 {(contenuModal == "modifierNomScenario" || contenuModal == "modifierNomMission") && (
                     <div id={contenuModal == "modifierNomScenario" ? "divModalModifierNomScenario" : "divModalModifierNomMission"}>
+                        <RetourArriere
+                            clique={() => {
+                                if (contenuModal == "modifierNomScenario") {
+                                    setContenuModal("menuScenario");
+                                } else {
+                                    setContenuModal("menuMission");
+                                }
+                            }}
+                        />
+
                         <h2>Modifier le nom {contenuModal == "modifierNomScenario" ? "du scénario" : "de la mission"}</h2>
                         <form
                             onSubmit={async (e) => {
                                 e.preventDefault();
+                                setChargementRequete(true);
+
                                 const nom = document.querySelector<HTMLInputElement>("#inputNom")!.value;
 
                                 const reponse = await requete({
@@ -630,7 +707,11 @@ export default function InterfaceAdministration() {
                                     corps: { nom },
                                 });
 
-                                recuperationDonnees(reponse);
+                                setTimeout(() => {
+                                    recuperationDonnees(reponse);
+                                    setChargementRequete(false);
+                                    setAfficherModal(false);
+                                }, 1000);
                             }}
                         >
                             <ChampDonneesForm id="inputNom" typeInput="text" value={contenuModal == "modifierNomScenario" ? scenarios?.filter((scenario) => scenario.id == Number(detailsModal))[0].nom : missions?.filter((scenario) => scenario.id == Number(detailsModal))[0].nom} focus={true} />
@@ -644,15 +725,31 @@ export default function InterfaceAdministration() {
 
                 {(contenuModal == "modifierDescriptionScenario" || contenuModal == "modifierDescriptionMission") && (
                     <div id={contenuModal == "modifierDescriptionScenario" ? "divModalModifierDescriptionScenario" : "divModalModifierDescriptionMission"}>
+                        <RetourArriere
+                            clique={() => {
+                                if (contenuModal == "modifierDescriptionScenario") {
+                                    setContenuModal("menuScenario");
+                                } else {
+                                    setContenuModal("menuMission");
+                                }
+                            }}
+                        />
+
                         <h2>Modifier la description {contenuModal == "modifierDescriptionScenario" ? "du scénario" : "de la mission"}</h2>
                         <form
                             onSubmit={async (e) => {
                                 e.preventDefault();
+                                setChargementRequete(true);
+
                                 const description = document.querySelector<HTMLInputElement>("#inputDescription")!.value;
 
                                 const reponse = await requete({ url: `/admins/${contenuModal == "modifierDescriptionScenario" ? "scenarios" : "missions"}/${detailsModal}/modification-description`, methode: "PATCH", corps: { description } });
 
-                                recuperationDonnees(reponse);
+                                setTimeout(() => {
+                                    recuperationDonnees(reponse);
+                                    setChargementRequete(false);
+                                    setAfficherModal(false);
+                                }, 1000);
 
                                 setAfficherModal(false);
                             }}
@@ -668,6 +765,15 @@ export default function InterfaceAdministration() {
 
                 {(contenuModal == "supprimerScenario" || contenuModal == "supprimerMission") && (
                     <div id={contenuModal == "supprimerScenario" ? "divModalSupprimerScenario" : "divModalSupprimerMission"}>
+                        <RetourArriere
+                            clique={() => {
+                                if (contenuModal == "supprimerScenario") {
+                                    setContenuModal("menuScenario");
+                                } else {
+                                    setContenuModal("menuMission");
+                                }
+                            }}
+                        />
                         <h2>Supprimer {contenuModal == "supprimerScenario" ? "le scénario" : "la mission"}</h2>
                         <form
                             onSubmit={async (e) => {
@@ -688,10 +794,14 @@ export default function InterfaceAdministration() {
                                 <button
                                     className="bouton boutonSupprimer"
                                     onClick={async () => {
-                                        const reponse = await requete({ url: `/admins/${contenuModal == "supprimerScenario" ? "scenarios" : "missions"}/${detailsModal}/suppression`, methode: "DELETE" });
-                                        recuperationDonnees(reponse);
+                                        setChargementRequete(true);
 
-                                        setAfficherModal(false);
+                                        const reponse = await requete({ url: `/admins/${contenuModal == "supprimerScenario" ? "scenarios" : "missions"}/${detailsModal}/suppression`, methode: "DELETE" });
+                                        setTimeout(() => {
+                                            recuperationDonnees(reponse);
+                                            setChargementRequete(false);
+                                            setAfficherModal(false);
+                                        }, 1000);
                                     }}
                                 >
                                     Confirmer
@@ -726,17 +836,23 @@ export default function InterfaceAdministration() {
                 )}
                 {contenuModal == "modifierConfigurationMission" && (
                     <div id="divModalmodifierConfigurationMission">
+                        <RetourArriere clique={() => setContenuModal("menuMission")} />
+
                         <h2>Modifier la configuration</h2>
                         <form
                             onSubmit={async (e) => {
                                 e.preventDefault();
+                                setChargementRequete(true);
+
                                 const configuration = document.querySelector<HTMLInputElement>("#inputConfiguration")!.value;
 
                                 const reponse = await requete({ url: `/admins/missions/${detailsModal}/modification-configuration`, methode: "PATCH", corps: { configuration } });
 
-                                recuperationDonnees(reponse);
-
-                                setAfficherModal(false);
+                                setTimeout(() => {
+                                    recuperationDonnees(reponse);
+                                    setChargementRequete(false);
+                                    setAfficherModal(false);
+                                }, 1000);
                             }}
                         >
                             <ChampDonneesForm id="inputConfiguration" typeInput="textearea" value={missions?.filter((scenario) => scenario.id == Number(detailsModal))[0].configuration} focus={true} />
@@ -749,11 +865,15 @@ export default function InterfaceAdministration() {
                 )}
                 {contenuModal == "modifierAdresseIPMission" && (
                     <div id="divModalmodifierAdresseIPMission">
+                        <RetourArriere clique={() => setContenuModal("menuMission")} />
+
                         <h2>Modifier adresse IP</h2>
 
                         <form
                             onSubmit={async (e) => {
                                 e.preventDefault();
+                                setChargementRequete(true);
+
                                 const adresseIp = document.querySelector<HTMLInputElement>("#inputAdresseIP")!.value;
 
                                 const reponse = await requete({
@@ -762,7 +882,11 @@ export default function InterfaceAdministration() {
                                     corps: { adresseIp },
                                 });
 
-                                recuperationDonnees(reponse);
+                                setTimeout(() => {
+                                    recuperationDonnees(reponse);
+                                    setChargementRequete(false);
+                                    setAfficherModal(false);
+                                }, 1000);
                             }}
                         >
                             <ChampDonneesForm id="inputAdresseIP" typeInput="text" value={missions?.filter((scenario) => scenario.id == Number(detailsModal))[0].ipAdresse} focus={true} />
@@ -773,7 +897,6 @@ export default function InterfaceAdministration() {
                         </form>
                     </div>
                 )}
-                {/* {contenuModal == "" && <div id="divModal"></div>} */}
             </Modal>
         </>
     );

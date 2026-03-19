@@ -157,6 +157,7 @@ export const avorterPartie = gestionErreur(
             });
         }
         await req.Parties.update({ statut: "abandonnee" }, { where: { id: partie.id } });
+        return res.json({ etat: true, detail: "ok" });
     },
     "controleurAvorterPartie",
     "Erreur lors de l'arrêt de la partie",

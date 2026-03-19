@@ -56,22 +56,21 @@ export default function GestionPartie({ missions, detailsPartie, setListeNotific
 
         return () => clearInterval(interval);
     }, []);
-
+    /*
     useEffect(() => {
-        // Connexion au broker MQTT via WebSocket
         const client = mqtt.connect(config.mqtt.host, {
             username: config.mqtt.username,
             password: config.mqtt.password,
-            clean: true, // connexion propre
-            connectTimeout: 4000, // timeout connexion
-            reconnectPeriod: 1000, // reconnexion auto si perdu
+            clean: true,
+            connectTimeout: 4000,
+            reconnectPeriod: 1000,
         });
 
         // Quand la connexion est établie
         client.on("connect", () => {
             setStatus("Connecté");
             console.log("MQTT connecté");
-
+            setListeNotifications((prev) => [...prev, { niveau: "succes", titre: "MQTT", description: "Connecté" }]);
             // S'abonner au topic principal
             client.subscribe(`${config.mqtt.baseTopic}/#`, (err) => {
                 if (err) console.error("Erreur d'abonnement :", err);
@@ -91,10 +90,14 @@ export default function GestionPartie({ missions, detailsPartie, setListeNotific
         });
 
         client.on("reconnect", () => {
+            setListeNotifications((prev) => [...prev, { niveau: "warn", titre: "MQTT", description: "Reconnexion en cours" }]);
+
             setStatus("Reconnexion...");
         });
 
         client.on("close", () => {
+            setListeNotifications((prev) => [...prev, { niveau: "warn", titre: "MQTT", description: "Déconnecté" }]);
+
             setStatus("Déconnecté");
         });
 
@@ -103,7 +106,7 @@ export default function GestionPartie({ missions, detailsPartie, setListeNotific
             client.end(true);
         };
     }, []);
-
+*/
     const envoyerMessage = (topicSuffix, message) => {
         const client = mqtt.connect(config.mqtt.host, {
             username: config.mqtt.username,
@@ -209,8 +212,9 @@ export default function GestionPartie({ missions, detailsPartie, setListeNotific
                             <button
                                 className="primaryButton boutonTerminerPartie"
                                 onClick={async () => {
-                                    await requete({ url: "/admins/parties/avorter-partie", methode: "PATCH" });
-                                    setPartiesEnCours(false)
+                                    const reponse2 = await requete({ url: "/admins/parties/avorter-partie", methode: "PATCH" });
+                                    console.log(reponse2);
+                                    setPartiesEnCours(false);
                                 }}
                             >
                                 <Power />

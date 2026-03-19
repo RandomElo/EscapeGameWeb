@@ -62,7 +62,7 @@ export const generation = gestionErreur(
         const cheminDossierAudio = path.join(cheminTTS, "audios");
         const nomFichier = `${Date.now()}.wav`;
         try {
-            await generationTTS(cheminDossierAudio, nomFichier, texte);
+            // await generationTTS(cheminDossierAudio, nomFichier, texte);
 
             await req.MessagesAudio.create({
                 detail: texte,
@@ -108,16 +108,17 @@ export const suppression = gestionErreur(
         const cheminDossierAudio = path.join(cheminTTS, "audios");
         const cheminFichier = path.join(cheminDossierAudio, nomFichier);
 
-        fs.unlink(cheminFichier, async (err) => {
-            if (err) {
-                if (err.code === "ENOENT") {
-                    return res.status(404).json({ etat: false, detail: "Fichier introuvable" });
-                }
-                return next(err);
+        try {
+            await fs.unlink(cheminFichier);
+        } catch (err) {
+            if (err.code !== "ENOENT") {
+                console.error("Erreur suppression fichier :", err);
+                return res.status(500).json({ etat: false, erreur: "Erreur suppression fichier" });
             }
-            await req.MessagesAudio.destroy({ where: { id: fichier.id } });
-            return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
-        });
+        }
+
+        await req.MessagesAudio.destroy({ where: { id: fichier.id } });
+        return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
     },
     "controleurSuppressionAudio",
     "Erreur lors de la suppression de l'audio",
@@ -264,7 +265,7 @@ async function generationQuestion(entree, req) {
                 if (!element.question || !element.type || !element.reponse) {
                     throw new Error("Format question invalide");
                 }
-                console.log(element.question)
+                console.log(element.question);
                 const nomFichier = `${randomUUID()}.wav`;
 
                 await generationTTS(cheminDossier, nomFichier, element.question);
