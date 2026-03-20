@@ -21,6 +21,7 @@ const cheminDossierAudios = path.resolve(__dirname, "../../audios");
 const cheminTTS = path.resolve(__dirname, "../../tts");
 const cheminPiper = path.join(cheminTTS, "piper", "piper");
 const cheminModeleVoix = path.join(cheminTTS, "voices", "fr_FR-tom-medium", "fr_FR-tom-medium.onnx");
+const cheminModeleVoix2= path.join(cheminTTS, "voices", "fr_FR-siwis-medium", "fr_FR-siwis-medium.onnx");
 
 function generationTTS(cheminDossier, nomFichier, texte) {
     return new Promise((resolve, reject) => {
@@ -62,7 +63,7 @@ export const generation = gestionErreur(
         const cheminDossierAudio = path.join(cheminTTS, "audios");
         const nomFichier = `${Date.now()}.wav`;
         try {
-            // await generationTTS(cheminDossierAudio, nomFichier, texte);
+            await generationTTS(cheminDossierAudio, nomFichier, texte);
 
             await req.MessagesAudio.create({
                 detail: texte,
@@ -236,10 +237,10 @@ async function generationAudiosSimple(entree, type, req) {
 
                 await generationTTS(cheminDossier, nomFichier, element);
 
-                return req.QuizAudios.create({
+                return await req.QuizAudios.create({
                     type,
                     texte: element,
-                    cheminFichier: path.join(type, nomFichier),
+                    nomFichier: path.join(type, nomFichier),
                 });
             }),
         ),
@@ -270,7 +271,7 @@ async function generationQuestion(entree, req) {
 
                 await generationTTS(cheminDossier, nomFichier, element.question);
 
-                return req.QuizAudios.create({
+                return await req.QuizQuestions.create({
                     question: element.question,
                     type: element.type,
                     reponse: element.reponse,
@@ -315,6 +316,8 @@ export const generationQuiz = gestionErreur(
         }
         const succes = resultats.filter((r) => r.status === "fulfilled").map((r) => r.value);
         const erreurs = resultats.filter((r) => r.status === "rejected").map((r) => r.reason?.message);
+
+        console.log(erreurs);
 
         return res.json({
             etat: true,

@@ -33,6 +33,7 @@ export default function GererAudiosScenario({ idScenario, missions, recuperation
     return (
         <div id="divModalGererAudiosScenario">
             <h1>Gérer les audios</h1>
+            {missions.map((mission) => <p>{mission.nom}</p>)}
         </div>
     );
 }

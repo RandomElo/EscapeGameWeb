@@ -19,15 +19,25 @@ export default function (bdd) {
                 onDelete: "CASCADE",
                 onUpdate: "CASCADE",
             },
+            type: {
+                type: DataTypes.STRING(20),
+                allowNull: false,
+                validate: {
+                    isIn: [["mission", "audio"]],
+                },
+            },
             missionId: {
                 type: DataTypes.INTEGER,
-                allowNull: false,
+                allowNull: true,
                 references: {
                     model: "Missions",
                     key: "id",
                 },
                 onDelete: "CASCADE",
                 onUpdate: "CASCADE",
+            },
+            nomFichier: {
+                type: DataTypes.STRING(255),
             },
             ordre: {
                 type: DataTypes.INTEGER,
@@ -51,7 +61,7 @@ export default function (bdd) {
                     fields: ["scenarioId", "ordre"],
                 },
             ],
-        }
+        },
     );
     return MissionsScenario;
 }

@@ -289,7 +289,7 @@ export default function InterfaceAdministration() {
                                 setTimeout(() => {
                                     recuperationDonnees(reponse);
                                     setChargementRequete(false);
-                                    setAfficherModal(false);
+                                    // setAfficherModal(false);
                                 }, 1000);
                             }}
                         >
@@ -370,7 +370,7 @@ export default function InterfaceAdministration() {
                             </select>
 
                             <button type="submit" className="bouton">
-                                Envoyer
+                                {chargementRequete ? <Chargement variant="button" /> : "Envoyer"}
                             </button>
                         </form>
                     </div>
@@ -398,7 +398,7 @@ export default function InterfaceAdministration() {
                                     Annuler
                                 </button>
                                 <button type="submit" className="bouton supprimer">
-                                    Supprimer
+                                    {chargementRequete ? <Chargement variant="button" /> : "Supprimer"}
                                 </button>
                             </div>
                         </form>
@@ -437,7 +437,7 @@ export default function InterfaceAdministration() {
                                 <option value="questionsJSON">Questions JSON</option>
                             </select>
 
-                            <button className="bouton">Générer</button>
+                            <button className="bouton">{chargementRequete ? <Chargement variant="button" /> : "Générer"}</button>
                         </form>
                     </div>
                 )}
@@ -488,7 +488,7 @@ export default function InterfaceAdministration() {
                             <ChampDonneesForm id="inputNom" label="Nom :" typeInput="text" placeholder="Scénario alarme" focus={true} />
                             <ChampDonneesForm id="inputDescription" label="Description :" typeInput="textearea" />
                             <button type="submit" className="bouton">
-                                Ajouter
+                                {chargementRequete ? <Chargement variant="button" /> : "Ajouter"}
                             </button>
                         </form>
                     </div>
@@ -602,7 +602,7 @@ export default function InterfaceAdministration() {
                                             }, 1000);
                                         }}
                                     >
-                                        Enregistrer les modifications
+                                        {chargementRequete ? <Chargement variant="button" /> : "Enregistrer les modifications"}
                                     </button>
                                 )}
 
@@ -618,7 +618,7 @@ export default function InterfaceAdministration() {
                             </div>
                         );
                     })()}
-                {contenuModal == "gererAudiosScenario" && <GererAudiosScenario />}
+                {contenuModal == "gererAudiosScenario" && detailsModal && missions&& <GererAudiosScenario idScenario={detailsModal} missions={missions} recuperationDonnees={recuperationDonnees} />}
 
                 {contenuModal == "ajouterMissionScenario" && (
                     <div id="divModalAjouterMissionScenario">
@@ -670,7 +670,7 @@ export default function InterfaceAdministration() {
                             </table>
                             {details2Modal.length > 0 ? (
                                 <button type="submit" className="bouton">
-                                    Ajouter {details2Modal.length} mission{details2Modal.length > 1 && "s"}
+                                    {chargementRequete ? <Chargement variant="button" /> : `Ajouter ${details2Modal.length} mission${details2Modal.length > 1 && "s"}`}
                                 </button>
                             ) : (
                                 <button className="bouton" disabled>
@@ -717,7 +717,7 @@ export default function InterfaceAdministration() {
                             <ChampDonneesForm id="inputNom" typeInput="text" value={contenuModal == "modifierNomScenario" ? scenarios?.filter((scenario) => scenario.id == Number(detailsModal))[0].nom : missions?.filter((scenario) => scenario.id == Number(detailsModal))[0].nom} focus={true} />
 
                             <button type="submit" className="bouton">
-                                Modifier
+                                {chargementRequete ? <Chargement variant="button" /> : "Modifier"}
                             </button>
                         </form>
                     </div>
@@ -757,7 +757,7 @@ export default function InterfaceAdministration() {
                             <ChampDonneesForm id="inputDescription" typeInput="textearea" label={"Nouvelle description :"} value={contenuModal == "modifierDescriptionScenario" ? scenarios?.filter((scenario) => scenario.id == Number(detailsModal))[0].description : missions?.filter((scenario) => scenario.id == Number(detailsModal))[0].description} focus={true} />
 
                             <button type="submit" className="bouton">
-                                Modifier
+                                {chargementRequete ? <Chargement variant="button" /> : "Modifier"}
                             </button>
                         </form>
                     </div>
@@ -804,7 +804,7 @@ export default function InterfaceAdministration() {
                                         }, 1000);
                                     }}
                                 >
-                                    Confirmer
+                                    {chargementRequete ? <Chargement variant="button" /> : "Confirmer"}
                                 </button>
                             </div>
                         </form>
@@ -858,7 +858,7 @@ export default function InterfaceAdministration() {
                             <ChampDonneesForm id="inputConfiguration" typeInput="textearea" value={missions?.filter((scenario) => scenario.id == Number(detailsModal))[0].configuration} focus={true} />
 
                             <button type="submit" className="bouton">
-                                Modifier
+                                {chargementRequete ? <Chargement variant="button" /> : "Modifier"}
                             </button>
                         </form>
                     </div>
@@ -892,7 +892,7 @@ export default function InterfaceAdministration() {
                             <ChampDonneesForm id="inputAdresseIP" typeInput="text" value={missions?.filter((scenario) => scenario.id == Number(detailsModal))[0].ipAdresse} focus={true} />
 
                             <button type="submit" className="bouton">
-                                Modifier
+                                {chargementRequete ? <Chargement variant="button" /> : "Modifier"}
                             </button>
                         </form>
                     </div>

@@ -6,7 +6,7 @@ echo "Initialisation Text To Speech"
 echo "Création de l'architecture"
 mkdir -p tts
 cd tts
-mkdir -p audios voices/fr_FR-tom-medium
+mkdir -p audios voices/fr_FR-tom-medium voices/fr_FR-siwis-medium
 
 echo "Téléchargement et décompression de Piper"
 wget -q https://github.com/rhasspy/piper/releases/download/2023.11.14-2/piper_linux_x86_64.tar.gz
@@ -17,3 +17,7 @@ echo "Téléchargement de la voix"
 cd voices/fr_FR-tom-medium
 wget -q https://huggingface.co/rhasspy/piper-voices/resolve/main/fr/fr_FR/tom/medium/fr_FR-tom-medium.onnx
 wget -q https://huggingface.co/rhasspy/piper-voices/resolve/main/fr/fr_FR/tom/medium/fr_FR-tom-medium.onnx.json
+
+cd ../fr_FR-siwis-medium
+wget -q https://huggingface.co/rhasspy/piper-voices/resolve/main/fr/fr_FR/siwis/medium/fr_FR-siwis-medium.onnx
+wget -q https://huggingface.co/rhasspy/piper-voices/resolve/main/fr/fr_FR/siwis/medium/fr_FR-siwis-medium.onnx.json

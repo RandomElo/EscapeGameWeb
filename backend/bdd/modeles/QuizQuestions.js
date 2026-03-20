@@ -25,7 +25,7 @@ export default function (bdd) {
                 type: DataTypes.STRING(255),
                 allowNull: false,
             },
-            audioId: {
+            nomFichier: {
                 type: DataTypes.STRING(255),
                 allowNull: false,
             },
