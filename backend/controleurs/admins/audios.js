@@ -63,7 +63,7 @@ export const generation = gestionErreur(
         const cheminDossierAudio = path.join(cheminTTS, "audios");
         const nomFichier = `${Date.now()}.wav`;
         try {
-            await generationTTS(cheminDossierAudio, nomFichier, texte);
+            // await generationTTS(cheminDossierAudio, nomFichier, texte);
 
             await req.MessagesAudio.create({
                 detail: texte,

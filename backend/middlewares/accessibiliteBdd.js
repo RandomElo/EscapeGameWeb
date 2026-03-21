@@ -1,7 +1,7 @@
 // Middleware qui permet de rendre facilement accessible l'ORM Sequelize
 export const accessibiliteBdd = (bdd) => {
     return (req, res, next) => {
-        const { sequelize, Utilisateurs, Equipes, MembresEquipe, Parties, Scenarios, Missions, EtatsMissions, MissionsScenario, Scores, MessagesAudio, JournauxEvenements, Tokens, DemandesAdhesion, MorseAudios, QuizAudios, QuizQuestions } = bdd;
+        const { sequelize, Utilisateurs, Equipes, MembresEquipe, Parties, Scenarios, Missions, EtatsMissions, DerouleScenario, Scores, MessagesAudio, JournauxEvenements, Tokens, DemandesAdhesion, MorseAudios, QuizAudios, QuizQuestions } = bdd;
 
         req.Sequelize = sequelize;
         req.Utilisateurs = Utilisateurs;
@@ -11,7 +11,7 @@ export const accessibiliteBdd = (bdd) => {
         req.Scenarios = Scenarios;
         req.Missions = Missions;
         req.EtatsMissions = EtatsMissions;
-        req.MissionsScenario = MissionsScenario;
+        req.DerouleScenario = DerouleScenario;
         req.Scores = Scores;
         req.MessagesAudio = MessagesAudio;
         req.JournauxEvenements = JournauxEvenements;

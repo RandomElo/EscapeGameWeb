@@ -1,8 +1,8 @@
 import { DataTypes } from "sequelize";
 
 export default function (bdd) {
-    const MissionsScenario = bdd.define(
-        "MissionsScenario",
+    const DerouleScenario = bdd.define(
+        "DerouleScenario",
         {
             id: {
                 type: DataTypes.INTEGER,
@@ -36,8 +36,15 @@ export default function (bdd) {
                 onDelete: "CASCADE",
                 onUpdate: "CASCADE",
             },
-            nomFichier: {
-                type: DataTypes.STRING(255),
+            audioId: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                references: {
+                    model: "MessagesAudio",
+                    key: "id",
+                },
+                onDelete: "CASCADE",
+                onUpdate: "CASCADE",
             },
             ordre: {
                 type: DataTypes.INTEGER,
@@ -50,7 +57,7 @@ export default function (bdd) {
             },
         },
         {
-            tableName: "MissionsScenario",
+            tableName: "DerouleScenario",
             indexes: [
                 {
                     unique: true,
@@ -63,5 +70,5 @@ export default function (bdd) {
             ],
         },
     );
-    return MissionsScenario;
+    return DerouleScenario;
 }

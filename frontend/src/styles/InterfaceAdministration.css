@@ -245,8 +245,24 @@
 #divModalListeMissionScenario {
     text-align: center;
     margin-top: 10px;
-
+    table tr {
+        height: 52px;
+    }
+    #divAjouterElement {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+    }
+    .tdSupprimer {
+        cursor: pointer;
+    }
+    .tdSupprimer:hover svg {
+        stroke: red;
+    }
 }
-#divModalGererAudiosScenario{
 
+#divModalAjouterAudioScenario {
+    table {
+        margin-bottom: 10px;
+    }
 }

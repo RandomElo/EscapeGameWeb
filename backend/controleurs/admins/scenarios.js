@@ -1,19 +1,28 @@
+import { Sequelize } from "sequelize";
 import gestionErreur from "../../middlewares/gestionErreur.js";
 
 export async function ConfigurationInterfaceAdmin(req) {
+    // Missions
     const missionsListe = await req.Missions.findAll({
         raw: true,
         attributes: ["id", "nom", "description", "ipAdresse", "configuration"],
     });
 
-    const missionsScenarios = await req.MissionsScenario.findAll({
+    // Deroulé
+    const derouleScenario = await req.DerouleScenario.findAll({
         raw: true,
-        attributes: ["missionId", "scenarioId", "ordre", "configuration"],
+        attributes: ["scenarioId", "missionId", "audioId", "ordre", "configuration", "type"],
+        order: [
+            ["scenarioId", "ASC"],
+            ["ordre", "ASC"],
+        ],
     });
 
     const mapMissionScenarios = {};
 
-    missionsScenarios.forEach((rel) => {
+    derouleScenario.forEach((rel) => {
+        if (rel.type != "mission") return;
+
         if (!mapMissionScenarios[rel.missionId]) {
             mapMissionScenarios[rel.missionId] = [];
         }
@@ -31,12 +40,54 @@ export async function ConfigurationInterfaceAdmin(req) {
         scenarios: mapMissionScenarios[mission.id] || [],
     }));
 
-    // scenario
+    // Scénarios
     const scenariosListe = await req.Scenarios.findAll({ raw: true });
-    // message audio
-    const messagesAudio = await req.MessagesAudio.findAll({ raw: true });
-    // adresse ip
-    return { missions, scenarios: scenariosListe, messagesAudio };
+
+    // Audios
+    const messagesAudio = await req.MessagesAudio.findAll({
+        raw: true,
+        attributes: ["id", "detail"],
+    });
+
+    // Permet de les parcourirs plus rapidement
+    const mapMissions = Object.fromEntries(missionsListe.map((m) => [m.id, m]));
+    const mapAudios = Object.fromEntries(messagesAudio.map((a) => [a.id, a]));
+
+    const mapScenarioDeroule = {};
+
+    for (const etape of derouleScenario) {
+        if (!mapScenarioDeroule[etape.scenarioId]) {
+            mapScenarioDeroule[etape.scenarioId] = [];
+        }
+
+        const derouleEnrichi = {
+            ordre: etape.ordre,
+            type: etape.type,
+            configuration: etape.configuration,
+        };
+
+        if (etape.type === "mission") {
+            derouleEnrichi.mission = mapMissions[etape.missionId] || null;
+        }
+
+        if (etape.type === "audio") {
+            derouleEnrichi.fichierId = mapAudios[etape.audioId]?.id || null;
+            derouleEnrichi.fichierDetail = mapAudios[etape.audioId]?.detail || null;
+        }
+
+        mapScenarioDeroule[etape.scenarioId].push(derouleEnrichi);
+    }
+
+    const scenarios = scenariosListe.map((scenario) => ({
+        ...scenario,
+        deroule: mapScenarioDeroule[scenario.id] || [],
+    }));
+
+    return {
+        missions,
+        scenarios,
+        messagesAudio,
+    };
 }
 
 export const configurationComplete = gestionErreur(
@@ -128,53 +179,96 @@ export const modificationDescription = gestionErreur(
 
 export const modificationEnTete = gestionErreur((req, res) => {}, "controleurModificationEnTete", "Erreur lors de la modification de l'en-tête du scénario");
 
-export const ajoutMission = gestionErreur(
-    async (req, res) => {
-        const { id } = req.params;
-        const { listeMissions } = req.body;
-        if (!listeMissions || !id) {
+async function ajoutElement(type, req, res) {
+    const { id } = req.params;
+    const { liste } = req.body;
+
+    if (!liste || !id) {
+        return res.status(400).json({
+            etat: false,
+            detail: "Requête incorrecte",
+        });
+    }
+
+    const scenario = await req.Scenarios.findByPk(id);
+    if (!scenario) {
+        return res.status(404).json({
+            etat: false,
+            detail: "Ressource inexistante",
+        });
+    }
+
+    const listeEtapes = await req.DerouleScenario.findAll({
+        where: { scenarioId: id },
+        raw: true,
+    });
+
+    const elementsIds = new Set(listeEtapes.filter((m) => m.type === type).map((m) => m[`${type}Id`]));
+
+    const ordresUtilises = new Set(listeEtapes.map((m) => m.ordre));
+
+    for (let index = 0; index < liste.length; index++) {
+        const elementId = liste[index];
+
+        if (elementsIds.has(elementId)) {
             return res.status(400).json({
                 etat: false,
-                detail: "Requête incorrecte",
+                detail: `${type} déjà présent (${elementId})`,
             });
         }
 
-        const scenario = await req.Scenarios.findByPk(id);
-        if (!scenario) {
+        let ordre = index;
+
+        while (ordresUtilises.has(ordre)) {
+            ordre++;
+        }
+
+        const element = await req[`${type == "mission" ? "Missions" : "MessagesAudio"}`].findByPk(elementId);
+        if (!element) {
             return res.status(404).json({
                 etat: false,
                 detail: "Ressource inexistante",
             });
         }
 
-        const listeMissionsEnregistrees = await req.MissionsScenario.findAll({ where: { scenarioId: id }, raw: true });
+        await req.DerouleScenario.create({
+            scenarioId: id,
+            [`${type}Id`]: elementId,
+            ordre,
+            type,
+        });
 
-        for (let idTableau in listeMissions) {
-            const missionId = listeMissions[idTableau];
+        ordresUtilises.add(ordre);
+        elementsIds.add(elementId);
+    }
 
-            if (listeMissionsEnregistrees.filter((item) => item.missionId == missionId).length > 0) {
-                return res.status(400).json({
-                    etat: false,
-                    detail: "Requête incorrecte",
-                });
-            } else {
-                await req.MissionsScenario.create({
-                    scenarioId: id,
-                    missionId,
-                    ordre: idTableau,
-                });
-            }
-        }
-        return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
+    return res.json({
+        etat: true,
+        detail: await ConfigurationInterfaceAdmin(req),
+    });
+}
+
+export const ajoutMission = gestionErreur(
+    async (req, res) => {
+        await ajoutElement("mission", req, res);
     },
     "controleurAjoutMissionScenario",
-    "Erreur lors de l'ajout de mission dans la scénario",
+    "Erreur lors de l'ajout de mission dans le scénario",
 );
 
-export const modificationMissions = gestionErreur(
+export const ajoutAudio = gestionErreur(
+    async (req, res) => {
+        await ajoutElement("audio", req, res);
+    },
+    "controleurAjoutAudioScenario",
+    "Erreur lors de l'ajout de l'audio au scénario",
+);
+
+export const modificationDeroule = gestionErreur(
     async (req, res) => {
         const { id } = req.params;
         const { donnees } = req.body;
+
         if (!donnees || !id) {
             return res.status(400).json({
                 etat: false,
@@ -190,27 +284,38 @@ export const modificationMissions = gestionErreur(
             });
         }
 
-        const listeMissionsEnregistrees = await req.MissionsScenario.findAll({ where: { scenarioId: id }, raw: true });
+        const derouleScenario = await req.DerouleScenario.findAll({ where: { scenarioId: id }, raw: true });
 
-        for (let idTableau in donnees) {
-            const missionId = donnees[idTableau];
-
-            if (listeMissionsEnregistrees.filter((item) => item.missionId == missionId).length > 0) {
+        for (const ordre in donnees) {
+            const element = donnees[ordre];
+            if (derouleScenario.filter((etape) => (etape.type == "mission" ? etape.missionId == element.id : etape.audioId == element.id)).length == 0) {
                 return res.status(400).json({
                     etat: false,
                     detail: "Requête incorrecte",
                 });
             }
+
+            const elementBdd = await req[`${element.type == "mission" ? "Missions" : "MessagesAudio"}`].findByPk(element.id);
+            if (!elementBdd) {
+                return res.status(404).json({
+                    etat: false,
+                    detail: "Ressource inexistante",
+                });
+            }
         }
 
-        for (const mission of donnees) {
-            await req.MissionsScenario.update({ ordre: mission.ordre, configuration: JSON.parse(mission.configuration) }, { where: { missionId: mission.missionId, scenarioId: mission.scenarioId } });
+        // Pour éviter les conflits (si deux étape on le meme ordre je décale avant)
+        await req.DerouleScenario.update({ ordre: Sequelize.literal("ordre + 1000") }, { where: { scenarioId: id } });
+
+        for (const ordre in donnees) {
+            const element = donnees[ordre];
+            await req.DerouleScenario.update({ ordre }, { where: { scenarioId: id, [`${element.type == "mission" ? "missionId" : "audioId"}`]: element.id } });
         }
 
         return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
     },
-    "controleurModificationMissionScenario",
-    "Erreur lors de la modification des mission dans la scénario",
+    "controleurModificationDerouleScenario",
+    "Erreur lors de la modification du déroulé du scénario",
 );
 
 export const suppressionMission = gestionErreur((req, res) => {}, "controleurSuppressionMissionScenario", "Erreur lors de la suppression de mission dans la scénario");

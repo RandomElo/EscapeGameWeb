@@ -16,7 +16,7 @@ import Parties from "./modeles/Parties.js";
 import Scenarios from "./modeles/Scenarios.js";
 import Missions from "./modeles/Missions.js";
 import EtatsMissions from "./modeles/EtatsMissions.js";
-import MissionsScenario from "./modeles/MissionsScenario.js";
+import DerouleScenario from "./modeles/DerouleScenario.js";
 import Scores from "./modeles/Scores.js";
 import MessagesAudio from "./modeles/MessagesAudio.js";
 import JournauxEvenements from "./modeles/JournauxEvenements.js";
@@ -48,7 +48,7 @@ const bdd = {
     Scenarios: Scenarios(sequelize),
     Missions: Missions(sequelize),
     EtatsMissions: EtatsMissions(sequelize),
-    MissionsScenario: MissionsScenario(sequelize),
+    DerouleScenario: DerouleScenario(sequelize),
     Scores: Scores(sequelize),
     MessagesAudio: MessagesAudio(sequelize),
     JournauxEvenements: JournauxEvenements(sequelize),

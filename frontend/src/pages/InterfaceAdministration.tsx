@@ -8,24 +8,55 @@ import { useAuth } from "../contexts/AuthContext";
 import { EllipsisVertical, GripVertical, Play, Square, Trash2 } from "lucide-react";
 import RetourArriere from "../composants/RetourArriere";
 import Chargement from "../composants/Chargement";
-import GererAudiosScenario from "../composants/interfaceAdministration/GererAudiosScenario";
+import GererDerouler from "../composants/interfaceAdministration/GererDerouler";
+
+type Mission = {
+    id: number;
+    nom: string;
+    description: string;
+    ipAdresse: string;
+    configuration: string;
+};
+
+type MissionScenario = {
+    scenarioId: number;
+    ordre: number;
+    configuration: string;
+};
+
+type MissionComplete = Mission & {
+    scenarios: MissionScenario[];
+};
+
+export type DerouleItem = {
+    ordre: number;
+    type: "mission" | "audio";
+    configuration: string;
+    mission?: Mission;
+    fichierId?: number;
+    fichierDetail?: string;
+};
+
+type Scenario = {
+    id: number;
+    nom: string;
+    description: string;
+    deroule: DerouleItem[];
+};
+
+type MessageAudio = {
+    id: number;
+    nomFichier: string;
+    detail: string;
+};
 
 export type RecuperationDonnees = {
-    scenarios: { id: number; nom: string; description: string }[];
-    missions: {
-        id: number;
-        nom: string;
-        description: string;
-        ipAdresse: string;
-        configuration: string;
-        scenarios: {
-            scenarioId: number;
-            ordre: number;
-            configuration: string;
-        }[];
-    }[];
-    messagesAudio: { nomFichier: string; detail: string }[];
+    missions: MissionComplete[];
+    scenarios: Scenario[];
+    messagesAudio: MessageAudio[];
 };
+
+export type ContenuModal = "ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio" | "menuScenario" | "gererDeroulerScenario" | "modifierNomScenario" | "modifierDescriptionScenario" | "supprimerScenario" | "menuMission" | "modifierAdresseIPMission" | "supprimerMission" | "modifierNomMission" | "modifierDescriptionMission" | "modifierConfigurationMission" | "ajouterMissionScenario" | "genererAudioQuiz" | "ajouterAudioScenario";
 
 export default function InterfaceAdministration() {
     const { estAuth } = useAuth();
@@ -33,20 +64,21 @@ export default function InterfaceAdministration() {
     const requete = useRequete();
 
     const [afficherModal, setAfficherModal] = useState<boolean>(false);
-    const [contenuModal, setContenuModal] = useState<"ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio" | "menuScenario" | "gererMissionsScenario" | "modifierNomScenario" | "modifierDescriptionScenario" | "supprimerScenario" | "menuMission" | "modifierAdresseIPMission" | "supprimerMission" | "modifierNomMission" | "modifierDescriptionMission" | "modifierConfigurationMission" | "ajouterMissionScenario" | "genererAudioQuiz" | "gererAudiosScenario">();
+    const [contenuModal, setContenuModal] = useState<ContenuModal>();
     const [detailsModal, setDetailsModal] = useState<string>();
     const [details2Modal, setDetails2Modal] = useState<number[]>([]);
+
     const [erreur, setErreur] = useState<string>();
-    const [missions, setMissions] = useState<{ id: number; nom: string; description: string; ipAdresse: string; configuration: string; scenarios: { scenarioId: number; ordre: number; configuration: string }[] }[]>();
-    const [scenarios, setScenarios] = useState<{ id: number; nom: string; description: string }[]>();
+
+    const [missions, setMissions] = useState<MissionComplete[]>();
+
+    const [scenarios, setScenarios] = useState<Scenario[]>([]);
+
     const [tableauIP, setTableauIP] = useState<string[]>();
-    const [messagesAudio, setMessagesAudio] = useState<{ nomFichier: string; detail: string }[]>();
+    const [messagesAudio, setMessagesAudio] = useState<MessageAudio[]>();
 
     const [idAudioEnCours, setIdAudioEnCours] = useState<number | null>(null);
     const [chargementRequete, setChargementRequete] = useState<boolean>(false);
-    // useState pour la gestion des missions pour un scénario
-    const [missionsTriees, setMissionsTriees] = useState<any[]>([]);
-    const [modificationMissionsScenarios, setModificationmissionsScenarios] = useState<boolean>(false);
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -55,7 +87,7 @@ export default function InterfaceAdministration() {
         setScenarios(reponse.scenarios);
         setMissions(reponse.missions);
         setMessagesAudio(reponse.messagesAudio);
-        // recuperation ip missions
+
         const tableauIP: string[] = [];
         for (const mission of reponse.missions) {
             if (!tableauIP.includes(mission.ipAdresse)) {
@@ -77,23 +109,6 @@ export default function InterfaceAdministration() {
             recuperation();
         }
     }, [estAuth, navigation]);
-
-    useEffect(() => {
-        if (contenuModal === "gererMissionsScenario") {
-            const scenarioId = Number(detailsModal);
-
-            const liste =
-                missions
-                    ?.filter((mission) => mission.scenarios.some((scenario) => scenario.scenarioId === scenarioId))
-                    .sort((a, b) => {
-                        const ordreA = a.scenarios.find((s) => s.scenarioId === scenarioId)?.ordre ?? 0;
-                        const ordreB = b.scenarios.find((s) => s.scenarioId === scenarioId)?.ordre ?? 0;
-                        return ordreA - ordreB;
-                    }) || [];
-
-            setMissionsTriees(liste);
-        }
-    }, [contenuModal, detailsModal, missions]);
 
     return (
         <>
@@ -447,11 +462,8 @@ export default function InterfaceAdministration() {
                     <div id="divModalMenuScenario">
                         <h2>Menu scénario</h2>
                         <div id="divOptions">
-                            <a className="bouton" onClick={() => setContenuModal("gererMissionsScenario")}>
-                                Gérer les missions
-                            </a>
-                            <a className="bouton" onClick={() => setContenuModal("gererAudiosScenario")}>
-                                Gérer les audios
+                            <a className="bouton" onClick={() => setContenuModal("gererDeroulerScenario")}>
+                                Gérer le dérouler (missions + audios)
                             </a>
                             <a className="bouton" onClick={() => setContenuModal("modifierNomScenario")}>
                                 Modifier le nom
@@ -493,132 +505,6 @@ export default function InterfaceAdministration() {
                         </form>
                     </div>
                 )}
-                {contenuModal == "gererMissionsScenario" &&
-                    (() => {
-                        const scenarioId = Number(detailsModal);
-
-                        const changerOrdre = (missionId: number, nouvelOrdre: number, scenarioId: number) => {
-                            setMissionsTriees((prev) => {
-                                const liste = [...prev];
-
-                                const indexActuel = liste.findIndex((m) => m.id === missionId);
-                                if (indexActuel === -1) return prev;
-
-                                const [mission] = liste.splice(indexActuel, 1);
-                                liste.splice(nouvelOrdre, 0, mission);
-
-                                const nouvelleListe = liste.map((mission, i) => ({
-                                    ...mission,
-                                    scenarios: mission.scenarios.map((s) => (s.scenarioId === scenarioId ? { ...s, ordre: i } : s)),
-                                }));
-
-                                setModificationmissionsScenarios(true);
-
-                                return nouvelleListe;
-                            });
-                        };
-
-                        const modifierConfiguration = (missionId: number, scenarioId: number, valeur: string) => {
-                            setMissionsTriees((prev) =>
-                                prev.map((mission) => {
-                                    if (mission.id !== missionId) return mission;
-
-                                    return {
-                                        ...mission,
-                                        scenarios: mission.scenarios.map((s) => (s.scenarioId === scenarioId ? { ...s, configuration: valeur } : s)),
-                                    };
-                                }),
-                            );
-
-                            setModificationmissionsScenarios(true);
-                        };
-
-                        return (
-                            <div id="divModalListeMissionScenario">
-                                <RetourArriere clique={() => setContenuModal("menuScenario")} />
-
-                                <h1>Les missions</h1>
-
-                                <div id="divListeMission">
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th>Ordre</th>
-                                                <th>Nom</th>
-                                                <th>Configuration</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {missionsTriees?.map((mission) => {
-                                                const scenario = mission.scenarios.find((s) => s.scenarioId === scenarioId);
-
-                                                return (
-                                                    <tr key={mission.id}>
-                                                        <td>
-                                                            <select value={scenario?.ordre} onChange={(e) => changerOrdre(mission.id, Number(e.target.value), scenarioId)}>
-                                                                {missionsTriees.map((_, index) => (
-                                                                    <option key={index} value={index}>
-                                                                        {index + 1}
-                                                                    </option>
-                                                                ))}
-                                                            </select>
-                                                        </td>
-
-                                                        <td>{mission.nom}</td>
-
-                                                        <td>
-                                                            <ChampDonneesForm typeInput="texteOnChange" id="inputConfiguration" value={scenario?.configuration} onChange={(valeur) => modifierConfiguration(mission.id, scenarioId, valeur)} />
-                                                        </td>
-                                                    </tr>
-                                                );
-                                            })}
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                                {modificationMissionsScenarios && (
-                                    <button
-                                        className="bouton"
-                                        onClick={async () => {
-                                            setChargementRequete(true);
-
-                                            const donnees = missionsTriees.map((mission) => {
-                                                const scenario = mission.scenarios.find((s) => s.scenarioId === scenarioId);
-
-                                                return {
-                                                    missionId: mission.id,
-                                                    scenarioId: scenarioId,
-                                                    ordre: scenario?.ordre ?? 0,
-                                                    configuration: scenario?.configuration ?? null,
-                                                };
-                                            });
-
-                                            const reponse = await requete({ url: `/admins/scenarios/${detailsModal}/modification-missions`, methode: "PATCH", corps: { donnees } });
-
-                                            setTimeout(() => {
-                                                recuperationDonnees(reponse);
-                                                setChargementRequete(false);
-                                                setAfficherModal(false);
-                                            }, 1000);
-                                        }}
-                                    >
-                                        {chargementRequete ? <Chargement variant="button" /> : "Enregistrer les modifications"}
-                                    </button>
-                                )}
-
-                                <button
-                                    className="bouton"
-                                    onClick={() => {
-                                        setDetails2Modal([]);
-                                        setContenuModal("ajouterMissionScenario");
-                                    }}
-                                >
-                                    Ajouter une mission
-                                </button>
-                            </div>
-                        );
-                    })()}
-                {contenuModal == "gererAudiosScenario" && detailsModal && missions&& <GererAudiosScenario idScenario={detailsModal} missions={missions} recuperationDonnees={recuperationDonnees} />}
 
                 {contenuModal == "ajouterMissionScenario" && (
                     <div id="divModalAjouterMissionScenario">
@@ -628,12 +514,12 @@ export default function InterfaceAdministration() {
                                 e.preventDefault();
                                 setChargementRequete(true);
 
-                                const reponse = await requete({ url: `/admins/scenarios/${detailsModal}/ajout-mission`, methode: "POST", corps: { listeMissions: details2Modal } });
+                                const reponse = await requete({ url: `/admins/scenarios/${detailsModal}/ajout-mission`, methode: "POST", corps: { liste: details2Modal } });
                                 console.log(reponse);
                                 setTimeout(() => {
                                     recuperationDonnees(reponse);
                                     setChargementRequete(false);
-                                    setContenuModal("gererMissionsScenario");
+                                    setContenuModal("gererDeroulerScenario");
                                 }, 1000);
                             }}
                         >
@@ -670,11 +556,77 @@ export default function InterfaceAdministration() {
                             </table>
                             {details2Modal.length > 0 ? (
                                 <button type="submit" className="bouton">
-                                    {chargementRequete ? <Chargement variant="button" /> : `Ajouter ${details2Modal.length} mission${details2Modal.length > 1 && "s"}`}
+                                    {chargementRequete ? <Chargement variant="button" /> : `Ajouter ${details2Modal.length} mission${details2Modal.length > 1 ? "s" : ""}`}
                                 </button>
                             ) : (
                                 <button className="bouton" disabled>
                                     Ajouter 0 mission
+                                </button>
+                            )}
+                        </form>
+                    </div>
+                )}
+
+                {contenuModal == "ajouterAudioScenario" && (
+                    <div id="divModalAjouterAudioScenario">
+                        <RetourArriere clique={() => setContenuModal("gererDeroulerScenario")} />
+
+                        <h1>Ajouter des audios au scénario</h1>
+                        {/* {scenarios
+                            ?.filter((scenario) => scenario.id == Number(detailsModal))[0]
+                            .deroule.filter((item) => item.type == "mission")
+                            .map((item) => (
+                                <p>{item.ordre}</p>
+                            ))} */}
+
+                        <form
+                            onSubmit={async (e) => {
+                                e.preventDefault();
+                                setChargementRequete(true);
+
+                                const reponse = await requete({ url: `/admins/scenarios/${detailsModal}/ajout-audio`, methode: "POST", corps: { liste: details2Modal } });
+                                console.log(reponse);
+                                setTimeout(() => {
+                                    recuperationDonnees(reponse);
+                                    setChargementRequete(false);
+                                    setContenuModal("gererDeroulerScenario");
+                                }, 1000);
+                            }}
+                        >
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Ajouter</th>
+                                        <th>Détail</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {messagesAudio?.map((audio, key) => (
+                                        <tr key={key}>
+                                            <td>
+                                                <input
+                                                    type="checkbox"
+                                                    onChange={() => {
+                                                        if (!details2Modal.includes(audio.id)) {
+                                                            setDetails2Modal((prev) => [...prev, audio.id]);
+                                                        } else {
+                                                            setDetails2Modal(details2Modal.filter((id) => id !== audio.id));
+                                                        }
+                                                    }}
+                                                />
+                                            </td>
+                                            <td>{audio.detail}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                            {details2Modal.length > 0 ? (
+                                <button type="submit" className="bouton">
+                                    {chargementRequete ? <Chargement variant="button" /> : `Ajouter ${details2Modal.length} audio${details2Modal.length > 1 ? "s" : ""}`}
+                                </button>
+                            ) : (
+                                <button className="bouton" disabled>
+                                    Ajouter 0 audio
                                 </button>
                             )}
                         </form>
@@ -898,6 +850,12 @@ export default function InterfaceAdministration() {
                     </div>
                 )}
             </Modal>
+
+            {contenuModal == "gererDeroulerScenario" && detailsModal && missions && (
+                <Modal estOuvert={afficherModal} fermeture={() => setAfficherModal(false)} taille={500}>
+                    <GererDerouler scenario={scenarios.filter((scenario) => scenario.id == Number(detailsModal))[0]} setContenuModal={setContenuModal} setDetails2Modal={setDetails2Modal} setAfficherModal={setAfficherModal} recuperationDonnees={recuperationDonnees} />
+                </Modal>
+            )}
         </>
     );
 }

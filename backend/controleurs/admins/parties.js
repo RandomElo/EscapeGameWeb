@@ -1,10 +1,11 @@
 import gestionErreur from "../../middlewares/gestionErreur.js";
+
 async function recuperationDetailsPartie(partie, req) {
     if (!partie?.equipeId || !partie?.scenarioId) {
         throw new Error("Données partie invalides");
     }
 
-    const [equipe, membres, scenario, missionsScenario] = await Promise.all([
+    const [equipe, membres, scenario, derouleScenario] = await Promise.all([
         req.Equipes.findOne({
             where: { id: partie.equipeId },
             attributes: ["nom"],
@@ -18,14 +19,14 @@ async function recuperationDetailsPartie(partie, req) {
             attributes: ["nom"],
             raw: true,
         }),
-        req.MissionsScenario.findAll({
+        req.DerouleScenario.findAll({
             where: { scenarioId: partie.scenarioId },
             attributes: ["missionId"],
             raw: true,
         }),
     ]);
 
-    const missionIds = missionsScenario.map((m) => m.missionId);
+    const missionIds = derouleScenario.map((m) => m.missionId);
 
     const missions = await req.Missions.findAll({
         where: { id: missionIds },
