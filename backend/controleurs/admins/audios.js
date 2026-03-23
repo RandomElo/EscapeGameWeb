@@ -21,7 +21,7 @@ const cheminDossierAudios = path.resolve(__dirname, "../../audios");
 const cheminTTS = path.resolve(__dirname, "../../tts");
 const cheminPiper = path.join(cheminTTS, "piper", "piper");
 // const cheminModeleVoix = path.join(cheminTTS, "voices", "fr_FR-tom-medium", "fr_FR-tom-medium.onnx");
-const cheminModeleVoix= path.join(cheminTTS, "voices", "fr_FR-siwis-medium", "fr_FR-siwis-medium.onnx");
+const cheminModeleVoix = path.join(cheminTTS, "voices", "fr_FR-siwis-medium", "fr_FR-siwis-medium.onnx");
 
 function generationTTS(cheminDossier, nomFichier, texte) {
     return new Promise((resolve, reject) => {
@@ -63,7 +63,9 @@ export const generation = gestionErreur(
         const cheminDossierAudio = path.join(cheminTTS, "audios");
         const nomFichier = `${Date.now()}.wav`;
         try {
-            await generationTTS(cheminDossierAudio, nomFichier, texte);
+            if (process.env.CHAINE_JWT_COOKIE == "reel") {
+                await generationTTS(cheminDossierAudio, nomFichier, texte);
+            }
 
             await req.MessagesAudio.create({
                 detail: texte,

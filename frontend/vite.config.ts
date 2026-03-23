@@ -13,7 +13,7 @@ export default defineConfig(({ mode }) => {
                 "/admins": {
                     target: env.VITE_API_URL_BACKEND,
                     changeOrigin: true,
-                    secure: false,
+                    secure: false,  
                 },
                 "/utilisateurs": {
                     target: env.VITE_API_URL_BACKEND,

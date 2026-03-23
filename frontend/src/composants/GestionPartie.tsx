@@ -36,6 +36,7 @@ function formatDureeDepuis(dateDebut: string, now: number): string {
 }
 
 export default function GestionPartie({ deroule, detailsPartie, setListeNotifications, setPartiesEnCours }: Props) {
+    const type = import.meta.env.TYPE_ENV;
     const [now, setNow] = useState(Date.now());
     const [messages, setMessages] = useState([]);
     const [status, setStatus] = useState("Déconnecté");
@@ -54,11 +55,12 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
         const interval = setInterval(() => {
             setNow(Date.now());
         }, 60000);
-
         return () => clearInterval(interval);
     }, []);
 
     useEffect(() => {
+        if (type !== "reel") return;
+
         const client = mqtt.connect(config.mqtt.host, {
             username: config.mqtt.username,
             password: config.mqtt.password,
@@ -67,21 +69,21 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
             reconnectPeriod: 1000,
         });
 
-        // Quand la connexion est établie
         client.on("connect", () => {
             setStatus("Connecté");
             console.log("MQTT connecté");
+
             setListeNotifications((prev) => [...prev, { niveau: "succes", titre: "MQTT", description: "Connecté" }]);
-            // S'abonner au topic principal
+
             client.subscribe(`${config.mqtt.baseTopic}/#`, (err) => {
                 if (err) console.error("Erreur d'abonnement :", err);
             });
         });
 
-        // Quand un message est reçu
         client.on("message", (topic, payload) => {
             const msg = payload.toString();
             console.log("Message reçu :", topic, msg);
+
             setMessages((prev) => [...prev, { topic, msg }]);
         });
 
@@ -102,11 +104,12 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
             setStatus("Déconnecté");
         });
 
-        // Cleanup à la fermeture du composant
+        // ✅ cleanup CORRECT
         return () => {
+            console.log("MQTT cleanup");
             client.end(true);
         };
-    }, []);
+    }, [type]);
 
     const envoyerMessage = (topicSuffix, message) => {
         const client = mqtt.connect(config.mqtt.host, {

@@ -54,6 +54,7 @@ CHAINE_JWT_CONFIG_2FA=
 MAIL_UTILISATEUR=
 MAIL_MDP=
 AUDIO_SECRET=
+TYPE_ENV= #fictif ou reel
 
 ```
 
@@ -65,6 +66,8 @@ Port `5252`
 DOTENV_CONFIG_QUIET=true
 VITE_API_URL_BACKEND=http://ipBackend:8100
 VITE_PORT_APPLICATION=5252
+TYPE_ENV= #fictif ou reel
+
 ```
 
 frontend$ npm install --save-dev @types/react @types/react-dom

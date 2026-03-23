@@ -60,6 +60,7 @@ async function recuperationDetailsPartie(partie, req) {
                 const mission = missionsMap.get(step.missionId);
 
                 return {
+                    type:"mission",
                     ordre: step.ordre,
                     nom: mission?.nom || null,
                     description: mission?.description || null,
@@ -72,6 +73,7 @@ async function recuperationDetailsPartie(partie, req) {
                 const audio = audiosMap.get(step.audioId);
 
                 return {
+                    type:"audio",
                     ordre: step.ordre,
                     nom: audio?.detail || null,
                 };

@@ -50,7 +50,7 @@ export default function SuiviPartie() {
                     setScenarios(reponse.details.scenarios);
                     setPartiesEnCours(false);
                 } else {
-                    setDetailsPartie(reponse.detailsPartie);
+                    setDetailsPartie(reponse.details.detailsPartie);
                     setDeroule(reponse.details.derouleScenario);
                     setPartiesEnCours(true);
                 }
@@ -61,7 +61,7 @@ export default function SuiviPartie() {
 
     return (
         <main className="SuiviPartie">
-            {partiesEnCours ? <GestionPartie deroule={deroule} detailsPartie={detailsPartie} setListeNotifications={setListeNotifications} setPartiesEnCours={setPartiesEnCours} /> : <CreationPartie lancementPartie={lancementPartie} setLancementPartie={setLancementPartie} scenarios={scenarios} equipes={equipes} erreur={erreur} setErreur={setErreur} setPartiesEnCours={setPartiesEnCours} setDetailsPartie={setDetailsPartie} />}
+            {partiesEnCours && deroule ? <GestionPartie deroule={deroule} detailsPartie={detailsPartie} setListeNotifications={setListeNotifications} setPartiesEnCours={setPartiesEnCours} /> : <CreationPartie lancementPartie={lancementPartie} setLancementPartie={setLancementPartie} scenarios={scenarios} equipes={equipes} erreur={erreur} setErreur={setErreur} setPartiesEnCours={setPartiesEnCours} setDetailsPartie={setDetailsPartie} />}
 
             <Notifications liste={listeNotifications} setListe={setListeNotifications} />
         </main>
