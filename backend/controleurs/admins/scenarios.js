@@ -46,7 +46,7 @@ export async function ConfigurationInterfaceAdmin(req) {
     // Audios
     const messagesAudio = await req.MessagesAudio.findAll({
         raw: true,
-        attributes: ["id", "detail"],
+        attributes: ["id", "detail", "nomFichier"],
     });
 
     // Permet de les parcourirs plus rapidement
@@ -73,8 +73,8 @@ export async function ConfigurationInterfaceAdmin(req) {
         if (etape.type === "audio") {
             derouleEnrichi.fichierId = mapAudios[etape.audioId]?.id || null;
             derouleEnrichi.fichierDetail = mapAudios[etape.audioId]?.detail || null;
+            derouleEnrichi.fichierNom = mapAudios[etape.audioId]?.nomFichier || null;
         }
-
         mapScenarioDeroule[etape.scenarioId].push(derouleEnrichi);
     }
 

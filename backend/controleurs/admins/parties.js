@@ -1,4 +1,5 @@
 import gestionErreur from "../../middlewares/gestionErreur.js";
+import { startGame } from "../../mqtt/gameManager.js";
 
 async function recuperationDetailsPartie(partie, req) {
     if (!partie?.equipeId || !partie?.scenarioId) {
@@ -21,31 +22,77 @@ async function recuperationDetailsPartie(partie, req) {
         }),
         req.DerouleScenario.findAll({
             where: { scenarioId: partie.scenarioId },
-            attributes: ["missionId"],
+            attributes: ["id", "type", "missionId", "audioId", "ordre", "configuration"],
+            order: [["ordre", "ASC"]],
             raw: true,
         }),
     ]);
 
-    const missionIds = derouleScenario.map((m) => m.missionId);
+    // Extraction des IDs
+    const missionIds = derouleScenario.filter((d) => d.type === "mission" && d.missionId).map((d) => d.missionId);
 
-    const missions = await req.Missions.findAll({
-        where: { id: missionIds },
-        attributes: ["id", "nom", "description"],
-        raw: true,
-    });
-    const missionsAvecTags = missions.map((m) => ({
-        ...m,
-        tags: [],
-    }));
+    const audioIds = derouleScenario.filter((d) => d.type === "audio" && d.audioId).map((d) => d.audioId);
+
+    // Chargement des données associées
+    const [missions, audios] = await Promise.all([
+        req.Missions.findAll({
+            where: { id: missionIds },
+            attributes: ["id", "nom", "description"],
+            raw: true,
+        }),
+        req.MessagesAudio.findAll({
+            where: { id: audioIds },
+            raw: true,
+        }),
+    ]);
+
+    // Indexation pour accès rapide O(1)
+    const missionsMap = new Map(missions.map((m) => [m.id, m]));
+    const audiosMap = new Map(audios.map((a) => [a.id, a]));
+
+    // Enrichissement du déroulé
+    const derouleScenarioEnrichi = derouleScenario
+        .map((step) => {
+            // Parse configuration si nécessaire
+            const configuration = typeof step.configuration === "string" ? JSON.parse(step.configuration) : step.configuration;
+
+            if (step.type === "mission") {
+                const mission = missionsMap.get(step.missionId);
+
+                return {
+                    ordre: step.ordre,
+                    nom: mission?.nom || null,
+                    description: mission?.description || null,
+                    configuration,
+                    tags: [],
+                };
+            }
+
+            if (step.type === "audio") {
+                const audio = audiosMap.get(step.audioId);
+
+                return {
+                    ordre: step.ordre,
+                    nom: audio?.detail || null,
+                };
+            }
+
+            return null;
+        })
+        .filter(Boolean);
+
     return {
-        equipeNom: equipe?.nom || null,
-        nbrMembres: membres,
-        scenarioNom: scenario?.nom || null,
-        nbrMissions: missions.length,
-        missions: missionsAvecTags,
-        dateDebut: partie.dateDebut,
+        derouleScenario: derouleScenarioEnrichi,
+        detailsPartie: {
+            equipeNom: equipe?.nom || null,
+            nbrMembres: membres,
+            scenarioNom: scenario?.nom || null,
+            nbrEtapes: derouleScenarioEnrichi.length,
+            dateDebut: partie.dateDebut,
+        },
     };
 }
+
 export const partieEnCours = gestionErreur(
     async (req, res) => {
         const partie = await req.Parties.findOne({ where: { statut: "enCours" } });
@@ -56,8 +103,6 @@ export const partieEnCours = gestionErreur(
             const scenarios = await req.Scenarios.findAll();
 
             return res.json({ etat: true, detail: { partieEnCours: false, details: { equipes, scenarios } } });
-
-            // je doit récupérer les scénarios et les equipes
         }
     },
     "controleurPartiesEnCours",
@@ -141,7 +186,7 @@ export const lancer = gestionErreur(
         });
 
         console.log("JE DOIT ENVOYER UN MESSAGE EN MQTT");
-
+        await startGame(scenario);
         return res.json({ etat: true, detail: { partieLancer: true, details: await recuperationDetailsPartie(await req.Parties.findOne({ where: { statut: "enCours" } }), req) } });
     },
     "controleurLancerPartie",

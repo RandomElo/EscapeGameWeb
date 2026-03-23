@@ -20,8 +20,8 @@ const cheminDossierAudios = path.resolve(__dirname, "../../audios");
 // Chemin modele TTS
 const cheminTTS = path.resolve(__dirname, "../../tts");
 const cheminPiper = path.join(cheminTTS, "piper", "piper");
-const cheminModeleVoix = path.join(cheminTTS, "voices", "fr_FR-tom-medium", "fr_FR-tom-medium.onnx");
-const cheminModeleVoix2= path.join(cheminTTS, "voices", "fr_FR-siwis-medium", "fr_FR-siwis-medium.onnx");
+// const cheminModeleVoix = path.join(cheminTTS, "voices", "fr_FR-tom-medium", "fr_FR-tom-medium.onnx");
+const cheminModeleVoix= path.join(cheminTTS, "voices", "fr_FR-siwis-medium", "fr_FR-siwis-medium.onnx");
 
 function generationTTS(cheminDossier, nomFichier, texte) {
     return new Promise((resolve, reject) => {
@@ -63,7 +63,7 @@ export const generation = gestionErreur(
         const cheminDossierAudio = path.join(cheminTTS, "audios");
         const nomFichier = `${Date.now()}.wav`;
         try {
-            // await generationTTS(cheminDossierAudio, nomFichier, texte);
+            await generationTTS(cheminDossierAudio, nomFichier, texte);
 
             await req.MessagesAudio.create({
                 detail: texte,
@@ -151,7 +151,8 @@ export const recuperationLien = gestionErreur(
                 detail: "Ressource introuvable",
             });
         }
-        const token = jwt.sign({ file: nomFichier }, process.env.SECRET_AUDIO, { expiresIn: "15s" });
+        const token = jwt.sign({ file: nomFichier }, process.env.SECRET_AUDIO, { expiresIn: "15m" });
+        // const token = jwt.sign({ file: nomFichier }, process.env.SECRET_AUDIO, { expiresIn: "15s" });
 
         res.json({
             etat: true,

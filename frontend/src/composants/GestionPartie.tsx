@@ -2,9 +2,10 @@ import { CircleAlert, Megaphone, Mic, Power, Tag, Volume2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import mqtt from "mqtt";
 import { useRequete } from "../fonctions/requete";
+import type { Deroule } from "../pages/SuiviPartie";
 
 type Props = {
-    missions: { id: number; nom: string; description: string; tags: string[]; etat: string }[];
+    deroule: Deroule;
 
     detailsPartie: { equipeNom: string; nbrMembres: number; scenarioNom: string; nbrMissions: number; dateDebut: string } | undefined;
     setListeNotifications: React.Dispatch<
@@ -34,7 +35,7 @@ function formatDureeDepuis(dateDebut: string, now: number): string {
     return `${heures}h${resteMinutes.toString().padStart(2, "0")}`;
 }
 
-export default function GestionPartie({ missions, detailsPartie, setListeNotifications, setPartiesEnCours }: Props) {
+export default function GestionPartie({ deroule, detailsPartie, setListeNotifications, setPartiesEnCours }: Props) {
     const [now, setNow] = useState(Date.now());
     const [messages, setMessages] = useState([]);
     const [status, setStatus] = useState("Déconnecté");
@@ -56,7 +57,7 @@ export default function GestionPartie({ missions, detailsPartie, setListeNotific
 
         return () => clearInterval(interval);
     }, []);
-    /*
+
     useEffect(() => {
         const client = mqtt.connect(config.mqtt.host, {
             username: config.mqtt.username,
@@ -106,7 +107,7 @@ export default function GestionPartie({ missions, detailsPartie, setListeNotific
             client.end(true);
         };
     }, []);
-*/
+
     const envoyerMessage = (topicSuffix, message) => {
         const client = mqtt.connect(config.mqtt.host, {
             username: config.mqtt.username,
@@ -135,38 +136,37 @@ export default function GestionPartie({ missions, detailsPartie, setListeNotific
             {/* CENTER PANEL */}
             <div className="scenarioCenter">
                 <div className="timeline">
-                    {missions.map((mission, index) => (
-                        <div key={mission.id} className="timelineBlock">
+                    {deroule.map((etape, index) => (
+                        <div key={index} className="timelineBlock">
                             {/* Mission card */}
-                            <div className={"card missionCard mission" + mission.etat}>
-                                <div className="missionHeader">
-                                    <h3>{mission.nom}</h3>
+                            {etape.type == "mission" && (
+                                <div className={"card missionCard mission" + etape.etat}>
+                                    <div className="missionHeader">
+                                        <h3>{etape.nom}</h3>
 
-                                    <div className="divBadges">
-                                        {(mission.tags.includes("Terminée") ? ["Terminée"] : mission.tags.includes("En attente") ? ["En attente"] : mission.tags.filter((tag) => tag !== "En cours")).map((tag) => (
-                                            <span className={`badge ${mission.etat == "EnCours" ? "enCours" : ""}`} key={tag}>
-                                                {mission.etat == "EnCours" ? <CircleAlert size={14} /> : <Tag size={14} />}
-
-                                                {tag}
+                                        <div className="divBadges">
+                                            {(etape.tags?.includes("Terminée") ? ["Terminée"] : etape.tags?.includes("EnAttente") ? ["EnAttente"] : (etape.tags?.filter((tag: string) => tag !== "EnCours") ?? [])).map((tag: string) => (
+                                                <span className={`badge ${etape.etat === "EnCours" ? "enCours" : ""}`} key={tag}>
+                                                    {etape.etat === "EnCours" ? <CircleAlert size={14} /> : <Tag size={14} />}
+                                                    {tag}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="missionSecondeLigne">
+                                        <p>{etape.description}</p>
+                                        {etape.etat == "EnCours" && (
+                                            <span className="aideAudio">
+                                                <Megaphone size={18} className="primaryButton" />
                                             </span>
-                                        ))}
+                                        )}
                                     </div>
                                 </div>
-                                <div className="missionSecondeLigne">
-                                    <p>{mission.description}</p>
-                                    {mission.etat == "EnCours" && (
-                                        <span className="aideAudio">
-                                            <Megaphone size={18} className="primaryButton" />
-                                        </span>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Audio card */}
-                            {index !== missions.length - 1 && (
+                            )}
+                            {etape.type == "audio" && (
                                 <div className="audioCard">
                                     <Volume2 size={20} />
-                                    <span>Audio indice</span>
+                                    <span>{etape.nom}</span>
                                 </div>
                             )}
                         </div>
