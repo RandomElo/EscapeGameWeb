@@ -52,20 +52,18 @@ async function recuperationDetailsPartie(partie, req) {
 
     // Enrichissement du déroulé
     const derouleScenarioEnrichi = derouleScenario
-        .map((step) => {
-            // Parse configuration si nécessaire
-            const configuration = typeof step.configuration === "string" ? JSON.parse(step.configuration) : step.configuration;
-
+        .map((step, index) => {
             if (step.type === "mission") {
                 const mission = missionsMap.get(step.missionId);
 
                 return {
-                    type:"mission",
+                    type: "mission",
                     ordre: step.ordre,
                     nom: mission?.nom || null,
                     description: mission?.description || null,
-                    configuration,
+                    configuration: step.configuration,
                     tags: [],
+                    etat: index == 0 || (index == 1 && derouleScenario[0].type == "audio") ? "EnCours" : "EnAttente",
                 };
             }
 
@@ -73,9 +71,10 @@ async function recuperationDetailsPartie(partie, req) {
                 const audio = audiosMap.get(step.audioId);
 
                 return {
-                    type:"audio",
+                    type: "audio",
                     ordre: step.ordre,
                     nom: audio?.detail || null,
+                    etat: index == 0 ? "Terminée" : "EnAttente",
                 };
             }
 

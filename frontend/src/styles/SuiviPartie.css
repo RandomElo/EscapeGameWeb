@@ -169,6 +169,16 @@
                             background: #0284c7;
                         }
                     }
+                    #divSkipMission {
+                        position: absolute;
+                        inset: 0;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        background: rgba(0, 0, 0, 0.138);
+                        border-radius: inherit;
+                        z-index: 10;
+                    }
                 }
 
                 .missionEnCours {
@@ -198,7 +208,7 @@
                     }
                 }
 
-                .missionCard.missionTerminee .missioEnAttente {
+                .missionCard.missionTerminee .missionCard.missionEnAttente {
                     opacity: 0.85;
                 }
 

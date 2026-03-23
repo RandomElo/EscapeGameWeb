@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import mqtt from "mqtt";
 import { useRequete } from "../fonctions/requete";
 import type { Deroule } from "../pages/SuiviPartie";
+import GestionTags from "./gestionPartie/GestionTags";
 
 type Props = {
     deroule: Deroule;
@@ -40,6 +41,8 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
     const [now, setNow] = useState(Date.now());
     const [messages, setMessages] = useState([]);
     const [status, setStatus] = useState("Déconnecté");
+    const [missionEnCours, setMissionEnCours] = useState<number>();
+    const [missionSuivante, setMissionSuivante] = useState<number>();
     const requete = useRequete();
 
     const config = {
@@ -57,6 +60,14 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
         }, 60000);
         return () => clearInterval(interval);
     }, []);
+
+    useEffect(() => {
+        const ordreMissionEnCours = deroule.filter((etape) => etape.etat == "EnCours")[0].ordre;
+        const missionSuivante = deroule.filter((etape) => etape.ordre > ordreMissionEnCours && etape.type == "mission")[0].ordre;
+
+        setMissionEnCours(ordreMissionEnCours);
+        setMissionSuivante(missionSuivante);
+    }, [deroule]);
 
     useEffect(() => {
         if (type !== "reel") return;
@@ -146,15 +157,7 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
                                 <div className={"card missionCard mission" + etape.etat}>
                                     <div className="missionHeader">
                                         <h3>{etape.nom}</h3>
-
-                                        <div className="divBadges">
-                                            {(etape.tags?.includes("Terminée") ? ["Terminée"] : etape.tags?.includes("EnAttente") ? ["EnAttente"] : (etape.tags?.filter((tag: string) => tag !== "EnCours") ?? [])).map((tag: string) => (
-                                                <span className={`badge ${etape.etat === "EnCours" ? "enCours" : ""}`} key={tag}>
-                                                    {etape.etat === "EnCours" ? <CircleAlert size={14} /> : <Tag size={14} />}
-                                                    {tag}
-                                                </span>
-                                            ))}
-                                        </div>
+                                        <GestionTags tags={etape.tags} etat={etape.etat} />
                                     </div>
                                     <div className="missionSecondeLigne">
                                         <p>{etape.description}</p>
@@ -164,6 +167,11 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
                                             </span>
                                         )}
                                     </div>
+                                    {etape.ordre == missionSuivante && (
+                                        <div id="divSkipMission">
+                                            <button className="primaryButton">Passer à cette mission</button>
+                                        </div>
+                                    )}
                                 </div>
                             )}
                             {etape.type == "audio" && (

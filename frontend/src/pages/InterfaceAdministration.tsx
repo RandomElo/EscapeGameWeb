@@ -56,7 +56,7 @@ export type RecuperationDonnees = {
     messagesAudio: MessageAudio[];
 };
 
-export type ContenuModal = "ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio" | "menuScenario" | "gererDeroulerScenario" | "modifierNomScenario" | "modifierDescriptionScenario" | "supprimerScenario" | "menuMission" | "modifierAdresseIPMission" | "supprimerMission" | "modifierNomMission" | "modifierDescriptionMission" | "modifierConfigurationMission" | "ajouterMissionScenario" | "genererAudioQuiz" | "ajouterAudioScenario";
+export type ContenuModal = "ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio" | "menuScenario" | "gererDeroulerScenario" | "modifierNomScenario" | "modifierDescriptionScenario" | "supprimerScenario" | "menuMission" | "modifierAdresseIPMission" | "supprimerMission" | "modifierNomMission" | "modifierDescriptionMission" | "modifierConfigurationMission" | "ajouterMissionScenario" | "genererAudioQuiz" | "ajouterAudioScenario" | "ajouterAudiosAideScenario";
 
 export default function InterfaceAdministration() {
     const { estAuth } = useAuth();
@@ -465,6 +465,9 @@ export default function InterfaceAdministration() {
                             <a className="bouton" onClick={() => setContenuModal("gererDeroulerScenario")}>
                                 Gérer le dérouler (missions + audios)
                             </a>
+                            <a className="bouton" onClick={() => setContenuModal("ajouterAudiosAideScenario")}>
+                                Ajouter des audios d'aide
+                            </a>
                             <a className="bouton" onClick={() => setContenuModal("modifierNomScenario")}>
                                 Modifier le nom
                             </a>
@@ -572,12 +575,6 @@ export default function InterfaceAdministration() {
                         <RetourArriere clique={() => setContenuModal("gererDeroulerScenario")} />
 
                         <h1>Ajouter des audios au scénario</h1>
-                        {/* {scenarios
-                            ?.filter((scenario) => scenario.id == Number(detailsModal))[0]
-                            .deroule.filter((item) => item.type == "mission")
-                            .map((item) => (
-                                <p>{item.ordre}</p>
-                            ))} */}
 
                         <form
                             onSubmit={async (e) => {
@@ -629,6 +626,51 @@ export default function InterfaceAdministration() {
                                     Ajouter 0 audio
                                 </button>
                             )}
+                        </form>
+                    </div>
+                )}
+
+                {contenuModal == "ajouterAudiosAideScenario" && (
+                    <div id="divModalAjouterAudiosAideScenario">
+                        <RetourArriere clique={() => setContenuModal("menuMission")} />
+                        <h1>Générer des audios d'aide</h1>
+                        <form
+                            onSubmit={async (e) => {
+                                e.preventDefault();
+                                setChargementRequete(true);
+
+                                // console.log()
+                                const texteAudios = document.querySelector<HTMLInputElement>("#inputTexte")!.value;
+                                const missionId = document.querySelector<HTMLInputElement>("#selectMission")!.value;
+                                console.log(texteAudios);
+                                console.log(missionId);
+
+                                // lancer la requete
+
+                                setTimeout(() => {
+                                    // recuperationDonnees(reponse);
+                                    setChargementRequete(false);
+                                    // setContenuModal("gererDeroulerScenario");
+                                }, 1000);
+                            }}
+                        >
+                            <ChampDonneesForm id="inputTexte" typeInput="textearea" label="Audios :" placeholder={"Audio d'aide n°1\nAudio d'aide n°2\nAudio d'aide n°3"} />
+                            <select id="selectMission" required>
+                                <option value="" selected disabled>
+                                    --- Sélectionnez une mission ---
+                                </option>
+                                {scenarios
+                                    .filter((scenario) => scenario.id == Number(detailsModal))[0]
+                                    .deroule.filter((etape) => etape.type == "mission")
+                                    .map((element, key) => (
+                                        <option value={element.mission?.id} key={key}>
+                                            {element.mission?.nom} - {element.mission?.description}
+                                        </option>
+                                    ))}
+                            </select>
+                            <button type="submit" className="bouton">
+                                {chargementRequete ? <Chargement variant="button" /> : "Générer"}
+                            </button>
                         </form>
                     </div>
                 )}
