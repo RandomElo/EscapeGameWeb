@@ -132,15 +132,10 @@ async function playCurrentStep() {
         logger.info(`Lecture audio ${step.audioId}`);
 
         client.publish(
-            `escape/audio/play`,
+            `escape/speaker/play`,
             JSON.stringify({
                 audioId: step.audioId
             })
         );
-
-        // auto next (optionnel)
-        setTimeout(() => {
-            skipMission();
-        }, 3000); // ajustable
     }
 }

@@ -25,6 +25,7 @@ import DemandesAdhesion from "./modeles/DemandesAdhesion.js";
 import MorseAudios from "./modeles/MorseAudios.js";
 import QuizAudios from "./modeles/QuizAudios.js";
 import QuizQuestions from "./modeles/QuizQuestions.js";
+import AideAudios from "./modeles/AideAudios.js";
 const cheminBDD = "./bdd/bdd.sqlite";
 
 // Initialisation de l'ORM
@@ -57,6 +58,7 @@ const bdd = {
     MorseAudios: MorseAudios(sequelize),
     QuizAudios: QuizAudios(sequelize),
     QuizQuestions: QuizQuestions(sequelize),
+    AideAudios: AideAudios(sequelize),
 };
 
 // Initialisation de la bdd

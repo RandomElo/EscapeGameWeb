@@ -275,14 +275,10 @@
         align-items: center;
         text-align: left;
 
-        #divinputTexte {
-            margin-bottom: 10px;
-            height: 100px;
-            textarea {
-                height: 81px;
-                resize: none;
-            }
+        #selectMission {
+            margin-top: 10px;
         }
+
         button[type="submit"] {
             margin-top: 10px;
         }

@@ -465,6 +465,7 @@ export default function InterfaceAdministration() {
                             <a className="bouton" onClick={() => setContenuModal("gererDeroulerScenario")}>
                                 Gérer le dérouler (missions + audios)
                             </a>
+                            <a className="bouton" onClick={() => }></a>
                             <a className="bouton" onClick={() => setContenuModal("ajouterAudiosAideScenario")}>
                                 Ajouter des audios d'aide
                             </a>
@@ -632,29 +633,46 @@ export default function InterfaceAdministration() {
 
                 {contenuModal == "ajouterAudiosAideScenario" && (
                     <div id="divModalAjouterAudiosAideScenario">
-                        <RetourArriere clique={() => setContenuModal("menuMission")} />
-                        <h1>Générer des audios d'aide</h1>
+                        <RetourArriere clique={() => setContenuModal("menuScenario")} />
+                        <h1>Ajouter des audios d'aide</h1>
                         <form
                             onSubmit={async (e) => {
                                 e.preventDefault();
                                 setChargementRequete(true);
 
-                                // console.log()
-                                const texteAudios = document.querySelector<HTMLInputElement>("#inputTexte")!.value;
                                 const missionId = document.querySelector<HTMLInputElement>("#selectMission")!.value;
-                                console.log(texteAudios);
-                                console.log(missionId);
+                                const checkboxes = document.querySelectorAll<HTMLInputElement>("#divAudios input[type='checkbox']:checked");
+                                const fichiersSelectionnes = Array.from(checkboxes).map((checkbox) => checkbox.id);
+                                console.log(fichiersSelectionnes);
+
+                                const reponse = await requete({ url: `/admins/scenarios/${detailsModal}/ajouter-audios-aide`, methode: "POST", corps: { fichiers: fichiersSelectionnes, missionId } });
 
                                 // lancer la requete
 
                                 setTimeout(() => {
                                     // recuperationDonnees(reponse);
                                     setChargementRequete(false);
+                                    // setAfficherModal(false);
                                     // setContenuModal("gererDeroulerScenario");
                                 }, 1000);
                             }}
                         >
-                            <ChampDonneesForm id="inputTexte" typeInput="textearea" label="Audios :" placeholder={"Audio d'aide n°1\nAudio d'aide n°2\nAudio d'aide n°3"} />
+                            <div id="divAudios">
+                                <table>
+                                    <tbody>
+                                        {messagesAudio?.map((audio, key) => (
+                                            <tr className="element" key={key}>
+                                                <td>
+                                                    <input type="checkbox" id={audio.nomFichier} />
+                                                </td>
+                                                <td>
+                                                    <label htmlFor={audio.nomFichier}>{audio.detail}</label>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                             <select id="selectMission" required>
                                 <option value="" selected disabled>
                                     --- Sélectionnez une mission ---

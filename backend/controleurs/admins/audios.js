@@ -63,7 +63,7 @@ export const generation = gestionErreur(
         const cheminDossierAudio = path.join(cheminTTS, "audios");
         const nomFichier = `${Date.now()}.wav`;
         try {
-            if (process.env.CHAINE_JWT_COOKIE == "reel") {
+            if (process.env.TYPE_ENV == "reel") {
                 await generationTTS(cheminDossierAudio, nomFichier, texte);
             }
 
@@ -130,7 +130,7 @@ export const suppression = gestionErreur(
 export const recuperationLien = gestionErreur(
     async (req, res) => {
         const { nomFichier } = req.body;
-
+        console.log(nomFichier);
         if (!nomFichier) {
             return res.status(401).json({
                 etat: false,

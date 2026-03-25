@@ -321,6 +321,7 @@ export const modificationDeroule = gestionErreur(
 export const suppressionMission = gestionErreur((req, res) => {}, "controleurSuppressionMissionScenario", "Erreur lors de la suppression de mission dans la scénario");
 
 export const modifierReponses = gestionErreur((req, res) => {}, "controleurModifierReponses", "Erreur lors de la mise a jour des réponses");
+export const generationAudiosAide = gestionErreur((req, res) => {}, "controleurGenerationAudiosAide", "Erreur lors de la génération des audios d'aide");
 
 export const suppression = gestionErreur(
     async (req, res) => {
@@ -344,4 +345,69 @@ export const suppression = gestionErreur(
     },
     "controleurSuppressionScenario",
     "Erreur lors de la suppression du scénario",
+);
+export const ajouterAudiosAide = gestionErreur(
+    async (req, res) => {
+        const { id } = req.params;
+        const { fichiers, missionId } = req.body;
+
+        if (!id || !missionId || !fichiers) {
+            return res.status(400).json({
+                etat: false,
+                detail: "Requête incorrecte",
+            });
+        }
+
+        if (!Array.isArray(fichiers) || fichiers.some((f) => typeof f !== "string")) {
+            return res.status(400).json({
+                etat: false,
+                detail: "Requête incorrecte",
+            });
+        }
+
+        const [scenario, mission, missionScenario] = await Promise.all([
+            req.Scenarios.findByPk(id, { raw: true }),
+            req.Missions.findByPk(missionId, { raw: true }),
+            req.DerouleScenario.findOne({
+                where: { missionId, scenarioId: id },
+                raw: true,
+            }),
+        ]);
+
+        if (!scenario || !mission || !missionScenario) {
+            return res.status(404).json({
+                etat: false,
+                detail: "Ressource introuvable",
+            });
+        }
+
+        const fichiersBDD = await req.MessagesAudio.findAll({
+            where: {
+                nomFichier: fichiers,
+            },
+            raw: true,
+        });
+
+        if (fichiersBDD.length !== fichiers.length) {
+            return res.status(404).json({
+                etat: false,
+                detail: "Ressource inexistantee",
+            });
+        }
+
+        const inserts = fichiersBDD.map((fichier) => ({
+            missionId,
+            scenarioId: id,
+            audioId: fichier.id,
+        }));
+
+        await req.AideAudios.bulkCreate(inserts);
+
+        return res.json({
+            etat: true,
+            detail: "Audios ajoutés avec succès",
+        });
+    },
+    "controleurAjouterAudiosAide",
+    "Erreur lors de l'ajout des audios d'aide",
 );

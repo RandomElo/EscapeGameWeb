@@ -113,6 +113,23 @@ client.on("message", async (topic, messageBuffer) => {
             }
             return;
         }
+
+        // ============================================
+        // SPEAKER STATUS
+        // ============================================
+
+        if (topic === "escape/speaker/status") {
+
+            const data = JSON.parse(msg);
+
+            if (data.status === "finished") {
+
+                logger.info(`Audio terminé : ${data.file}`);
+            }
+
+            return;
+
+        }
     } catch (err) {
         logger.error("Erreur MQTT : " + err.message);
     }
