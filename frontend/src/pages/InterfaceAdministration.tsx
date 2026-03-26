@@ -35,6 +35,7 @@ export type DerouleItem = {
     mission?: Mission;
     fichierId?: number;
     fichierDetail?: string;
+    audiosAide?: { nomFichier: string; detail: string }[];
 };
 
 type Scenario = {
@@ -56,7 +57,7 @@ export type RecuperationDonnees = {
     messagesAudio: MessageAudio[];
 };
 
-export type ContenuModal = "ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio" | "menuScenario" | "gererDeroulerScenario" | "modifierNomScenario" | "modifierDescriptionScenario" | "supprimerScenario" | "menuMission" | "modifierAdresseIPMission" | "supprimerMission" | "modifierNomMission" | "modifierDescriptionMission" | "modifierConfigurationMission" | "ajouterMissionScenario" | "genererAudioQuiz" | "ajouterAudioScenario" | "ajouterAudiosAideScenario";
+export type ContenuModal = "ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio" | "menuScenario" | "gererDeroulerScenario" | "modifierNomScenario" | "modifierDescriptionScenario" | "supprimerScenario" | "menuMission" | "modifierAdresseIPMission" | "supprimerMission" | "modifierNomMission" | "modifierDescriptionMission" | "modifierConfigurationMission" | "ajouterMissionScenario" | "genererAudioQuiz" | "ajouterAudioScenario" | "ajouterAudiosAideScenario" | "audiosAideScenario";
 
 export default function InterfaceAdministration() {
     const { estAuth } = useAuth();
@@ -465,7 +466,9 @@ export default function InterfaceAdministration() {
                             <a className="bouton" onClick={() => setContenuModal("gererDeroulerScenario")}>
                                 Gérer le dérouler (missions + audios)
                             </a>
-                            <a className="bouton" onClick={() => }></a>
+                            <a className="bouton" onClick={() => setContenuModal("audiosAideScenario")}>
+                                Audios d'aide
+                            </a>
                             <a className="bouton" onClick={() => setContenuModal("ajouterAudiosAideScenario")}>
                                 Ajouter des audios d'aide
                             </a>
@@ -630,7 +633,46 @@ export default function InterfaceAdministration() {
                         </form>
                     </div>
                 )}
+                {contenuModal == "audiosAideScenario" && (
+                    <div id="divModalAudiosAideScenario">
+                        <h1>Audios d'aide</h1>
+                        <table>
+                            <tbody>
+                                {scenarios
+                                    .filter((scenario) => scenario.id == Number(detailsModal))[0]
+                                    .deroule.filter((etape) => etape.audiosAide && etape.audiosAide.length > 0)
+                                    .map((etape) => (
+                                        <>
+                                            <tr>
+                                                <td colSpan={2} className="tdNomMission">
+                                                    {etape.mission?.nom} :
+                                                </td>
+                                            </tr>
+                                            {etape.audiosAide?.map((audio, key) => (
+                                                <tr key={key}>
+                                                    <td>{audio.detail}</td>
+                                                    <td
+                                                        onClick={async () => {
+                                                            setChargementRequete(true);
 
+                                                            const reponse = await requete({ url: `/admins/scenarios/${detailsModal}/supprimer-audio-aide`, methode: "DELETE", corps: { nomFichier: audio.nomFichier } });
+
+                                                            setTimeout(() => {
+                                                                recuperationDonnees(reponse);
+                                                                setChargementRequete(false);
+                                                            }, 1000);
+                                                        }}
+                                                    >
+                                                        {chargementRequete ? <Chargement variant="button" /> : <Trash2 />}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </>
+                                    ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
                 {contenuModal == "ajouterAudiosAideScenario" && (
                     <div id="divModalAjouterAudiosAideScenario">
                         <RetourArriere clique={() => setContenuModal("menuScenario")} />

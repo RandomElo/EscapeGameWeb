@@ -2,7 +2,7 @@ import mqtt from "mqtt";
 import config from "./config.js";
 import logger from "./logger.js";
 import CommunicationBDD from "./CommunicationBDD.js";
-import { startGame, stopGame, skipMission } from "./gameManager.js";
+import { startGame, stopGame, NextMission } from "./gameManager.js";
 import verifierMorseConfig from "../fonctions/verifierMorseConfig.js";
 // Téléchargement : http://172.18.201.101:8100/admins/audios/recuperation-morse?nomFichier=morse_1773393734861.wav
 
@@ -51,7 +51,7 @@ client.on("message", async (topic, messageBuffer) => {
 
             logger.warn("Skip mission");
 
-            skipMission();
+            NextMission();
 
             return;
         }
@@ -109,7 +109,7 @@ client.on("message", async (topic, messageBuffer) => {
                 logger.info(`Mission ${missionId} SUCCESS`);
 
                 // passe à l'étape suivante
-                skipMission();
+                NextMission();
             }
             return;
         }

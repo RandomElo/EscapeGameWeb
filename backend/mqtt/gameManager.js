@@ -68,9 +68,9 @@ export function stopGame() {
 // SKIP MISSION
 // ============================================
 
-export async function skipMission() {
+export async function NextMission() {
 
-    logger.warn("Skip mission");
+    logger.warn("Next mission");
 
     currentStepIndex++;
 

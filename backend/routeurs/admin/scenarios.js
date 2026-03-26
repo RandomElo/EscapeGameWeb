@@ -1,5 +1,5 @@
 import e from "express";
-import { ajoutAudio, ajouterAudiosAide, ajoutMission, configurationComplete, creation, details, liste, modificationDeroule, modificationDescription, modificationEnTete, modificationNom, modifierReponses, suppression, suppressionMission } from "../../controleurs/admins/scenarios.js";
+import { ajoutAudio, ajouterAudiosAide, ajoutMission, configurationComplete, creation, details, liste, modificationDeroule, modificationDescription, modificationEnTete, modificationNom, modifierReponses, suppression, suppressionMission, supprimerAudioAide } from "../../controleurs/admins/scenarios.js";
 
 const routeurScenarios = e.Router();
 
@@ -18,4 +18,6 @@ routeurScenarios.patch("/:id/modifier-reponse", modifierReponses);
 routeurScenarios.patch("/:id/modification-deroule", modificationDeroule);
 routeurScenarios.delete("/:id/suppression", suppression);
 routeurScenarios.post("/:id/ajouter-audios-aide", ajouterAudiosAide)
+routeurScenarios.delete("/:id/supprimer-audio-aide", supprimerAudioAide)
+
 export default routeurScenarios;

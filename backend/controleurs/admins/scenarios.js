@@ -49,9 +49,34 @@ export async function ConfigurationInterfaceAdmin(req) {
         attributes: ["id", "detail", "nomFichier"],
     });
 
+    // Audios d'aide
+    const aideAudios = await req.AideAudios.findAll({
+        raw: true,
+        attributes: ["missionId", "scenarioId", "audioId"],
+    });
+
     // Permet de les parcourirs plus rapidement
     const mapMissions = Object.fromEntries(missionsListe.map((m) => [m.id, m]));
     const mapAudios = Object.fromEntries(messagesAudio.map((a) => [a.id, a]));
+
+    const mapAideAudios = {};
+
+    for (const aide of aideAudios) {
+        const key = `${aide.scenarioId}_${aide.missionId}`;
+
+        if (!mapAideAudios[key]) {
+            mapAideAudios[key] = [];
+        }
+
+        const audio = mapAudios[aide.audioId];
+
+        if (audio) {
+            mapAideAudios[key].push({
+                nomFichier: audio.nomFichier,
+                detail: audio.detail,
+            });
+        }
+    }
 
     const mapScenarioDeroule = {};
 
@@ -68,6 +93,8 @@ export async function ConfigurationInterfaceAdmin(req) {
 
         if (etape.type === "mission") {
             derouleEnrichi.mission = mapMissions[etape.missionId] || null;
+            const key = `${etape.scenarioId}_${etape.missionId}`;
+            derouleEnrichi.audiosAide = mapAideAudios[key] || [];
         }
 
         if (etape.type === "audio") {
@@ -92,6 +119,7 @@ export async function ConfigurationInterfaceAdmin(req) {
 
 export const configurationComplete = gestionErreur(
     async (req, res) => {
+        console.log("je suis ici");
         return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
     },
     "controleurRecuperationConfiugrationComplete",
@@ -403,11 +431,41 @@ export const ajouterAudiosAide = gestionErreur(
 
         await req.AideAudios.bulkCreate(inserts);
 
-        return res.json({
-            etat: true,
-            detail: "Audios ajoutés avec succès",
-        });
+        return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
     },
     "controleurAjouterAudiosAide",
     "Erreur lors de l'ajout des audios d'aide",
+);
+
+export const supprimerAudioAide = gestionErreur(
+    async (req, res) => {
+        const { id } = req.params;
+        const { nomFichier } = req.body;
+        if (!id || !nomFichier) {
+            return res.status(400).json({
+                etat: false,
+                detail: "Requête incorrecte",
+            });
+        }
+
+        const scenario = await req.Scenarios.findByPk(id, { raw: true });
+        if (!scenario) {
+            return res.status(404).json({
+                etat: false,
+                detail: "Ressource inexistante",
+            });
+        }
+
+        const fichier = await req.AideAudios.findOne({ where: { nomFichier } });
+        if (!fichier) {
+            return res.status(404).json({
+                etat: false,
+                detail: "Ressource inexistante",
+            });
+        }
+        await req.AideAudios.destroy({ where: { id: fichier.id } });
+        return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
+    },
+    "controleurSupprimerAudioAide",
+    "Erreur lors de la suppression de l'audio d'aide",
 );
