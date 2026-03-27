@@ -578,3 +578,20 @@
         }
     }
 }
+
+#divModalAudioAide {
+    text-align: center;
+    table {
+        margin: 0 auto;
+        width: 100%;
+        tr {
+            height: 38px;
+            .tdDetailFichier {
+                text-align: left;
+            }
+            .tdAction {
+                width: 70px;
+            }
+        }
+    }
+}

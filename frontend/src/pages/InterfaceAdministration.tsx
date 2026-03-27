@@ -671,9 +671,9 @@ export default function InterfaceAdministration() {
                             </tbody>
                         </table>
                         <div id="divBouton">
-                            <a className="bouton" onClick={() => setContenuModal("ajouterAudiosAideScenario")}>
+                            <button className="bouton" onClick={() => setContenuModal("ajouterAudiosAideScenario")}>
                                 Ajouter des audios d'aide
-                            </a>
+                            </button>
                         </div>
                     </div>
                 )}

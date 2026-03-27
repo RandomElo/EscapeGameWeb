@@ -4,6 +4,7 @@ import mqtt from "mqtt";
 import { useRequete } from "../fonctions/requete";
 import type { Deroule } from "../pages/SuiviPartie";
 import GestionTags from "./gestionPartie/GestionTags";
+import Modal from "./Modal";
 
 type Props = {
     deroule: Deroule;
@@ -43,6 +44,10 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
     const [status, setStatus] = useState("Déconnecté");
     const [missionEnCours, setMissionEnCours] = useState<number>();
     const [missionSuivante, setMissionSuivante] = useState<number>();
+    const [afficherModal, setAfficherModal] = useState<boolean>(false);
+    const [contenuModal, setContenuModal] = useState<"audioAide">();
+    const [detailModal, setDetailModal] = useState<string>("");
+
     const requete = useRequete();
 
     const config = {
@@ -138,128 +143,150 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
     };
 
     return (
-        <div className="gestionPartie">
-            {/* LEFT PANEL */}
-            <div className="scenarioLeft">
-                <div className="card cameraCard">
-                    <h3>Aperçu caméra</h3>
+        <>
+            <div className="gestionPartie">
+                {/* LEFT PANEL */}
+                <div className="scenarioLeft">
+                    <div className="card cameraCard">
+                        <h3>Aperçu caméra</h3>
 
-                    <div className="cameraPreview">
-                        <div className="fakeCamera">Caméra live</div>
+                        <div className="cameraPreview">
+                            <div className="fakeCamera">Caméra live</div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* CENTER PANEL */}
-            <div className="scenarioCenter">
-                <div className="timeline">
-                    {deroule.map((etape, index) => (
-                        <div key={index} className="timelineBlock">
-                            {/* Mission card */}
-                            {etape.type == "mission" && (
-                                <div className={"card missionCard mission" + etape.etat}>
-                                    <div className="missionHeader">
-                                        <h3>{etape.nom}</h3>
-                                        <GestionTags tags={etape.tags} etat={etape.etat} />
-                                    </div>
-                                    <div className="missionSecondeLigne">
-                                        <p>{etape.description}</p>
-                                        {etape.etat == "EnCours" && (
-                                            <span
-                                                className="aideAudio"
-                                                onClick={() => {
-                                                    console.log(etape.audiosAide)
-                                                }}
-                                            >
-                                                <Megaphone size={18} className="primaryButton" />
-                                            </span>
+                {/* CENTER PANEL */}
+                <div className="scenarioCenter">
+                    <div className="timeline">
+                        {deroule.map((etape, index) => (
+                            <div key={index} className="timelineBlock">
+                                {/* Mission card */}
+                                {etape.type == "mission" && (
+                                    <div className={"card missionCard mission" + etape.etat}>
+                                        <div className="missionHeader">
+                                            <h3>{etape.nom}</h3>
+                                            <GestionTags tags={etape.tags} etat={etape.etat} />
+                                        </div>
+                                        <div className="missionSecondeLigne">
+                                            <p>{etape.description}</p>
+                                            {etape.etat == "EnCours" && (
+                                                <span
+                                                    className="aideAudio"
+                                                    onClick={() => {
+                                                        console.log(etape.audiosAide);
+                                                        setContenuModal("audioAide");
+                                                        setDetailModal(etape.ordre.toString());
+                                                        setAfficherModal(true);
+                                                    }}
+                                                >
+                                                    <Megaphone size={18} className="primaryButton" />
+                                                </span>
+                                            )}
+                                        </div>
+                                        {etape.ordre == missionSuivante && (
+                                            <div id="divSkipMission">
+                                                <button className="primaryButton">Passer à cette mission</button>
+                                            </div>
                                         )}
                                     </div>
-                                    {etape.ordre == missionSuivante && (
-                                        <div id="divSkipMission">
-                                            <button className="primaryButton">Passer à cette mission</button>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                            {etape.type == "audio" && (
-                                <div className="audioCard">
-                                    <Volume2 size={20} />
-                                    <span>{etape.nom}</span>
-                                </div>
-                            )}
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* RIGHT PANEL */}
-            <div className="scenarioRight">
-                <div className="card cardDetailsPartie">
-                    <div className="cardHeader">
-                        <h3>Détails de la partie</h3>
-                        <span className="badge badge-info">
-                            <CircleAlert size={14} />
-                            Étape 1 / 5
-                        </span>
+                                )}
+                                {etape.type == "audio" && (
+                                    <div className="audioCard">
+                                        <Volume2 size={20} />
+                                        <span>{etape.nom}</span>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
                     </div>
-                    {detailsPartie && (
-                        <div className="detailsGrid">
-                            <div className="premiereLigne">
-                                <div className="bloc">
-                                    <span className="label">Équipe</span>
-                                    <span className="valeur">{detailsPartie.equipeNom}</span>
-                                    <span className="meta">
-                                        {detailsPartie?.nbrMembres} membre{detailsPartie.nbrMembres > 1 ? "s" : ""}
-                                    </span>
-                                </div>
-
-                                <div className="bloc scenario">
-                                    <span className="label">Scénario</span>
-                                    <span className="valeur">{detailsPartie.scenarioNom}</span>
-                                    <span className="meta">
-                                        {detailsPartie?.nbrMissions} mission{detailsPartie.nbrMissions > 1 ? "s" : ""}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className="bloc duree">
-                                <span className="label">Durée</span>
-                                <span className="valeur">{formatDureeDepuis(detailsPartie.dateDebut, now)}</span>
-                            </div>
-
-                            <button
-                                className="primaryButton boutonTerminerPartie"
-                                onClick={async () => {
-                                    const reponse2 = await requete({ url: "/admins/parties/avorter-partie", methode: "PATCH" });
-                                    console.log(reponse2);
-                                    setPartiesEnCours(false);
-                                }}
-                            >
-                                <Power />
-                                Terminer la partie
-                            </button>
-                        </div>
-                    )}
                 </div>
 
-                <div className="card audioControl">
-                    <h3>Envoyer un message audio</h3>
+                {/* RIGHT PANEL */}
+                <div className="scenarioRight">
+                    <div className="card cardDetailsPartie">
+                        <div className="cardHeader">
+                            <h3>Détails de la partie</h3>
+                            <span className="badge badge-info">
+                                <CircleAlert size={14} />
+                                Étape 1 / 5
+                            </span>
+                        </div>
+                        {detailsPartie && (
+                            <div className="detailsGrid">
+                                <div className="premiereLigne">
+                                    <div className="bloc">
+                                        <span className="label">Équipe</span>
+                                        <span className="valeur">{detailsPartie.equipeNom}</span>
+                                        <span className="meta">
+                                            {detailsPartie?.nbrMembres} membre{detailsPartie.nbrMembres > 1 ? "s" : ""}
+                                        </span>
+                                    </div>
 
-                    <p className="textSecondary">Enregistrer et envoyer un message vocal aux joueurs.</p>
+                                    <div className="bloc scenario">
+                                        <span className="label">Scénario</span>
+                                        <span className="valeur">{detailsPartie.scenarioNom}</span>
+                                        <span className="meta">
+                                            {detailsPartie?.nbrMissions} mission{detailsPartie.nbrMissions > 1 ? "s" : ""}
+                                        </span>
+                                    </div>
+                                </div>
 
-                    <button className="primaryButton">
-                        <Mic size={18} />
-                        Enregistrer un message
-                    </button>
+                                <div className="bloc duree">
+                                    <span className="label">Durée</span>
+                                    <span className="valeur">{formatDureeDepuis(detailsPartie.dateDebut, now)}</span>
+                                </div>
 
-                    {/* TEST */}
-                    <button onClick={() => setListeNotifications((prev) => [...prev, { niveau: "erreur", titre: "Test 2", description: "Licorne" }])}>Envoyer notif</button>
-                    <button onClick={() => envoyerMessage("test", "Hello MQTT")}>Envoyer "Hello MQTT"</button>
+                                <button
+                                    className="primaryButton boutonTerminerPartie"
+                                    onClick={async () => {
+                                        const reponse2 = await requete({ url: "/admins/parties/avorter-partie", methode: "PATCH" });
+                                        console.log(reponse2);
+                                        setPartiesEnCours(false);
+                                    }}
+                                >
+                                    <Power />
+                                    Terminer la partie
+                                </button>
+                            </div>
+                        )}
+                    </div>
 
-                    {/* FIN TEST */}
+                    <div className="card audioControl">
+                        <h3>Envoyer un message audio</h3>
+
+                        <p className="textSecondary">Enregistrer et envoyer un message vocal aux joueurs.</p>
+
+                        <button className="primaryButton">
+                            <Mic size={18} />
+                            Enregistrer un message
+                        </button>
+
+                        {/* TEST */}
+                        <button onClick={() => setListeNotifications((prev) => [...prev, { niveau: "erreur", titre: "Test 2", description: "Licorne" }])}>Envoyer notif</button>
+                        <button onClick={() => envoyerMessage("test", "Hello MQTT")}>Envoyer "Hello MQTT"</button>
+
+                        {/* FIN TEST */}
+                    </div>
                 </div>
             </div>
-        </div>
+            <Modal estOuvert={afficherModal} fermeture={() => setAfficherModal(false)}>
+                {contenuModal == "audioAide" && (
+                    <div id="divModalAudioAide">
+                        <h1>Lancer des audios d'aide</h1>
+                        <table>
+                            <tbody>
+                                {deroule.filter((etape) => etape.ordre == Number(detailModal))[0].audiosAide.map((audio, key) => (
+                                    <tr key={key}>
+                                        <td className="tdDetailFichier">{audio.detail}</td>
+                                        <td className="tdAction"><button className="bouton">Lancer</button></td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </Modal>
+        </>
     );
 }

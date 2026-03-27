@@ -73,14 +73,11 @@ async function recuperationDetailsPartie(partie, req) {
     }
 
     // Enrichissement du déroulé
-    console.log(partie?.equipeId + " " + partie?.scenarioId);
     const derouleScenarioEnrichi = derouleScenario
         .map((step, index) => {
             if (step.type === "mission") {
                 const mission = missionsMap.get(step.missionId);
                 const key = `${step.scenarioId}_${step.missionId}`;
-                console.log("Clé " + key);
-                console.table(mapAideAudios[key]);
 
                 return {
                     type: "mission",
