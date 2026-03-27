@@ -63,10 +63,13 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
 
     useEffect(() => {
         const ordreMissionEnCours = deroule.filter((etape) => etape.etat == "EnCours")[0].ordre;
-        const missionSuivante = deroule.filter((etape) => etape.ordre > ordreMissionEnCours && etape.type == "mission")[0].ordre;
+        console.log("Ordre : " + ordreMissionEnCours);
+        const missionSuivante = deroule.filter((etape) => etape.ordre > ordreMissionEnCours && etape.type == "mission")[0];
+        console.log(missionSuivante);
+        // const missionSuivante = deroule.filter((etape) => etape.ordre > ordreMissionEnCours && etape.type == "mission")[0].ordre;
 
-        setMissionEnCours(ordreMissionEnCours);
-        setMissionSuivante(missionSuivante);
+        // setMissionEnCours(ordreMissionEnCours);
+        // setMissionSuivante(missionSuivante);
     }, [deroule]);
 
     useEffect(() => {
@@ -162,7 +165,12 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
                                     <div className="missionSecondeLigne">
                                         <p>{etape.description}</p>
                                         {etape.etat == "EnCours" && (
-                                            <span className="aideAudio">
+                                            <span
+                                                className="aideAudio"
+                                                onClick={() => {
+                                                    console.log(etape.audiosAide)
+                                                }}
+                                            >
                                                 <Megaphone size={18} className="primaryButton" />
                                             </span>
                                         )}

@@ -22,7 +22,7 @@ async function recuperationDetailsPartie(partie, req) {
         }),
         req.DerouleScenario.findAll({
             where: { scenarioId: partie.scenarioId },
-            attributes: ["id", "type", "missionId", "audioId", "ordre", "configuration"],
+            attributes: ["id", "type", "missionId", "scenarioId", "audioId", "ordre", "configuration"],
             order: [["ordre", "ASC"]],
             raw: true,
         }),
@@ -32,9 +32,9 @@ async function recuperationDetailsPartie(partie, req) {
     const missionIds = derouleScenario.filter((d) => d.type === "mission" && d.missionId).map((d) => d.missionId);
 
     const audioIds = derouleScenario.filter((d) => d.type === "audio" && d.audioId).map((d) => d.audioId);
-
+    console.log(derouleScenario);
     // Chargement des données associées
-    const [missions, audios] = await Promise.all([
+    const [missions, audios, aideAudios] = await Promise.all([
         req.Missions.findAll({
             where: { id: missionIds },
             attributes: ["id", "nom", "description"],
@@ -44,17 +44,43 @@ async function recuperationDetailsPartie(partie, req) {
             where: { id: audioIds },
             raw: true,
         }),
+        req.AideAudios.findAll({
+            raw: true,
+            attributes: ["missionId", "scenarioId", "audioId"],
+        }),
     ]);
 
     // Indexation pour accès rapide O(1)
     const missionsMap = new Map(missions.map((m) => [m.id, m]));
     const audiosMap = new Map(audios.map((a) => [a.id, a]));
 
+    const mapAideAudios = {};
+
+    for (const aide of aideAudios) {
+        const key = `${aide.scenarioId}_${aide.missionId}`;
+
+        if (!mapAideAudios[key]) {
+            mapAideAudios[key] = [];
+        }
+
+        const audio = audiosMap.get(aide.audioId);
+        if (audio) {
+            mapAideAudios[key].push({
+                nomFichier: audio.nomFichier,
+                detail: audio.detail,
+            });
+        }
+    }
+
     // Enrichissement du déroulé
+    console.log(partie?.equipeId + " " + partie?.scenarioId);
     const derouleScenarioEnrichi = derouleScenario
         .map((step, index) => {
             if (step.type === "mission") {
                 const mission = missionsMap.get(step.missionId);
+                const key = `${step.scenarioId}_${step.missionId}`;
+                console.log("Clé " + key);
+                console.table(mapAideAudios[key]);
 
                 return {
                     type: "mission",
@@ -64,6 +90,7 @@ async function recuperationDetailsPartie(partie, req) {
                     configuration: step.configuration,
                     tags: [],
                     etat: index == 0 || (index == 1 && derouleScenario[0].type == "audio") ? "EnCours" : "EnAttente",
+                    audiosAide: mapAideAudios[key] || [],
                 };
             }
 

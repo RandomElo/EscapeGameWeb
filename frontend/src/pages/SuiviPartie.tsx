@@ -14,6 +14,7 @@ export type Deroule = {
     description?: string;
     tags?: string[];
     etat: "EnCours" | "EnAttente" | "Terminée";
+    audiosAide: { nomFichier: string; detail: string }[];
 }[];
 
 export default function SuiviPartie() {

@@ -469,9 +469,6 @@ export default function InterfaceAdministration() {
                             <a className="bouton" onClick={() => setContenuModal("audiosAideScenario")}>
                                 Audios d'aide
                             </a>
-                            <a className="bouton" onClick={() => setContenuModal("ajouterAudiosAideScenario")}>
-                                Ajouter des audios d'aide
-                            </a>
                             <a className="bouton" onClick={() => setContenuModal("modifierNomScenario")}>
                                 Modifier le nom
                             </a>
@@ -635,6 +632,8 @@ export default function InterfaceAdministration() {
                 )}
                 {contenuModal == "audiosAideScenario" && (
                     <div id="divModalAudiosAideScenario">
+                        <RetourArriere clique={() => setContenuModal("menuScenario")} />
+
                         <h1>Audios d'aide</h1>
                         <table>
                             <tbody>
@@ -671,11 +670,16 @@ export default function InterfaceAdministration() {
                                     ))}
                             </tbody>
                         </table>
+                        <div id="divBouton">
+                            <a className="bouton" onClick={() => setContenuModal("ajouterAudiosAideScenario")}>
+                                Ajouter des audios d'aide
+                            </a>
+                        </div>
                     </div>
                 )}
                 {contenuModal == "ajouterAudiosAideScenario" && (
                     <div id="divModalAjouterAudiosAideScenario">
-                        <RetourArriere clique={() => setContenuModal("menuScenario")} />
+                        <RetourArriere clique={() => setContenuModal("audiosAideScenario")} />
                         <h1>Ajouter des audios d'aide</h1>
                         <form
                             onSubmit={async (e) => {
@@ -692,10 +696,9 @@ export default function InterfaceAdministration() {
                                 // lancer la requete
 
                                 setTimeout(() => {
-                                    // recuperationDonnees(reponse);
+                                    recuperationDonnees(reponse);
                                     setChargementRequete(false);
-                                    // setAfficherModal(false);
-                                    // setContenuModal("gererDeroulerScenario");
+                                    setContenuModal("audiosAideScenario");
                                 }, 1000);
                             }}
                         >

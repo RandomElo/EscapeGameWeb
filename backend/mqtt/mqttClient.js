@@ -58,41 +58,61 @@ client.on("message", async (topic, messageBuffer) => {
         
         // ================= Web → config brute =================
         const webConfigMatch = topic.match(/^escape\/mission\/(\d+)\/config\/web$/);
+
         if (webConfigMatch) {
+
             const missionId = webConfigMatch[1];
             const missionConfig = JSON.parse(msg);
 
             logger.info(`Config brute reçue du WEB pour mission ${missionId}`);
 
-            // Vérifie et génère la config enrichie
-            const finalConfig = await verifierMorseConfig(missionConfig);
-            if (!finalConfig) {
+            // Vérifie + génère UNE SEULE FOIS
+            const morseAudios = await verifierMorseConfig(missionConfig);
+
+            if (!morseAudios) {
                 logger.warn(`Pas de morse valide pour la mission ${missionId}`);
                 return;
             }
 
-            // Sauvegarde la config brute en BDD (optionnel)
-            await CommunicationBDD.updateMissionConfig(missionId, missionConfig);
+            // Remplace la config par la version enrichie
+            const finalConfig = {
+                ...missionConfig,
+                morse: morseAudios
+            };
 
-            // Publie uniquement la config enrichie vers la Raspberry
-            client.publish(`escape/mission/${missionId}/config`, JSON.stringify(finalConfig));
+            //Sauvegarde DIRECTEMENT la config enrichie
+            await CommunicationBDD.updateMissionConfig(missionId, finalConfig);
 
-            // Lancement de la mission
-            client.publish(`escape/mission/${missionId}/state`, "start");
+            logger.info(`Config enrichie mission ${missionId} sauvegardée`);
 
-            logger.info(`Config enrichie envoyée à la mission ${missionId}`);
             return;
         }
 
-        // ================= Connected handshake =================
-        const connectedMatch = topic.match(/^escape\/mission\/(\d+)\/connected$/);
-        if (connectedMatch) {
-            const missionId = connectedMatch[1];
-            logger.info(`Mission ${missionId} handshake`);
-            client.publish(`escape/mission/${missionId}/connected/reply`, "ok");
+        // ================= Lest will =================
+        const statusMatch = topic.match(/^escape\/mission\/(\d+)\/status$/);
+
+        if (statusMatch) {
+
+            const missionId = statusMatch[1];
+
+            logger.info(`Mission ${missionId} status : ${msg}`);
+
+            if (msg === "online") {
+
+                // 🔥 demander config automatiquement
+                client.publish(
+                    `escape/mission/${missionId}/state`,
+                    "config"
+                );
+            }
+
+            if (msg === "offline") {
+
+                logger.warn(`Mission ${missionId} déconnectée !`);
+            }
+
             return;
         }
-
         // ================= Event missions =================
         const eventMatch = topic.match(/^escape\/mission\/(\d+)\/event$/);
         if (eventMatch) {

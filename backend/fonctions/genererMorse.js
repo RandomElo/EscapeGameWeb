@@ -99,6 +99,7 @@ function createWavFile(filePath, audioBuffer) {
 // ================= EXPORT PRINCIPAL =================
 
 export default async function generateMorseAudio(text) {
+    console.log(text)
     if (!text || typeof text !== "string") {
         throw new Error("Texte Morse invalide");
     }

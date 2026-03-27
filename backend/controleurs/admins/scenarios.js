@@ -429,7 +429,9 @@ export const ajouterAudiosAide = gestionErreur(
             audioId: fichier.id,
         }));
 
-        await req.AideAudios.bulkCreate(inserts);
+        await req.AideAudios.bulkCreate(inserts, {
+            ignoreDuplicates: true,
+        });
 
         return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
     },
