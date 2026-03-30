@@ -58,6 +58,7 @@
             justify-content: center;
         }
 
+        .scenarioLeft,
         .scenarioRight {
             row-gap: 30px;
         }
@@ -87,6 +88,14 @@
 
                     font-size: 14px;
                 }
+            }
+        }
+
+        /* ============================= */
+        /* AVERTISSEMENTS */
+        /* ============================= */
+
+        .avertissementsCard {
             }
         }
 

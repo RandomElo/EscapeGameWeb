@@ -12,10 +12,12 @@ export default function (bdd) {
             reponse: {
                 type: DataTypes.STRING(255),
                 allowNull: false,
+                unique: true,
             },
             nomFichier: {
                 type: DataTypes.STRING(255),
                 allowNull: false,
+                unique: true,
             },
         },
         {

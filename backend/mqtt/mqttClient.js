@@ -6,6 +6,7 @@ import { startGame, stopGame, NextMission } from "./gameManager.js";
 import verifierMorseConfig from "../fonctions/verifierMorseConfig.js";
 // Téléchargement : http://172.18.201.101:8100/admins/audios/recuperation-morse?nomFichier=morse_1773393734861.wav
 
+const configLocks = new Set();
 const client = mqtt.connect(config.mqtt.host, {
     username: config.mqtt.username,
     password: config.mqtt.password,
@@ -62,28 +63,40 @@ client.on("message", async (topic, messageBuffer) => {
         if (webConfigMatch) {
 
             const missionId = webConfigMatch[1];
-            const missionConfig = JSON.parse(msg);
 
-            logger.info(`Config brute reçue du WEB pour mission ${missionId}`);
-
-            // Vérifie + génère UNE SEULE FOIS
-            const morseAudios = await verifierMorseConfig(missionConfig);
-
-            if (!morseAudios) {
-                logger.warn(`Pas de morse valide pour la mission ${missionId}`);
+            // 🚫 bloque double exécution
+            if (configLocks.has(missionId)) {
+                logger.warn(`Config mission ${missionId} déjà en cours, ignoré`);
                 return;
             }
 
-            // Remplace la config par la version enrichie
-            const finalConfig = {
-                ...missionConfig,
-                morse: morseAudios
-            };
+            configLocks.add(missionId);
 
-            //Sauvegarde DIRECTEMENT la config enrichie
-            await CommunicationBDD.updateMissionConfig(missionId, finalConfig);
+            try {
 
-            logger.info(`Config enrichie mission ${missionId} sauvegardée`);
+                const missionConfig = JSON.parse(msg);
+
+                logger.info(`Config brute reçue du WEB pour mission ${missionId}`);
+
+                const morseAudios = await verifierMorseConfig(missionConfig);
+
+                if (!morseAudios) {
+                    logger.warn(`Pas de morse valide`);
+                    return;
+                }
+
+                const finalConfig = {
+                    ...missionConfig,
+                    morse: morseAudios
+                };
+
+                await CommunicationBDD.updateMissionConfig(missionId, finalConfig);
+
+                logger.info(`Config enrichie mission ${missionId} sauvegardée`);
+
+            } finally {
+                configLocks.delete(missionId);
+            }
 
             return;
         }

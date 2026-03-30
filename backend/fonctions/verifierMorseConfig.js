@@ -10,6 +10,9 @@ const __dirname = path.dirname(__filename);
 
 const AUDIO_DIR = path.join(__dirname, "..", "morseAudios");
 
+// 🔥 cache global anti double génération
+const generatingNow = new Set();
+
 export default async function verifierMorseConfig(configuration) {
 
     if (!configuration?.morse) {
@@ -32,43 +35,27 @@ export default async function verifierMorseConfig(configuration) {
             throw new Error(`Format morse invalide : ${value}`);
         }
 
+        // 🔥 IMPORTANT : RECHECK DB JUSTE AVANT
         let morseAudio = await bdd.MorseAudios.findOne({
             where: { reponse: value }
         });
 
-        let fichierExiste = false;
-
-        if (morseAudio) {
-
-            const filePath = path.join(AUDIO_DIR, morseAudio.nomFichier);
-
-            if (fs.existsSync(filePath)) {
-                fichierExiste = true;
-                logger.info(`${value} audio déjà présent`);
-            }
-        }
-
-        // génération si nécessaire
-        if (!morseAudio || !fichierExiste) {
+        if (!morseAudio) {
 
             logger.info(`Génération audio pour ${value}`);
 
             const generated = await generateMorseAudio(value);
 
-            result.push({
-                reponse: value,
-                nomFichier: generated.fileName
+            // 🔁 REFETCH après génération (ultra important)
+            morseAudio = await bdd.MorseAudios.findOne({
+                where: { reponse: value }
             });
-
-        } else {
-
-            result.push({
-                reponse: value,
-                nomFichier: morseAudio.nomFichier
-            });
-
         }
 
+        result.push({
+            reponse: value,
+            nomFichier: morseAudio.nomFichier
+        });
     }
 
     return result;

@@ -5,6 +5,7 @@ import { useRequete } from "../fonctions/requete";
 import type { Deroule } from "../pages/SuiviPartie";
 import GestionTags from "./gestionPartie/GestionTags";
 import Modal from "./Modal";
+import { constrainedMemory } from "node:process";
 
 type Props = {
     deroule: Deroule;
@@ -38,7 +39,7 @@ function formatDureeDepuis(dateDebut: string, now: number): string {
 }
 
 export default function GestionPartie({ deroule, detailsPartie, setListeNotifications, setPartiesEnCours }: Props) {
-    const type = import.meta.env.TYPE_ENV;
+    const type = import.meta.env.VITE_TYPE_ENV;
     const [now, setNow] = useState(Date.now());
     const [messages, setMessages] = useState([]);
     const [status, setStatus] = useState("Déconnecté");
@@ -47,6 +48,7 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
     const [afficherModal, setAfficherModal] = useState<boolean>(false);
     const [contenuModal, setContenuModal] = useState<"audioAide">();
     const [detailModal, setDetailModal] = useState<string>("");
+    const [missionsDeconnectee, setMissionsDeconnectee] = useState<string[]>([]);
 
     const requete = useRequete();
 
@@ -68,18 +70,14 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
 
     useEffect(() => {
         const ordreMissionEnCours = deroule.filter((etape) => etape.etat == "EnCours")[0].ordre;
-        console.log("Ordre : " + ordreMissionEnCours);
-        const missionSuivante = deroule.filter((etape) => etape.ordre > ordreMissionEnCours && etape.type == "mission")[0];
-        console.log(missionSuivante);
-        // const missionSuivante = deroule.filter((etape) => etape.ordre > ordreMissionEnCours && etape.type == "mission")[0].ordre;
+        const missionSuivante = deroule.filter((etape) => etape.ordre > ordreMissionEnCours && etape.type == "mission")[0].ordre;
 
-        // setMissionEnCours(ordreMissionEnCours);
-        // setMissionSuivante(missionSuivante);
+        setMissionEnCours(ordreMissionEnCours);
+        setMissionSuivante(missionSuivante);
     }, [deroule]);
 
     useEffect(() => {
         if (type !== "reel") return;
-
         const client = mqtt.connect(config.mqtt.host, {
             username: config.mqtt.username,
             password: config.mqtt.password,
@@ -104,6 +102,24 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
             console.log("Message reçu :", topic, msg);
 
             setMessages((prev) => [...prev, { topic, msg }]);
+
+            // Gestion des messagesconst match = topic.match(/^escape\/mission\/(\d+)\/status$/);
+            const regexConnected = topic.match(/^escape\/mission\/(\d+)\/status$/);
+            if (regexConnected) {
+                const missionId = regexConnected[1];
+                const mission = `Mission ${missionId}`;
+                if (msg === "online") {
+                    setListeNotifications((prev) => [...prev, { niveau: "succes", titre: mission, description: "Connecté" }]);
+                } else {
+                    setListeNotifications((prev) => [...prev, { niveau: "warn", titre: mission, description: "Déconnecté" }]);
+                    if (!missionsDeconnectee.includes(mission)) {
+                        setMissionsDeconnectee((prev) => [...prev, mission]);
+                    }
+                    console.log("eloi");
+                }
+
+                return; // important → éviter traitement global
+            }
         });
 
         client.on("error", (err) => {
@@ -154,6 +170,16 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
                             <div className="fakeCamera">Caméra live</div>
                         </div>
                     </div>
+                    <div className="card avertissementsCard">
+                        <h3>Avertissements</h3>
+                        <div>
+                            {missionsDeconnectee.map((mission) => (
+                                <p>
+                                    ⚠️ <span className="gras">{mission}</span> est déconnecté
+                                </p>
+                            ))}
+                        </div>
+                    </div>
                 </div>
 
                 {/* CENTER PANEL */}
@@ -174,7 +200,6 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
                                                 <span
                                                     className="aideAudio"
                                                     onClick={() => {
-                                                        console.log(etape.audiosAide);
                                                         setContenuModal("audioAide");
                                                         setDetailModal(etape.ordre.toString());
                                                         setAfficherModal(true);
@@ -276,12 +301,16 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
                         <h1>Lancer des audios d'aide</h1>
                         <table>
                             <tbody>
-                                {deroule.filter((etape) => etape.ordre == Number(detailModal))[0].audiosAide.map((audio, key) => (
-                                    <tr key={key}>
-                                        <td className="tdDetailFichier">{audio.detail}</td>
-                                        <td className="tdAction"><button className="bouton">Lancer</button></td>
-                                    </tr>
-                                ))}
+                                {deroule
+                                    .filter((etape) => etape.ordre == Number(detailModal))[0]
+                                    .audiosAide.map((audio, key) => (
+                                        <tr key={key}>
+                                            <td className="tdDetailFichier">{audio.detail}</td>
+                                            <td className="tdAction">
+                                                <button className="bouton">Lancer</button>
+                                            </td>
+                                        </tr>
+                                    ))}
                             </tbody>
                         </table>
                     </div>
