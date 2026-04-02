@@ -337,7 +337,7 @@ export const modificationDeroule = gestionErreur(
 
         for (const ordre in donnees) {
             const element = donnees[ordre];
-            await req.DerouleScenario.update({ ordre }, { where: { scenarioId: id, [`${element.type == "mission" ? "missionId" : "audioId"}`]: element.id } });
+            await req.DerouleScenario.update({ ordre, configuration: element.configuration }, { where: { scenarioId: id, [`${element.type == "mission" ? "missionId" : "audioId"}`]: element.id } });
         }
 
         return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });

@@ -1,11 +1,11 @@
 import { CircleAlert, Megaphone, Mic, Power, Tag, Volume2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import mqtt from "mqtt";
 import { useRequete } from "../fonctions/requete";
 import type { Deroule } from "../pages/SuiviPartie";
 import GestionTags from "./gestionPartie/GestionTags";
 import Modal from "./Modal";
-import { constrainedMemory } from "node:process";
+import Camera from "./Camera";
 
 type Props = {
     deroule: Deroule;
@@ -75,7 +75,7 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
         setMissionEnCours(ordreMissionEnCours);
         setMissionSuivante(missionSuivante);
     }, [deroule]);
-
+    /*
     useEffect(() => {
         if (type !== "reel") return;
         const client = mqtt.connect(config.mqtt.host, {
@@ -145,7 +145,7 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
             client.end(true);
         };
     }, [type]);
-
+*/
     const envoyerMessage = (topicSuffix, message) => {
         const client = mqtt.connect(config.mqtt.host, {
             username: config.mqtt.username,
@@ -165,9 +165,8 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
                 <div className="scenarioLeft">
                     <div className="card cameraCard">
                         <h3>Aperçu caméra</h3>
-
                         <div className="cameraPreview">
-                            <div className="fakeCamera">Caméra live</div>
+                            <Camera />
                         </div>
                     </div>
                     <div className="card avertissementsCard">

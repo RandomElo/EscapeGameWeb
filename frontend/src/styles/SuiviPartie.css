@@ -74,19 +74,8 @@
 
         .cameraCard {
             .cameraPreview {
-                height: 160px;
-
-                .fakeCamera {
-                    height: 100%;
-                    border-radius: 10px;
-                    background: #0f172a;
-                    color: white;
-
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-
-                    font-size: 14px;
+                img {
+                    width: 100%;
                 }
             }
         }
@@ -96,7 +85,6 @@
         /* ============================= */
 
         .avertissementsCard {
-            }
         }
 
         /* ============================= */

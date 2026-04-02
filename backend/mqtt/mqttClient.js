@@ -63,40 +63,36 @@ client.on("message", async (topic, messageBuffer) => {
         if (webConfigMatch) {
 
             const missionId = webConfigMatch[1];
+            const missionConfig = JSON.parse(msg);
 
-            // 🚫 bloque double exécution
-            if (configLocks.has(missionId)) {
-                logger.warn(`Config mission ${missionId} déjà en cours, ignoré`);
+            logger.info(`Config brute reçue du WEB pour mission ${missionId}`);
+
+            const morseAudios = await verifierMorseConfig(missionConfig);
+
+            if (!morseAudios) {
+                logger.warn(`Pas de morse valide`);
                 return;
             }
 
-            configLocks.add(missionId);
+            const finalConfig = {
+                ...missionConfig,
+                morse: morseAudios
+            };
 
-            try {
+            await CommunicationBDD.updateMissionConfig(missionId, finalConfig);
 
-                const missionConfig = JSON.parse(msg);
+            // 🔥 ENVOI DIRECT À LA MISSION (COMME AVANT)
+            client.publish(
+                `escape/mission/${missionId}/config`,
+                JSON.stringify(finalConfig)
+            );
 
-                logger.info(`Config brute reçue du WEB pour mission ${missionId}`);
+            client.publish(
+                `escape/mission/${missionId}/state`,
+                "start"
+            );
 
-                const morseAudios = await verifierMorseConfig(missionConfig);
-
-                if (!morseAudios) {
-                    logger.warn(`Pas de morse valide`);
-                    return;
-                }
-
-                const finalConfig = {
-                    ...missionConfig,
-                    morse: morseAudios
-                };
-
-                await CommunicationBDD.updateMissionConfig(missionId, finalConfig);
-
-                logger.info(`Config enrichie mission ${missionId} sauvegardée`);
-
-            } finally {
-                configLocks.delete(missionId);
-            }
+            logger.info(`Mission ${missionId} lancée`);
 
             return;
         }
@@ -160,9 +156,33 @@ client.on("message", async (topic, messageBuffer) => {
                 logger.info(`Audio terminé : ${data.file}`);
             }
 
-            return;
+            return;   
 
         }
+
+        if (msg === "online") {
+
+            logger.info(`Mission ${missionId} connectée`);
+
+            // 🔥 ENVOIE DIRECT CONFIG
+            const missionConfig = await CommunicationBDD.getMissionConfig(missionId);
+
+            if (!missionConfig) {
+                logger.warn(`Pas de config pour mission ${missionId}`);
+                return;
+            }
+
+            client.publish(
+                `escape/mission/${missionId}/config`,
+                JSON.stringify(missionConfig)
+            );
+
+            client.publish(
+                `escape/mission/${missionId}/state`,
+                "start"
+            );
+        }
+
     } catch (err) {
         logger.error("Erreur MQTT : " + err.message);
     }

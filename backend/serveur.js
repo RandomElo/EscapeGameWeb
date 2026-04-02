@@ -38,6 +38,8 @@ app.use(cookieParser());
 app.use(accessibiliteBdd(bdd));
 app.use(verificationCookie);
 
+app.use("/camera", e.static("public/camera"));
+
 app.use("/utilisateurs", routeurUtilisateurs);
 app.use("/equipes", routeurEquipes);
 app.use("/classements", routeurClassements);

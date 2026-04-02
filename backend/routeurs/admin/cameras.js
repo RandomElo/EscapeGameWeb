@@ -1,5 +1,5 @@
 import e from "express";
-import { liste, tournerCamera } from "../../controleurs/admins/cameras.js";
+import { arreterStream, lancerStream, liste, tournerCamera } from "../../controleurs/admins/cameras.js";
 
 const routeurCameras = e.Router();
 

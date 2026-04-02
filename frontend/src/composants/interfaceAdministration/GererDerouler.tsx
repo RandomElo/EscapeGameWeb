@@ -99,7 +99,11 @@ export default function GererDeroulerMissions({ scenario, setContenuModal, setDe
 
                         console.log(deroule);
 
-                        const donnees = deroule.map((etape) => ({ type: etape.type, id: etape.type == "mission" ? etape.mission?.id : etape.fichierId }));
+                        const donnees = deroule.map((etape) => ({
+                            type: etape.type,
+                            id: etape.type == "mission" ? etape.mission?.id : etape.fichierId,
+                            configuration: etape.type == "mission" ? etape.configuration : "",
+                        }));
                         console.log(donnees);
 
                         const reponse = await requete({

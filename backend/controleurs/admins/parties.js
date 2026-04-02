@@ -32,7 +32,6 @@ async function recuperationDetailsPartie(partie, req) {
     const missionIds = derouleScenario.filter((d) => d.type === "mission" && d.missionId).map((d) => d.missionId);
 
     const audioIds = derouleScenario.filter((d) => d.type === "audio" && d.audioId).map((d) => d.audioId);
-    console.log(derouleScenario);
     // Chargement des données associées
     const [missions, audios, aideAudios] = await Promise.all([
         req.Missions.findAll({

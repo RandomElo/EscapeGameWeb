@@ -75,3 +75,6 @@ frontend$ npm install --save-dev @types/react @types/react-dom
 ### MQTT
 
 Port 1883
+
+# Installation apt
+sudo apt install ffmpeg

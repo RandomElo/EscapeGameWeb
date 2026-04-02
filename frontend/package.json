@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@types/node": "^25.5.0",
+    "hls.js": "^1.6.15",
+    "jsmpeg": "^1.0.0",
     "lucide-react": "^0.562.0",
     "mqtt": "^5.15.0",
     "react": "^19.2.0",
