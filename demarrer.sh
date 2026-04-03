@@ -18,4 +18,14 @@ echo "Démarrage backend..."
 (
   cd backend || exit 1
   nodemon 2>&1 | log BACK
-)
+) &
+
+echo "Démarrage serveur caméra..."
+(
+  cd streamCamera || exit 1
+  source venv/bin/activate
+  python3 serveur.py 2>&1 | log CAMERA
+) &
+
+# Attend que tous les processus en arrière-plan se terminent
+wait

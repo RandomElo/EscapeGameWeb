@@ -153,8 +153,7 @@ export const recuperationLien = gestionErreur(
                 detail: "Ressource introuvable",
             });
         }
-        const token = jwt.sign({ file: nomFichier }, process.env.SECRET_AUDIO, { expiresIn: "15m" });
-        // const token = jwt.sign({ file: nomFichier }, process.env.SECRET_AUDIO, { expiresIn: "15s" });
+        const token = jwt.sign({ file: nomFichier }, process.env.SECRET_AUDIO, { expiresIn: "15s" });
 
         res.json({
             etat: true,
