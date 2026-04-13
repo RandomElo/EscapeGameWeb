@@ -4,7 +4,7 @@ import { randomUUID } from "crypto";
 import { spawn } from "child_process";
 import fs from "fs/promises";
 import fsSync from "fs";
-
+import { stat } from "fs/promises"; // pour async
 import path from "path";
 import { fileURLToPath } from "url";
 import { ConfigurationInterfaceAdmin } from "./scenarios.js";
