@@ -60,7 +60,7 @@ export type RecuperationDonnees = {
 export type ContenuModal = "ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio" | "menuScenario" | "gererDeroulerScenario" | "modifierNomScenario" | "modifierDescriptionScenario" | "supprimerScenario" | "menuMission" | "modifierAdresseIPMission" | "supprimerMission" | "modifierNomMission" | "modifierDescriptionMission" | "modifierConfigurationMission" | "ajouterMissionScenario" | "genererAudioQuiz" | "ajouterAudioScenario" | "ajouterAudiosAideScenario" | "audiosAideScenario";
 
 export default function InterfaceAdministration() {
-    const { estAuth } = useAuth();
+    const { estAuth, chargement } = useAuth();
     const navigation = useNavigate();
     const requete = useRequete();
 
@@ -75,11 +75,11 @@ export default function InterfaceAdministration() {
 
     const [scenarios, setScenarios] = useState<Scenario[]>([]);
 
-    const [tableauIP, setTableauIP] = useState<string[]>();
     const [messagesAudio, setMessagesAudio] = useState<MessageAudio[]>();
 
     const [idAudioEnCours, setIdAudioEnCours] = useState<number | null>(null);
     const [chargementRequete, setChargementRequete] = useState<boolean>(false);
+    const [chargementPage, setChargementPage] = useState<boolean>(true);
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -88,42 +88,33 @@ export default function InterfaceAdministration() {
         setScenarios(reponse.scenarios);
         setMissions(reponse.missions);
         setMessagesAudio(reponse.messagesAudio);
-
-        const tableauIP: string[] = [];
-        for (const mission of reponse.missions) {
-            if (!tableauIP.includes(mission.ipAdresse)) {
-                tableauIP.push(mission.ipAdresse);
-            }
-        }
-        setTableauIP(tableauIP);
     }
 
     useEffect(() => {
-        if (!estAuth) {
+        if (!chargement && !estAuth) {
             navigation("/connexion");
         } else {
             async function recuperation() {
+                setChargementPage(true);
                 const reponse = await requete({ url: "/admins/scenarios/configuration-complete" });
 
-                recuperationDonnees(reponse);
+                await recuperationDonnees(reponse);
+
+                setTimeout(() => {
+                    setChargementPage(false);
+                }, 1000);
             }
             recuperation();
         }
-    }, [estAuth, navigation]);
+    }, [estAuth, navigation, chargement]);
 
-    return (
+    return chargementPage ? (
+        <Chargement variant="page" label="Chargement de la page en cours" />
+    ) : (
         <>
             <main className="InterfaceAdministration">
                 <h1 id="titre">Interface d'administration</h1>
-                {/* Pour les pings */}
-                <div id="divCommunicationMissions">
-                    {tableauIP?.map((ip, key) => (
-                        <div className="divVerificationCommunication" key={key}>
-                            <p id="pEtat">Connecté</p>
-                            <p id="pIP">{ip}</p>
-                        </div>
-                    ))}
-                </div>
+
                 <div id="divMissions">
                     <h2>Les missions</h2>
                     <button

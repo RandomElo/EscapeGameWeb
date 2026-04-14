@@ -75,7 +75,7 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
         setMissionEnCours(ordreMissionEnCours);
         setMissionSuivante(missionSuivante);
     }, [deroule]);
-    
+
     useEffect(() => {
         if (type !== "reel") return;
         const client = mqtt.connect(config.mqtt.host, {

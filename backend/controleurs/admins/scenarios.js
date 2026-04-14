@@ -119,7 +119,6 @@ export async function ConfigurationInterfaceAdmin(req) {
 
 export const configurationComplete = gestionErreur(
     async (req, res) => {
-        console.log("je suis ici");
         return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
     },
     "controleurRecuperationConfiugrationComplete",

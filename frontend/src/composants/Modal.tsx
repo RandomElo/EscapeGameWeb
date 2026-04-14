@@ -20,11 +20,19 @@ export default function Modal({ estOuvert, fermeture, children, taille, empecher
     };
 
     return (
-        <div className="Modal" onClick={fermer}>
+        <div
+            className="Modal"
+            onClick={fermer}
+            onKeyDown={(e) => {
+                if (e.code == "Escape") {
+                    fermer();
+                }
+            }}
+        >
             <div className="modalContenu" onClick={(e) => e.stopPropagation()} style={{ width: taille ?? undefined }}>
                 {!empecherFermeture && <X className="boutonFermer" width={30} height={30} onClick={fermeture} />}
 
-                <div>{children}</div>
+                <div className="modalDetail">{children}</div>
             </div>
         </div>
     );

@@ -18,7 +18,7 @@ export type Deroule = {
 }[];
 
 export default function SuiviPartie() {
-    const { estAuth, role } = useAuth();
+    const { estAuth, role, chargement } = useAuth();
     const navigation = useNavigate();
     const requete = useRequete();
 
@@ -36,16 +36,16 @@ export default function SuiviPartie() {
 
     const [lancementPartie, setLancementPartie] = useState<{ scenario: string; equipe: string }>({ scenario: "", equipe: "" });
     const [erreur, setErreur] = useState<string>("");
+    const [chargementInfos, setChargementInfos] = useState<boolean>(true);
 
     useEffect(() => {
-        if (!estAuth) {
+        if (!estAuth && !chargement) {
             navigation("/connexion");
         } else if (role != "controleur") {
             navigation("/");
         } else {
             async function recuperation() {
                 const reponse = await requete({ url: "/admins/parties/partie-en-cours" });
-                console.log(reponse);
                 if (!reponse.partieEnCours) {
                     setEquipes(reponse.details.equipes);
                     setScenarios(reponse.details.scenarios);
@@ -55,6 +55,9 @@ export default function SuiviPartie() {
                     setDeroule(reponse.details.derouleScenario);
                     setPartiesEnCours(true);
                 }
+                setTimeout(() => {
+                    // setChargementInfos(false);
+                }, 1000);
             }
             recuperation();
         }
@@ -62,7 +65,7 @@ export default function SuiviPartie() {
 
     return (
         <main className="SuiviPartie">
-            {partiesEnCours && deroule ? <GestionPartie deroule={deroule} detailsPartie={detailsPartie} setListeNotifications={setListeNotifications} setPartiesEnCours={setPartiesEnCours} /> : <CreationPartie lancementPartie={lancementPartie} setLancementPartie={setLancementPartie} scenarios={scenarios} equipes={equipes} erreur={erreur} setErreur={setErreur} setPartiesEnCours={setPartiesEnCours} setDetailsPartie={setDetailsPartie} />}
+            {partiesEnCours && deroule ? <GestionPartie deroule={deroule} detailsPartie={detailsPartie} setListeNotifications={setListeNotifications} setPartiesEnCours={setPartiesEnCours} /> : <CreationPartie lancementPartie={lancementPartie} setLancementPartie={setLancementPartie} scenarios={scenarios} equipes={equipes} erreur={erreur} setErreur={setErreur} setPartiesEnCours={setPartiesEnCours} setDetailsPartie={setDetailsPartie} chargementInfos={chargementInfos} />}
 
             <Notifications liste={listeNotifications} setListe={setListeNotifications} />
         </main>

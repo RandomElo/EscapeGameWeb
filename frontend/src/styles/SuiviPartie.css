@@ -387,6 +387,16 @@
 
         /* FORM */
 
+        .divChargement {
+            height: 30px;
+            width: 50px;
+            margin: 0 auto;
+            background-color: #0085ff;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
         .formulaire {
             display: flex;
             flex-direction: column;
@@ -466,7 +476,11 @@
             margin-bottom: 24px;
             text-align: center;
         }
-
+        .divChargement {
+            height: 30px;
+            width: 100%;
+            background-color: #0085ff;
+        }
         .listeParties {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));

@@ -15,29 +15,32 @@
         position: relative;
         box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.15);
         animation: fadeIn 0.5s ease;
-    }
 
-    h1 {
-        margin-top: 0;
-        margin-bottom: 1rem;
-    }
-    .boutonRetourArriere {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        cursor: pointer;
-        color: #888;
-    }
-    .boutonFermer {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        cursor: pointer;
-        color: #888;
-    }
+        .boutonRetourArriere {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            cursor: pointer;
+            color: #888;
+        }
+        .boutonFermer {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            color: #888;
+        }
 
-    .boutonFermer:hover {
-        color: #000;
+        .boutonFermer:hover {
+            color: #000;
+        }
+        .modalDetail {
+            margin-top: 10px;
+            h1 {
+                margin-top: 0;
+                margin-bottom: 1rem;
+            }
+        }
     }
 }
 

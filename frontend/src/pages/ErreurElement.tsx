@@ -5,11 +5,11 @@ import Generale from "../composants/Generale";
 
 export default function ErreurElement() {
     const navigation = useNavigate();
-    const { estAuth } = useAuth();
+    const { estAuth, chargement } = useAuth();
     const erreur = useRouteError() as Error;
 
     useEffect(() => {
-        if (!estAuth) {
+        if (!estAuth && !chargement) {
             navigation("/connexion");
         }
     }, [estAuth, navigation]);

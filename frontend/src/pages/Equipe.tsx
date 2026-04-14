@@ -20,7 +20,7 @@ export default function Equipe() {
     const [etatModal, setEtatModal] = useState<string>();
 
     useEffect(() => {
-        if (!estAuth && chargement) {
+        if (!estAuth && !chargement) {
             navigation("/connexion");
         } else {
             // recupération de la liste des équipes

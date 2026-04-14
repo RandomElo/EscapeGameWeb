@@ -1,5 +1,6 @@
 import { Gamepad2, Play, Users } from "lucide-react";
 import { useRequete } from "../fonctions/requete";
+import Chargement from "./Chargement";
 
 type Props = {
     lancementPartie: {
@@ -41,11 +42,11 @@ type Props = {
             | undefined
         >
     >;
+    chargementInfos: boolean;
 };
 
-export default function CreationPartie({ lancementPartie, setLancementPartie, scenarios, equipes, erreur, setErreur, setPartiesEnCours, setDetailsPartie }: Props) {
+export default function CreationPartie({ lancementPartie, setLancementPartie, scenarios, equipes, erreur, setErreur, setPartiesEnCours, setDetailsPartie, chargementInfos }: Props) {
     const requete = useRequete();
-
     return (
         <div className="aucunePartie card">
             <div className="header">
@@ -58,28 +59,34 @@ export default function CreationPartie({ lancementPartie, setLancementPartie, sc
             <div className="formulaire">
                 <div className="champ">
                     <label>Scénario :</label>
-                    <div className="selectWrapper">
-                        <Gamepad2 size={16} />
+                    {chargementInfos ? (
+                        <div className="divChargement">
+                            <Chargement variant="button" />
+                        </div>
+                    ) : (
+                        <div className="selectWrapper">
+                            <Gamepad2 size={16} />
 
-                        <select
-                            defaultValue={lancementPartie.scenario}
-                            onChange={(e) =>
-                                setLancementPartie((prev) => ({
-                                    ...prev,
-                                    scenario: e.target.value,
-                                }))
-                            }
-                        >
-                            <option value="" selected disabled>
-                                {scenarios.length > 0 ? "Sélectionner un scénario" : "⚠️ Merci de crée un scénario"}
-                            </option>
-                            {scenarios?.map((scenario, key) => (
-                                <option value={scenario.id} key={key}>
-                                    {scenario.nom}
+                            <select
+                                defaultValue={lancementPartie.scenario}
+                                onChange={(e) =>
+                                    setLancementPartie((prev) => ({
+                                        ...prev,
+                                        scenario: e.target.value,
+                                    }))
+                                }
+                            >
+                                <option value="" selected disabled>
+                                    {scenarios.length > 0 ? "Sélectionner un scénario" : "⚠️ Merci de crée un scénario"}
                                 </option>
-                            ))}
-                        </select>
-                    </div>
+                                {scenarios?.map((scenario, key) => (
+                                    <option value={scenario.id} key={key}>
+                                        {scenario.nom}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
                 </div>
 
                 <div className="champ">
