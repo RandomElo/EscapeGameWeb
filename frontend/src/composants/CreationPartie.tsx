@@ -91,27 +91,33 @@ export default function CreationPartie({ lancementPartie, setLancementPartie, sc
 
                 <div className="champ">
                     <label>Équipe :</label>
-                    <div className="selectWrapper">
-                        <Users size={16} />
-                        <select
-                            defaultValue={lancementPartie.equipe}
-                            onChange={(e) =>
-                                setLancementPartie((prev) => ({
-                                    ...prev,
-                                    equipe: e.target.value,
-                                }))
-                            }
-                        >
-                            <option value="" selected disabled>
-                                {equipes.length > 0 ? "Sélectionner une équipe" : "⚠️ Aucune équipe enregistrée (les joueurs doivent en créé une)"}
-                            </option>
-                            {equipes?.map((equipe, key) => (
-                                <option value={equipe.id} key={key}>
-                                    {equipe.nom}
+                    {chargementInfos ? (
+                        <div className="divChargement">
+                            <Chargement variant="button" />
+                        </div>
+                    ) : (
+                        <div className="selectWrapper">
+                            <Users size={16} />
+                            <select
+                                defaultValue={lancementPartie.equipe}
+                                onChange={(e) =>
+                                    setLancementPartie((prev) => ({
+                                        ...prev,
+                                        equipe: e.target.value,
+                                    }))
+                                }
+                            >
+                                <option value="" selected disabled>
+                                    {equipes.length > 0 ? "Sélectionner une équipe" : "⚠️ Aucune équipe enregistrée (les joueurs doivent en créé une)"}
                                 </option>
-                            ))}
-                        </select>
-                    </div>
+                                {equipes?.map((equipe, key) => (
+                                    <option value={equipe.id} key={key}>
+                                        {equipe.nom}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
                 </div>
             </div>
 

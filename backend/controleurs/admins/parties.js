@@ -209,8 +209,8 @@ export const lancer = gestionErreur(
             dateDebut: new Date(),
         });
 
-        console.log("JE DOIT ENVOYER UN MESSAGE EN MQTT");
         await startGame(scenario);
+
         return res.json({ etat: true, detail: { partieLancer: true, details: await recuperationDetailsPartie(await req.Parties.findOne({ where: { statut: "enCours" } }), req) } });
     },
     "controleurLancerPartie",

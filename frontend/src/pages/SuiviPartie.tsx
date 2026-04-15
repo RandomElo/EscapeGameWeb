@@ -56,7 +56,7 @@ export default function SuiviPartie() {
                     setPartiesEnCours(true);
                 }
                 setTimeout(() => {
-                    // setChargementInfos(false);
+                    setChargementInfos(false);
                 }, 1000);
             }
             recuperation();

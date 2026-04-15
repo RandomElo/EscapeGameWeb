@@ -115,7 +115,6 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
                     if (!missionsDeconnectee.includes(mission)) {
                         setMissionsDeconnectee((prev) => [...prev, mission]);
                     }
-                    console.log("eloi");
                 }
 
                 return; // important → éviter traitement global

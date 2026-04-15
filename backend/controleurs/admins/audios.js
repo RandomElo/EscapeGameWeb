@@ -60,7 +60,7 @@ export const generation = gestionErreur(
             });
         }
 
-        const cheminDossierAudio = path.join(cheminTTS, "audios");
+        const cheminDossierAudio = path.join(process.cwd(),"audios", "messages");
         const nomFichier = `${Date.now()}.wav`;
         try {
             if (process.env.TYPE_ENV == "reel") {
@@ -108,7 +108,7 @@ export const suppression = gestionErreur(
             });
         }
 
-        const cheminDossierAudio = path.join(cheminTTS, "audios");
+        const cheminDossierAudio = path.join(process.cwd(), "audios", "messages");
         const cheminFichier = path.join(cheminDossierAudio, nomFichier);
 
         try {
@@ -130,7 +130,6 @@ export const suppression = gestionErreur(
 export const recuperationLien = gestionErreur(
     async (req, res) => {
         const { nomFichier } = req.body;
-        console.log(nomFichier);
         if (!nomFichier) {
             return res.status(401).json({
                 etat: false,
@@ -146,11 +145,12 @@ export const recuperationLien = gestionErreur(
             });
         }
 
-        const cheminFichier = path.join(cheminTTS, "audios", nomFichier);
+        const cheminFichier = path.join(process.cwd(), "audios", "messages", nomFichier);
+
         if (!fsSync.existsSync(cheminFichier)) {
             return res.status(404).json({
                 etat: false,
-                detail: "Ressource introuvable",
+                detail: `Ressource introuvable 2 ${cheminFichier}`,
             });
         }
         const token = jwt.sign({ file: nomFichier }, process.env.SECRET_AUDIO, { expiresIn: "15s" });
@@ -176,7 +176,8 @@ export const lecture = gestionErreur(
                 detail: "Accès interdit",
             });
         }
-        const cheminFichier = path.join(cheminTTS, "audios", nomFichier);
+        const cheminFichier = path.join(process.cwd(), "audios", "messages", nomFichier);
+
         if (!fsSync.existsSync(cheminFichier)) {
             return res.status(404).json({ error: "Fichier audio introuvable" });
         }
@@ -203,8 +204,7 @@ export const recuperationMorse = gestionErreur(
             });
         }
 
-        const filePath = path.join(process.cwd(), "morseAudios", nomFichier);
-
+        const filePath = path.join(process.cwd(),"audios", "morseAudios", nomFichier);
         try {
             await fs.access(filePath, fsSync.constants.R_OK);
         } catch {
@@ -268,7 +268,6 @@ async function generationQuestion(entree, req) {
                 if (!element.question || !element.type || !element.reponse) {
                     throw new Error("Format question invalide");
                 }
-                console.log(element.question);
                 const nomFichier = `${randomUUID()}.wav`;
 
                 await generationTTS(cheminDossier, nomFichier, element.question);

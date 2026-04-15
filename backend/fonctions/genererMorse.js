@@ -1,12 +1,8 @@
-import { fileURLToPath } from "url";
 import fs from "fs";
 import path from "path";
 import bdd from "../bdd/bdd.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const AUDIO_DIR = path.join(__dirname, "..", "morseAudios");
+const AUDIO_DIR = path.join(process.cwd(), "audios", "morseAudios");
 
 if (!fs.existsSync(AUDIO_DIR)) {
     fs.mkdirSync(AUDIO_DIR, { recursive: true });
