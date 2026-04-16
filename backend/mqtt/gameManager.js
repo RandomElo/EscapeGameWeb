@@ -110,7 +110,7 @@ async function playCurrentStep() {
     // ==========================
 
     if (step.type === "audio") {
-        const audio = await bdd.Audios.findByPk(step.audioId);
+        const audio = await bdd.MessagesAudio.findByPk(step.audioId);
 
         if (!audio) {
             logger.error("Audio introuvable");

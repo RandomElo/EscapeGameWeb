@@ -9,8 +9,8 @@ const __dirname = path.dirname(__filename);
 
 export const stream = gestionErreur(async (req, res) => {
     const nomFichier = req.params.nomFichier;
-    const cheminFichier = path.join(__dirname, "../../audios/aide", nomFichier);
-
+    const cheminFichier = path.join(__dirname, "../../audios/morse", nomFichier);
+    console.log(cheminFichier)
     if (!fs.existsSync(cheminFichier)) {
         return res.status(404).json({
             etat: false,

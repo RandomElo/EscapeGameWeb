@@ -204,7 +204,7 @@ export const recuperationMorse = gestionErreur(
             });
         }
 
-        const filePath = path.join(process.cwd(),"audios", "morseAudios", nomFichier);
+        const filePath = path.join(process.cwd(),"audios", "morse", nomFichier);
         try {
             await fs.access(filePath, fsSync.constants.R_OK);
         } catch {

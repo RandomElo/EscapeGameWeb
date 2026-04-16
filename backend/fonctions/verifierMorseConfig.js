@@ -8,11 +8,6 @@ import logger from "../mqtt/logger.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const AUDIO_DIR = path.join(__dirname, "..", "morseAudios");
-
-// 🔥 cache global anti double génération
-const generatingNow = new Set();
-
 export default async function verifierMorseConfig(configuration) {
 
     if (!configuration?.morse) {

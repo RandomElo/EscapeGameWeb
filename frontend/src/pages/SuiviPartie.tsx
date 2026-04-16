@@ -39,27 +39,29 @@ export default function SuiviPartie() {
     const [chargementInfos, setChargementInfos] = useState<boolean>(true);
 
     useEffect(() => {
-        if (!estAuth && !chargement) {
-            navigation("/connexion");
-        } else if (role != "controleur") {
-            navigation("/");
-        } else {
-            async function recuperation() {
-                const reponse = await requete({ url: "/admins/parties/partie-en-cours" });
-                if (!reponse.partieEnCours) {
-                    setEquipes(reponse.details.equipes);
-                    setScenarios(reponse.details.scenarios);
-                    setPartiesEnCours(false);
-                } else {
-                    setDetailsPartie(reponse.details.detailsPartie);
-                    setDeroule(reponse.details.derouleScenario);
-                    setPartiesEnCours(true);
+        if (!chargement) {
+            if (!estAuth) {
+                navigation("/connexion");
+            } else if (role != "controleur") {
+                navigation("/");
+            } else {
+                async function recuperation() {
+                    const reponse = await requete({ url: "/admins/parties/partie-en-cours" });
+                    if (!reponse.partieEnCours) {
+                        setEquipes(reponse.details.equipes);
+                        setScenarios(reponse.details.scenarios);
+                        setPartiesEnCours(false);
+                    } else {
+                        setDetailsPartie(reponse.details.detailsPartie);
+                        setDeroule(reponse.details.derouleScenario);
+                        setPartiesEnCours(true);
+                    }
+                    setTimeout(() => {
+                        setChargementInfos(false);
+                    }, 1000);
                 }
-                setTimeout(() => {
-                    setChargementInfos(false);
-                }, 1000);
+                recuperation();
             }
-            recuperation();
         }
     }, [estAuth, navigation, partiesEnCours]);
 

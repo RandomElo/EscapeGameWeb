@@ -1,4 +1,6 @@
 import os
+import signal
+import subprocess
 import cv2
 import base64
 import asyncio
@@ -46,9 +48,9 @@ app.add_middleware(
 # ============================
 latest_frame = None  # stocke la dernière frame capturée
 
-# ============================
+# =========================
 # CAPTURE CAMERA EN THREAD
-# ============================
+# =========================
 def start_camera():
     """Capture la caméra en continu dans un thread séparé"""
     global latest_frame
@@ -74,9 +76,9 @@ def start_camera():
         latest_frame = cv2.resize(frame, (640, 360))
 
 
-# ============================
+# ===============================
 # FONCTION DE VALIDATION DU TOKEN
-# ============================
+# ===============================
 def tokenBDD(token):
     """
     Vérifie que le token existe dans la BDD.
@@ -96,6 +98,22 @@ def tokenBDD(token):
         print(f"[ALERT] Token invalide : {token}")
         raise HTTPException(status_code=401, detail="Token invalide")
 
+# ===============================
+# FONCTION DE VALIDATION DU TOKEN
+# ===============================
+# Tue automatiquement le processus qui utilise déjà le port
+try:
+    pid = subprocess.check_output(
+        ["lsof", "-t", f"-i:{PORT_UVICORN}"]
+    ).decode().strip()
+
+    if pid:
+        print(f"[INFO] Port {PORT_UVICORN} déjà utilisé par PID {pid}, arrêt du processus...")
+        os.kill(int(pid), signal.SIGKILL)
+
+except subprocess.CalledProcessError:
+    # Aucun processus trouvé sur ce port
+    pass
 
 # ============================
 # LANCEMENT DE LA CAMERA AU DEMARRAGE
@@ -113,7 +131,6 @@ async def stream(ws: WebSocket):
     token = ws.query_params.get("token")
     print("[INFO] Token reçu :", token)
 
-    # Vérifier que le token est valide
     tokenBDD(token)
 
     await ws.accept()
@@ -122,23 +139,21 @@ async def stream(ws: WebSocket):
     try:
         while True:
             if latest_frame is None:
-                # Pas de frame disponible, attendre 10ms
                 await asyncio.sleep(0.01)
                 continue
 
-            # Encoder la frame en JPEG avec qualité 30
-            _, buffer = cv2.imencode(".jpg", latest_frame, [int(cv2.IMWRITE_JPEG_QUALITY), 30])
-            jpg_b64 = base64.b64encode(buffer).decode("utf-8")
+            _, buffer = cv2.imencode(
+                ".jpg",
+                latest_frame,
+                [int(cv2.IMWRITE_JPEG_QUALITY), 30]
+            )
 
-            # Envoyer directement la frame encodée
-            await ws.send_text(json.dumps({"image": jpg_b64}))
+            await ws.send_bytes(buffer.tobytes())
 
-            # Limiter la fréquence d'envoi pour réduire le lag et CPU (~25 FPS)
-            await asyncio.sleep(0.04)
+            await asyncio.sleep(0.08)
 
     except Exception as e:
         print("[INFO] Client déconnecté :", e)
-
 
 # ============================
 # LANCEMENT DU SERVEUR

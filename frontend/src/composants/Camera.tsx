@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRequete } from "../fonctions/requete";
 import Chargement from "./Chargement";
 
 export default function Camera() {
-    const [image, setImage] = useState(null);
     const [token, setToken] = useState<string>("");
+    const [chargement, setChargement] = useState<boolean>(true);
+    const imgRef = useRef<HTMLImageElement | null>(null);
+    const lastUrlRef = useRef<string | null>(null);
 
     const requete = useRequete();
 
@@ -17,28 +19,37 @@ export default function Camera() {
     }, []);
 
     useEffect(() => {
-        if(!token) return
+        if (!token) return;
         const ws = new WebSocket(`ws://172.18.201.101:8080/ws/stream?token=${token}`);
-        console.log("WS Open")
-        ws.onmessage = (event) => {
-            // si tu envoies du JSON côté Python :
-            try {
-                console.log('open')
-                const data = JSON.parse(event.data);
-                setImage(data.image);
-            } catch {
-                console.log("erreur")
-                // sinon fallback si brut
-                setImage(event.data);
+        ws.binaryType = "blob";
+
+        console.log("WS Open");
+
+        ws.onmessage = async (event) => {
+            if (chargement) {
+                setChargement(false);
             }
+            const blob = new Blob([event.data], { type: "image/jpeg" });
+            const url = URL.createObjectURL(blob);
+
+            if (imgRef.current) {
+                imgRef.current.src = url;
+            }
+
+            if (lastUrlRef.current) {
+                URL.revokeObjectURL(lastUrlRef.current);
+            }
+
+            lastUrlRef.current = url;
         };
 
         ws.onclose = () => {
             console.log("WS closed");
+            setChargement(true);
         };
 
         return () => ws.close();
     }, [token]);
 
-    return image ? <img src={`data:image/jpeg;base64,${image}`} alt="stream" /> : <Chargement variant="button"/>;
+    return chargement ? <Chargement variant="button" /> : <img ref={imgRef} alt="stream" />;
 }

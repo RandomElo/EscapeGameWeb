@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import bdd from "../bdd/bdd.js";
 
-const AUDIO_DIR = path.join(process.cwd(), "audios", "morseAudios");
+const AUDIO_DIR = path.join(process.cwd(), "audios", "morse");
 
 if (!fs.existsSync(AUDIO_DIR)) {
     fs.mkdirSync(AUDIO_DIR, { recursive: true });

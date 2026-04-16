@@ -79,9 +79,10 @@ client.on("message", async (topic, messageBuffer) => {
                 morse: morseAudios
             };
 
+            console.log(finalConfig)
+            
             await CommunicationBDD.updateMissionConfig(missionId, finalConfig);
 
-            // 🔥 ENVOI DIRECT À LA MISSION (COMME AVANT)
             client.publish(
                 `escape/mission/${missionId}/config`,
                 JSON.stringify(finalConfig)
@@ -89,7 +90,7 @@ client.on("message", async (topic, messageBuffer) => {
 
             client.publish(
                 `escape/mission/${missionId}/state`,
-                "start"
+                JSON.stringify("start")
             );
 
             logger.info(`Mission ${missionId} lancée`);
@@ -111,7 +112,7 @@ client.on("message", async (topic, messageBuffer) => {
                 // 🔥 demander config automatiquement
                 client.publish(
                     `escape/mission/${missionId}/state`,
-                    "config"
+                    JSON.stringify("config")
                 );
             }
 
@@ -122,24 +123,34 @@ client.on("message", async (topic, messageBuffer) => {
 
             return;
         }
-        // ================= Event missions =================
-        const eventMatch = topic.match(/^escape\/mission\/(\d+)\/event$/);
-        if (eventMatch) {
-            const missionId = eventMatch[1];
-            logger.info(`Event mission ${missionId} : ${msg}`);
-            return;
-        }
+        const stateMatch = topic.match(/^escape\/mission\/(\d+)\/state$/);
 
-        // ================= Result missions =================
-        const resultMatch = topic.match(/^escape\/mission\/(\d+)\/result$/);
-        if (resultMatch) {
-            const missionId = resultMatch[1];
-            if (msg === "success") {
-                logger.info(`Mission ${missionId} SUCCESS`);
+        if (stateMatch) {
 
-                // passe à l'étape suivante
-                NextMission();
+            const missionId = stateMatch[1];
+
+            try {
+                const data = JSON.parse(msg);
+
+                logger.info(`State mission ${missionId} : ${msg}`);
+
+                // ================= COMBO =================
+                if (data.state === "combo") {
+                    return;
+                }
+
+                // ================= SUCCESS =================
+                if (data.state === "success") {
+
+                    logger.info(`Mission ${missionId} SUCCESS`);
+
+                    NextMission();
+                }
+
+            } catch (err) {
+                logger.error(`Erreur state mission ${missionId} : ${err.message}`);
             }
+
             return;
         }
 
