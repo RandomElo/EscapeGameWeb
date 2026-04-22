@@ -1,0 +1,275 @@
+.darkMode {
+    .navbarContainer {
+        background: rgba(15, 23, 42, 0.92);
+        border-bottom: 1px solid #334155;
+        .navbarLogoTexte {
+            color: #f1f5f9;
+        }
+        .navbarLien,
+        .navbarLienSecondaire,
+        .navbarProfil {
+            color: #cbd5e1;
+        }
+        .navbarLien:hover,
+        .navbarLienSecondaire:hover,
+        .navbarProfil:hover {
+            background: #1e293b;
+            color: #f8fafc;
+        }
+        .navbarLien.active {
+            background: rgba(56, 189, 248, 0.12);
+            color: #38bdf8;
+        }
+        .navbarNotification {
+            background: #1e293b;
+            border-color: #334155;
+            color: #f1f5f9;
+        }
+
+        .navbarBurger {
+            background: #1e293b;
+            border-color: #334155;
+            color: #f1f5f9;
+        }
+    }
+}
+
+.navbarContainer {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(248, 250, 252, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid #e5e7eb;
+    .navbar {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 16px 32px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+
+        .navbarLogo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            flex-shrink: 0;
+
+            .navbarLogoImg {
+                width: 36px;
+                height: 36px;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 14px;
+                font-weight: 700;
+            }
+
+            .navbarLogoTexte {
+                display: flex;
+                flex-direction: column;
+                font-size: 15px;
+                font-weight: 600;
+                color: #0f172a;
+            }
+        }
+        .navbarBurger {
+            display: none;
+            width: 44px;
+            height: 44px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            background: white;
+            color: #0f172a;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .navbarNavigation {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex: 1;
+            gap: 24px;
+
+            .navbarLien,
+            .navbarLienSecondaire,
+            .navbarProfil {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                height: 40px;
+                padding: 0 14px;
+                border-radius: 10px;
+                color: #475569;
+                text-decoration: none;
+                font-size: 14px;
+                font-weight: 500;
+                transition: all 0.15s ease;
+            }
+
+            .navbarLien:hover,
+            .navbarLienSecondaire:hover,
+            .navbarProfil:hover {
+                background: #f1f5f9;
+                color: #0f172a;
+            }
+
+            .navbarListeLiens {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                list-style: none;
+                padding: 0;
+                margin: 0;
+
+                .navbarLien.active {
+                    background: #e0f2fe;
+                    color: #0284c7;
+                }
+                .Chargement {
+                    margin-right: 2px;
+                    .loader-ring--button {
+                        width: 14px;
+                        height: 14px;
+                        span:nth-child(1) {
+                            border-top-color: #0085ff;
+                            width: 14px;
+                            height: 14px;
+                        }
+                    }
+                }
+            }
+            .navbarActions {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+
+                .navbarBoutonPrincipal {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    height: 40px;
+                    padding: 0 16px;
+                    border-radius: 10px;
+                    background: #0ea5e9;
+                    color: white;
+                    text-decoration: none;
+                    font-size: 14px;
+                    font-weight: 600;
+                    transition: background 0.15s ease;
+                }
+
+                .navbarBoutonPrincipal:hover {
+                    background: #0284c7;
+                }
+
+                .navbarNotification {
+                    position: relative;
+                    width: 40px;
+                    height: 40px;
+                    border: 1px solid #e5e7eb;
+                    border-radius: 10px;
+                    background: white;
+                    color: #475569;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    transition: all 0.15s ease;
+
+                    .navbarNotificationBadge {
+                        position: absolute;
+                        top: -4px;
+                        right: -4px;
+                        min-width: 9px;
+                        height: 18px;
+                        padding: 0 5px;
+                        border-radius: 999px;
+                        background: #ef4444;
+                        color: white;
+                        font-size: 11px;
+                        font-weight: 600;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                }
+
+                .navbarNotification:hover {
+                    background: #f8fafc;
+                    border-color: #cbd5e1;
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 900px) {
+    .navbarContainer {
+        .navbar {
+            padding: 16px 20px;
+
+            .navbarBurger {
+                display: flex;
+            }
+
+            .navbarNavigation {
+                position: fixed;
+                top: 77px;
+                left: 16px;
+                right: 16px;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 24px;
+                padding: 24px;
+                background: #ffffff;
+                border: 1px solid #e5e7eb;
+                border-radius: 16px;
+                opacity: 0;
+                pointer-events: none;
+                transform: translateY(-10px);
+                transition: all 0.2s ease;
+
+                .navbarListeLiens,
+                .navbarActions {
+                    flex-direction: column;
+                    align-items: stretch;
+                }
+
+                .navbarLien,
+                .navbarLienSecondaire,
+                .navbarProfil,
+                .navbarBoutonPrincipal {
+                    width: 100%;
+                    justify-content: flex-start;
+                }
+
+                .navbarNotification {
+                    width: 100%;
+                    justify-content: flex-start;
+                    padding-left: 14px;
+                }
+
+                .navbarNotificationBadge {
+                    position: static;
+                    margin-left: auto;
+                }
+            }
+
+            .navbarNavigationOuverte {
+                opacity: 1;
+                pointer-events: auto;
+                transform: translateY(0);
+            }
+        }
+
+        .darkMode .navbarNavigation {
+            background: #1e293b;
+            border-color: #334155;
+        }
+    }
+}

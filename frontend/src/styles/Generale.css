@@ -64,43 +64,7 @@
     font-weight: bold;
     color: red;
 }
-/* Gestion de la navbar */
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-sizing: border-box;
-    padding: 30px;
-}
-.navbar .logo {
-    font-size: 1.5em;
-    font-weight: bold;
-}
-.navLinks.mobile-menu {
-    margin-left: 0;
-}
 
-.navbar .navLinks .active {
-    text-decoration: underline;
-}
-.navbar a {
-    color: black;
-}
-.navbar a:hover {
-    text-decoration: underline;
-}
-.navbar .navLinks ul {
-    display: flex;
-    align-items: center;
-}
-.navbar .navLinks ul li {
-    margin: 0 20px;
-    list-style: none;
-}
-.navbar .navLinks ul li.notificationDemandesAdhesion {
-    display: flex;
-    cursor: pointer;
-}
 .modalContenu {
     width: 600px;
 

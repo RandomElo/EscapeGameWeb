@@ -5,12 +5,18 @@ import { useRequete } from "../fonctions/requete";
 import type { Deroule } from "../pages/SuiviPartie";
 import GestionTags from "./gestionPartie/GestionTags";
 import Modal from "./Modal";
-import Camera from "./Camera";
-
+import Chargement from "./Chargement";
+import { useResponsive } from "../contexts/ResponsiveContext";
+import CardAvertissements from "./gestionPartie/CardAvertissements";
+import CardCamera from "./gestionPartie/Camera";
+import CardDetailsPartie from "./gestionPartie/CardDetailsPartie";
+import CardLancementAudioVolee from "./gestionPartie/CardLancementAudioVolee";
+import CardTimelineScenario from "./gestionPartie/CardTimelineScenario";
+export type DetailsPartie = { equipeNom: string; nbrMembres: number; scenarioNom: string; nbrMissions: number; dateDebut: string } | undefined;
 type Props = {
     deroule: Deroule;
 
-    detailsPartie: { equipeNom: string; nbrMembres: number; scenarioNom: string; nbrMissions: number; dateDebut: string } | undefined;
+    detailsPartie: DetailsPartie;
     setListeNotifications: React.Dispatch<
         React.SetStateAction<
             {
@@ -23,24 +29,9 @@ type Props = {
     setPartiesEnCours: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-function formatDureeDepuis(dateDebut: string, now: number): string {
-    const debut = new Date(dateDebut).getTime();
-    const diffMs = now - debut;
-
-    const minutes = Math.floor(diffMs / 60000);
-    const heures = Math.floor(minutes / 60);
-
-    if (heures === 0) {
-        return `${minutes} min`;
-    }
-
-    const resteMinutes = minutes % 60;
-    return `${heures}h${resteMinutes.toString().padStart(2, "0")}`;
-}
-
 export default function GestionPartie({ deroule, detailsPartie, setListeNotifications, setPartiesEnCours }: Props) {
     const type = import.meta.env.VITE_TYPE_ENV;
-    const [now, setNow] = useState(Date.now());
+    const [now, setNow] = useState<number>(() => Date.now());
     const [messages, setMessages] = useState([]);
     const [status, setStatus] = useState("Déconnecté");
     const [missionEnCours, setMissionEnCours] = useState<number>();
@@ -49,8 +40,9 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
     const [contenuModal, setContenuModal] = useState<"audioAide">();
     const [detailModal, setDetailModal] = useState<string>("");
     const [missionsDeconnectee, setMissionsDeconnectee] = useState<string[]>([]);
-
+    const [chargementPage, setChargementPage] = useState<boolean>(false);
     const requete = useRequete();
+    const { estMobile } = useResponsive();
 
     const config = {
         mqtt: {
@@ -160,138 +152,31 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
     return (
         <>
             <div className="gestionPartie">
-                {/* LEFT PANEL */}
-                <div className="scenarioLeft">
-                    <div className="card cameraCard">
-                        <h3>Aperçu caméra</h3>
-                        <div className="cameraPreview">
-                            <Camera />
+                {estMobile ? (
+                    <>
+                        <CardDetailsPartie detailsPartie={detailsPartie} setPartiesEnCours={setPartiesEnCours} now={now} />
+                        <CardAvertissements missionsDeconnectee={missionsDeconnectee} />
+                        <CardTimelineScenario deroule={deroule} setContenuModal={setContenuModal} setDetailModal={setDetailModal} setAfficherModal={setAfficherModal} missionSuivante={missionSuivante} />
+                        <CardCamera />
+                        <CardLancementAudioVolee />
+                    </>
+                ) : (
+                    <>
+                        {/* LEFT PANEL */}
+                        <div className="scenarioLeft">
+                            <CardCamera />
+                            <CardAvertissements missionsDeconnectee={missionsDeconnectee} />
                         </div>
-                    </div>
-                    <div className="card avertissementsCard">
-                        <h3>Avertissements</h3>
-                        <div>
-                            {missionsDeconnectee.map((mission) => (
-                                <p>
-                                    ⚠️ <span className="gras">{mission}</span> est déconnecté
-                                </p>
-                            ))}
+
+                        {/* CENTER PANEL */}
+                        <CardTimelineScenario deroule={deroule} setContenuModal={setContenuModal} setDetailModal={setDetailModal} setAfficherModal={setAfficherModal} missionSuivante={missionSuivante} />
+                        {/* RIGHT PANEL */}
+                        <div className="scenarioRight">
+                            <CardDetailsPartie detailsPartie={detailsPartie} setPartiesEnCours={setPartiesEnCours} now={now} />
+                            <CardLancementAudioVolee />
                         </div>
-                    </div>
-                </div>
-
-                {/* CENTER PANEL */}
-                <div className="scenarioCenter">
-                    <div className="timeline">
-                        {deroule.map((etape, index) => (
-                            <div key={index} className="timelineBlock">
-                                {/* Mission card */}
-                                {etape.type == "mission" && (
-                                    <div className={"card missionCard mission" + etape.etat}>
-                                        <div className="missionHeader">
-                                            <h3>{etape.nom}</h3>
-                                            <GestionTags tags={etape.tags} etat={etape.etat} />
-                                        </div>
-                                        <div className="missionSecondeLigne">
-                                            <p>{etape.description}</p>
-                                            {etape.etat == "EnCours" && (
-                                                <span
-                                                    className="aideAudio"
-                                                    onClick={() => {
-                                                        setContenuModal("audioAide");
-                                                        setDetailModal(etape.ordre.toString());
-                                                        setAfficherModal(true);
-                                                    }}
-                                                >
-                                                    <Megaphone size={18} className="primaryButton" />
-                                                </span>
-                                            )}
-                                        </div>
-                                        {etape.ordre == missionSuivante && (
-                                            <div id="divSkipMission">
-                                                <button className="primaryButton">Passer à cette mission</button>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                                {etape.type == "audio" && (
-                                    <div className="audioCard">
-                                        <Volume2 size={20} />
-                                        <span>{etape.nom}</span>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* RIGHT PANEL */}
-                <div className="scenarioRight">
-                    <div className="card cardDetailsPartie">
-                        <div className="cardHeader">
-                            <h3>Détails de la partie</h3>
-                            <span className="badge badge-info">
-                                <CircleAlert size={14} />
-                                Étape 1 / 5
-                            </span>
-                        </div>
-                        {detailsPartie && (
-                            <div className="detailsGrid">
-                                <div className="premiereLigne">
-                                    <div className="bloc">
-                                        <span className="label">Équipe</span>
-                                        <span className="valeur">{detailsPartie.equipeNom}</span>
-                                        <span className="meta">
-                                            {detailsPartie?.nbrMembres} membre{detailsPartie.nbrMembres > 1 ? "s" : ""}
-                                        </span>
-                                    </div>
-
-                                    <div className="bloc scenario">
-                                        <span className="label">Scénario</span>
-                                        <span className="valeur">{detailsPartie.scenarioNom}</span>
-                                        <span className="meta">
-                                            {detailsPartie?.nbrMissions} mission{detailsPartie.nbrMissions > 1 ? "s" : ""}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div className="bloc duree">
-                                    <span className="label">Durée</span>
-                                    <span className="valeur">{formatDureeDepuis(detailsPartie.dateDebut, now)}</span>
-                                </div>
-
-                                <button
-                                    className="primaryButton boutonTerminerPartie"
-                                    onClick={async () => {
-                                        const reponse2 = await requete({ url: "/admins/parties/avorter-partie", methode: "PATCH" });
-                                        console.log(reponse2);
-                                        setPartiesEnCours(false);
-                                    }}
-                                >
-                                    <Power />
-                                    Terminer la partie
-                                </button>
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="card audioControl">
-                        <h3>Envoyer un message audio</h3>
-
-                        <p className="textSecondary">Enregistrer et envoyer un message vocal aux joueurs.</p>
-
-                        <button className="primaryButton">
-                            <Mic size={18} />
-                            Enregistrer un message
-                        </button>
-
-                        {/* TEST */}
-                        <button onClick={() => setListeNotifications((prev) => [...prev, { niveau: "erreur", titre: "Test 2", description: "Licorne" }])}>Envoyer notif</button>
-                        <button onClick={() => envoyerMessage("test", "Hello MQTT")}>Envoyer "Hello MQTT"</button>
-
-                        {/* FIN TEST */}
-                    </div>
-                </div>
+                    </>
+                )}
             </div>
             <Modal estOuvert={afficherModal} fermeture={() => setAfficherModal(false)}>
                 {contenuModal == "audioAide" && (

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { useRequete } from "../fonctions/requete";
-import Chargement from "./Chargement";
+import { useRequete } from "../../fonctions/requete";
+import Chargement from "../Chargement";
 
-export default function Camera() {
+export default function CardCamera() {
     const [token, setToken] = useState<string>("");
     const [chargement, setChargement] = useState<boolean>(true);
     const imgRef = useRef<HTMLImageElement | null>(null);
@@ -51,5 +51,10 @@ export default function Camera() {
         return () => ws.close();
     }, [token]);
 
-    return chargement ? <Chargement variant="button" /> : <img ref={imgRef} alt="stream" />;
+    return (
+        <div className="card cameraCard">
+            <h3>Aperçu caméra</h3>
+            <div className="cameraPreview">{chargement ? <Chargement variant="button" /> : <img ref={imgRef} alt="stream" />}</div>
+        </div>
+    );
 }

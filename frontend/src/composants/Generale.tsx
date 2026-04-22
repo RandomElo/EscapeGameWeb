@@ -5,7 +5,13 @@ import { useAuth } from "../contexts/AuthContext";
 import { useRequete } from "../fonctions/requete";
 import { BellDot, Check, X } from "lucide-react";
 import Modal from "./Modal";
-
+import Navbar from "./Navbar";
+export type DemandeAdhesion = {
+    nom: string;
+    mail: string;
+    nomEquipe: string;
+    date: Date;
+};
 export default function Generale({ children }: { children?: ReactNode }) {
     const { erreur, setErreur } = useErreur();
     const { estAuth, role } = useAuth();
@@ -15,21 +21,9 @@ export default function Generale({ children }: { children?: ReactNode }) {
     const [afficherModal, setAfficherModal] = useState<boolean>(false);
     interface PropsDemandeAdhesion {
         etat: "accepter" | "refuser";
-        demande: {
-            nom: string;
-            mail: string;
-            nomEquipe: string;
-            date: Date;
-        };
+        demande: DemandeAdhesion;
     }
-    const [demandesAdhesion, setDemandesAdhesion] = useState<
-        {
-            nom: string;
-            mail: string;
-            nomEquipe: string;
-            date: Date;
-        }[]
-    >();
+    const [demandesAdhesion, setDemandesAdhesion] = useState<DemandeAdhesion[]>();
 
     useEffect(() => {
         if (erreur) {
@@ -74,7 +68,7 @@ export default function Generale({ children }: { children?: ReactNode }) {
     return (
         <>
             <header>
-                <nav className="navbar">
+                {/* <nav className="navbar">
                     <NavLink className="logo" to="/">
                         Escape Game
                     </NavLink>
@@ -131,7 +125,8 @@ export default function Generale({ children }: { children?: ReactNode }) {
                             )}
                         </ul>
                     </div>
-                </nav>
+                </nav> */}
+                <Navbar estAuth={estAuth} role={role} demandesAdhesion={demandesAdhesion} setAfficherModal={setAfficherModal} />
             </header>
             {erreur ? (
                 <div className="Erreur">

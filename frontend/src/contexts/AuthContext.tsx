@@ -2,8 +2,9 @@ import { createContext, useContext, useState, useEffect, type ReactNode } from "
 import { useRequete } from "../fonctions/requete";
 import { useNavigate } from "react-router-dom";
 
+export type Role = "joueur" | "controleur" | null;
 interface AuthContextType {
-    role: "joueur" | "controleur" | null;
+    role: Role;
     estAuth: boolean;
     chargement: boolean;
     deconnexion: () => void;

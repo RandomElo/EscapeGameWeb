@@ -606,3 +606,14 @@
         }
     }
 }
+@media (max-width: 768px) {
+    .SuiviPartie {
+        .gestionPartie {
+            display: flex;
+            flex-direction: column;
+            .cardDetailsPartie {
+                width: 265px;
+            }
+        }
+    }
+}

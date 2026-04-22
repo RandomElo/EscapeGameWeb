@@ -3,7 +3,7 @@ import { useRequete } from "../fonctions/requete";
 import "../styles/InterfaceAdministration.css";
 import Modal from "../composants/Modal";
 import ChampDonneesForm from "../composants/ChampDonneesForm";
-import { useNavigate } from "react-router-dom";
+import { useLoaderData, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { EllipsisVertical, GripVertical, Play, Square, Trash2 } from "lucide-react";
 import RetourArriere from "../composants/RetourArriere";
@@ -63,6 +63,7 @@ export default function InterfaceAdministration() {
     const { estAuth, chargement } = useAuth();
     const navigation = useNavigate();
     const requete = useRequete();
+    const donneesLoader = useLoaderData();
 
     const [afficherModal, setAfficherModal] = useState<boolean>(false);
     const [contenuModal, setContenuModal] = useState<ContenuModal>();
@@ -79,7 +80,6 @@ export default function InterfaceAdministration() {
 
     const [idAudioEnCours, setIdAudioEnCours] = useState<number | null>(null);
     const [chargementRequete, setChargementRequete] = useState<boolean>(false);
-    const [chargementPage, setChargementPage] = useState<boolean>(true);
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -94,23 +94,15 @@ export default function InterfaceAdministration() {
         if (!chargement && !estAuth) {
             navigation("/connexion");
         } else {
-            async function recuperation() {
-                setChargementPage(true);
-                const reponse = await requete({ url: "/admins/scenarios/configuration-complete" });
-
-                await recuperationDonnees(reponse);
-
-                setTimeout(() => {
-                    setChargementPage(false);
-                }, 1000);
+            function appelFonction() {
+                console.log(donneesLoader);
+                recuperationDonnees(donneesLoader);
             }
-            recuperation();
+            appelFonction();
         }
     }, [estAuth, navigation, chargement]);
 
-    return chargementPage ? (
-        <Chargement variant="page" label="Chargement de la page en cours" />
-    ) : (
+    return (
         <>
             <main className="InterfaceAdministration">
                 <h1 id="titre">Interface d'administration</h1>
