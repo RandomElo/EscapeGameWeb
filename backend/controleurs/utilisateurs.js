@@ -197,3 +197,37 @@ export const detailsToken = gestionErreur(
     "controleurDetailTokenAuthentification",
     "Erreur lors de la récupération des détails du lien de connexion",
 );
+
+export const monCompte = gestionErreur(
+    async (req, res) => {
+        const { nom, mail, role, doubleAuthentificationActive } = await req.Utilisateurs.findByPk(req.idUtilisateur, { raw: true });
+        if (role == "controleur") {
+            return res.json({ etat: true, detail: { nom, mail, doubleAuthentificationActive } });
+        } else {
+            const mesEquipes = await req.MembresEquipe.findAll({ where: { idUtilisateur: req.idUtilisateur }, raw: true });
+
+            let nbrParties = 0;
+            for (const e of mesEquipes) {
+                const equipe = await req.Equipes.findByPk(e.equipeId, { raw: true });
+                nbrParties += await req.Parties.count({ where: { equipeId: e.id } });
+            }
+
+            return res.json({ etat: true, detail: { nom, mail, doubleAuthentificationActive, nbrParties } });
+        }
+    },
+    "controleurMonCompte",
+    "Erreur lors de la récupération des informations de votre compte",
+);
+export const deconnexion = gestionErreur(
+    async (req, res) => {
+        res.clearCookie("utilisateur", {
+            httpOnly: true,
+            sameSite: "Strict",
+            secure: process.env.MODE == "production",
+        });
+
+        return res.json({ etat: true, detail: "ok" });
+    },
+    "controleurDeconnexion",
+    "Erreur lors de la déconnexion",
+);

@@ -17,6 +17,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [chargement, setChargement] = useState(true);
     const [auth, setAuth] = useState(false);
     const [role, setRole] = useState<"joueur" | "controleur" | null>(null);
+
     const verificationConnexion = async () => {
         const requete = await fetch("/utilisateurs/verification", {
             method: "GET",
@@ -40,15 +41,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setChargement(false);
     };
 
-    useEffect(() => {
-        verificationConnexion();
-        const interval = setInterval(verificationConnexion, 2 * 60 * 1000);
-        return () => clearInterval(interval);
-    }, []);
-
     const deconnexion = () => {
         setAuth(false);
     };
+    useEffect(() => {
+        verificationConnexion();
+
+        // Interval
+        const interval = setInterval(verificationConnexion, 30 * 1000);
+
+        // Détection focus page
+        const changementVisiblite = () => {
+            if (document.visibilityState === "visible") verificationConnexion();
+        };
+
+        document.addEventListener("visibilitychange", changementVisiblite);
+
+        return () => {
+            clearInterval(interval);
+            document.removeEventListener("visibilitychange", changementVisiblite);
+        };
+    }, [verificationConnexion]);
 
     return <AuthContext.Provider value={{ estAuth: auth, role, chargement, verificationConnexion, deconnexion }}>{children}</AuthContext.Provider>;
 };

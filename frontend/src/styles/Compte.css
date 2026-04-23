@@ -1,0 +1,15 @@
+.Compte {
+    .divActions {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        row-gap: 15px;
+        .bouton.rouge {
+            background-color: #ef4444;
+        }
+
+        .bouton.rouge:hover {
+            background: #b91c1c;
+        }
+    }
+}

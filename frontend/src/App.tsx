@@ -12,6 +12,31 @@ import InterfaceAdministration from "./pages/InterfaceAdministration";
 import SuiviPartie from "./pages/SuiviPartie";
 import { ResponsiveProvider } from "./contexts/ResponsiveContext";
 import { redirect } from "react-router-dom";
+import Compte from "./pages/Compte";
+async function verifUtilisateur() {
+    const requeteVerification = await fetch("/utilisateurs/verification", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        credentials: "include",
+    });
+
+    if (!requeteVerification.ok) {
+        throw new Response("Erreur lors de la vérification utilisateur", {
+            status: 500,
+        });
+    }
+
+    const reponseVerification = await requeteVerification.json();
+
+    if (!reponseVerification.etat) throw redirect("/connexion");
+    return reponseVerification.detail;
+}
+async function verifAdmin() {
+    const donneesVerif = await verifUtilisateur();
+    if (donneesVerif !== "controleur") throw redirect("/");
+}
 
 const router = createBrowserRouter([
     {
@@ -46,25 +71,7 @@ const router = createBrowserRouter([
                 element: <InterfaceAdministration />,
                 loader: async () => {
                     try {
-                        const requeteVerification = await fetch("/utilisateurs/verification", {
-                            method: "GET",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            credentials: "include",
-                        });
-
-                        if (!requeteVerification.ok) {
-                            throw new Response("Erreur lors de la vérification utilisateur", {
-                                status: 500,
-                            });
-                        }
-
-                        const reponseVerification = await requeteVerification.json();
-
-                        if (!reponseVerification.etat) throw redirect("/connexion");
-
-                        if (reponseVerification.detail !== "controleur") throw redirect("/");
+                        await verifAdmin();
 
                         const requeteDonnees = await fetch("/admins/scenarios/configuration-complete", {
                             method: "GET",
@@ -100,8 +107,40 @@ const router = createBrowserRouter([
                 element: <SuiviPartie />,
             },
             {
-                path: "/suivi-partie/:partieId",
-                element: <SuiviPartie />,
+                path: "/mon-compte",
+                element: <Compte />,
+                loader: async () => {
+                    try {
+                        await verifUtilisateur();
+
+                        const requeteDonnees = await fetch("/utilisateurs/mon-compte", {
+                            method: "GET",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            credentials: "include",
+                        });
+
+                        if (!requeteDonnees.ok) {
+                            throw new Response("Impossible de charger l'interface administration", {
+                                status: 500,
+                            });
+                        }
+                        const reponse = await requeteDonnees.json();
+
+                        return reponse.detail;
+                    } catch (erreur) {
+                        if (erreur instanceof Response) {
+                            throw erreur;
+                        }
+
+                        console.error(erreur);
+
+                        throw new Response("Erreur serveur", {
+                            status: 500,
+                        });
+                    }
+                },
             },
             {
                 path: "*",
