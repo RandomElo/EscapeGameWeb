@@ -118,6 +118,11 @@
                 color: #0f172a;
             }
 
+            .navbarLien.active {
+                background: #e0f2fe;
+                color: #0284c7;
+            }
+            
             .navbarListeLiens {
                 display: flex;
                 align-items: center;
@@ -126,10 +131,6 @@
                 padding: 0;
                 margin: 0;
 
-                .navbarLien.active {
-                    background: #e0f2fe;
-                    color: #0284c7;
-                }
                 .Chargement {
                     margin-right: 2px;
                     .loader-ring--button {

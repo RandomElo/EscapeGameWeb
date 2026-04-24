@@ -77,7 +77,7 @@ export default function Navbar({ estAuth, role, demandesAdhesion, setAfficherMod
                                                 to="/interface-administration"
                                                 onClick={() => {
                                                     fermerMenu();
-                                                    
+
                                                     if (location.pathname !== "/interface-administration") {
                                                         setNavigationEnCours("administration");
                                                     }
@@ -116,7 +116,7 @@ export default function Navbar({ estAuth, role, demandesAdhesion, setAfficherMod
                                     </button>
                                 )}
 
-                                <NavLink className="navbarProfil" to="/mon-compte" onClick={fermerMenu}>
+                                <NavLink className="navbarProfil navbarLien" to="/mon-compte" onClick={fermerMenu}>
                                     <UserCircle2 size={18} />
                                     Mon compte
                                 </NavLink>

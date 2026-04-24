@@ -3,6 +3,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import speakeasy from "speakeasy";
 import QRCode from "qrcode";
+import { genererToken } from "../fonctions/genererToken.js";
+import { envoyerMail, recupererTexteMail } from "../fonctions/envoyerMail.js";
 
 async function verifierCode2FA(utilisateur, token) {
     if (!token) {
@@ -230,4 +232,41 @@ export const deconnexion = gestionErreur(
     },
     "controleurDeconnexion",
     "Erreur lors de la déconnexion",
+);
+export const modifierMail = gestionErreur(
+    async (req, res) => {
+        const { mail } = req.body;
+        if (!mail) {
+            return res.status(401).json({
+                etat: false,
+                detail: "Requête incorrecte",
+            });
+        }
+
+        const regexMail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+        if (!regexMail.test(mail)) {
+            return res.status(401).json({
+                etat: false,
+                detail: "Requête incorrecte",
+            });
+        }
+
+        const utilisateur = await req.Utilisateurs.findByPk(req.idUtilisateur);
+
+        // Crée le token
+        const token = genererToken(10);
+
+        await req.Tokens.create({
+            token,
+            type: "changementMail",
+            details: req.idUtilisateur,
+        });
+
+        // Envoyer le mail
+        const { texte, html } = recupererTexteMail("validationChangementEmail", { nomUtilisateur: utilisateur.nom, nouvelleAdresseMail: mail, lienValidation: `${process.env.IP_FRONTEND}/changement-mail?token=${token}` });
+        // Renvoyer
+    },
+    "controleurModifierMail",
+    "Erreur lors de la modification du mail",
 );

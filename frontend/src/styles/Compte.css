@@ -13,3 +13,13 @@
         }
     }
 }
+#divModalModifierMail {
+    text-align: center;
+    .ChampDonneesForm {
+        text-align: left;
+        margin-bottom: 5px;
+    }
+    .bouton {
+        margin-top: 10px;
+    }
+}

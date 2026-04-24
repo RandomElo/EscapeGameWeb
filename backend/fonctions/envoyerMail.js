@@ -4,17 +4,17 @@ const textesMail = {
     ajoutEquipeCreationCompte: ({ nomUtilisateur, nomEquipe, lienCreation }) => ({
         texte: `Bonjour,
 
-${nomUtilisateur} vous a invité à rejoindre l’équipe "${nomEquipe}".
+        ${nomUtilisateur} vous a invité à rejoindre l’équipe "${nomEquipe}".
 
-Pour accepter cette invitation, vous devez d’abord créer un compte en utilisant l’adresse email à laquelle ce message a été envoyé.
+        Pour accepter cette invitation, vous devez d’abord créer un compte en utilisant l’adresse email à laquelle ce message a été envoyé.
 
-Cliquez sur le lien ci-dessous pour créer votre compte :
-${lienCreation}
+        Cliquez sur le lien ci-dessous pour créer votre compte :
+        ${lienCreation}
 
-Si vous n’êtes pas à l’origine de cette demande, vous pouvez ignorer ce message.
+        Si vous n’êtes pas à l’origine de cette demande, vous pouvez ignorer ce message.
 
-Cordialement,
-L’équipe Escape Game`,
+        Cordialement,
+        L’équipe Escape Game`,
         html: /* html */ `
             <p>Bonjour,</p>
 
@@ -37,16 +37,16 @@ L’équipe Escape Game`,
     ajoutEquipeNotification: ({ nomUtilisateur, nomEquipe }) => ({
         texte: `Bonjour,
 
-${nomUtilisateur} vous a ajouté à l’équipe "${nomEquipe}".
+        ${nomUtilisateur} vous a ajouté à l’équipe "${nomEquipe}".
 
-Vous faites désormais partie de cette équipe et pouvez y accéder dès votre prochaine connexion ou directement a partir de ce lien.
+        Vous faites désormais partie de cette équipe et pouvez y accéder dès votre prochaine connexion ou directement a partir de ce lien.
 
-${process.env.IP_FRONTEND}/equipe
+        ${process.env.IP_FRONTEND}/equipe
 
-Si vous pensez qu’il s’agit d’une erreur, merci de contacter un administrateur.
+        Si vous pensez qu’il s’agit d’une erreur, merci de contacter un administrateur.
 
-Cordialement,
-L’équipe Escape Game`,
+        Cordialement,
+        L’équipe Escape Game`,
         html: /* html */ `
             <p>Bonjour,</p>
 
@@ -68,6 +68,48 @@ L’équipe Escape Game`,
 
             <p style="color:#666;font-size:0.9em;">
                 Si vous pensez qu’il s’agit d’une erreur, merci de contacter un administrateur.
+            </p>
+
+            <p>Cordialement,<br>L’équipe Escape Game</p>
+        `,
+    }),
+    validationChangementEmail: ({ nomUtilisateur, nouvelleAdresseMail, lienValidation }) => ({
+        texte: `Bonjour,
+
+        ${nomUtilisateur}, vous avez demandé à modifier votre adresse email.
+
+        Nouvelle adresse email : ${nouvelleAdresseMail}
+
+        Pour confirmer ce changement, veuillez cliquer sur le lien ci-dessous :
+        ${lienValidation}
+
+        Si vous n’êtes pas à l’origine de cette demande, nous vous recommandons de sécuriser votre compte immédiatement.
+
+        Cordialement,
+        L’équipe Escape Game`,
+
+        html: /* html */ `
+            <p>Bonjour,</p>
+
+            <p>
+                <strong>${nomUtilisateur}</strong>, vous avez demandé à modifier votre adresse email.
+            </p>
+
+            <p>
+                Nouvelle adresse email : <strong>${nouvelleAdresseMail}</strong>
+            </p>
+
+            <p>Pour confirmer ce changement, cliquez sur le bouton ci-dessous :</p>
+
+            <p>
+                <a href="${lienValidation}"
+                style="display:inline-block;padding:10px 16px;background:#0085ff;color:#fff;text-decoration:none;border:none;border-radius:5px;">
+                    Valider le changement d’adresse email
+                </a>
+            </p>
+
+            <p style="color:#666;font-size:0.9em;">
+                Si vous n’êtes pas à l’origine de cette demande, nous vous recommandons de sécuriser votre compte immédiatement.
             </p>
 
             <p>Cordialement,<br>L’équipe Escape Game</p>

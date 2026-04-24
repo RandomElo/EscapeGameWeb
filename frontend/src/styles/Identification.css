@@ -68,20 +68,7 @@
             }
         }
         #divErreurFormulaire {
-            width: 100%;
-            display: flex;
-            align-items: center;
             margin-top: 20px;
-            #pErreur {
-                margin-left: 10px;
-                font-size: 0.85em;
-                font-weight: bold;
-            }
-            svg {
-                display: block;
-                width: 24px;
-                height: 24px;
-            }
         }
 
         .bouton {

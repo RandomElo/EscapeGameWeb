@@ -57,14 +57,27 @@
 }
 
 #titre {
+    margin-top: 12px;
     text-align: center;
 }
 
-#pErreur {
-    font-weight: bold;
-    color: red;
+#divErreurFormulaire {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    #pErreur {
+        margin-left: 10px;
+        font-size: 0.85em;
+        font-weight: bold;
+        color: #b91c1c;
+    }
+    svg {
+        display: block;
+        color:#b91c1c; 
+        width: 24px;
+        height: 24px;
+    }
 }
-
 .modalContenu {
     width: 600px;
 
