@@ -260,12 +260,21 @@ export const modifierMail = gestionErreur(
         await req.Tokens.create({
             token,
             type: "changementMail",
-            details: req.idUtilisateur,
+            details: { idUtilisateur: req.idUtilisateur, nouvelleAdresseMail: mail },
         });
 
         // Envoyer le mail
         const { texte, html } = recupererTexteMail("validationChangementEmail", { nomUtilisateur: utilisateur.nom, nouvelleAdresseMail: mail, lienValidation: `${process.env.IP_FRONTEND}/changement-mail?token=${token}` });
+
         // Renvoyer
+        await envoyerMail({
+            destinataire: utilisateur.mail,
+            sujet: "Changement d'adresse mail",
+            texte,
+            html,
+        });
+
+        return res.json({ etat: true, detail: "ok" });
     },
     "controleurModifierMail",
     "Erreur lors de la modification du mail",

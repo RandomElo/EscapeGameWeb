@@ -14,7 +14,7 @@ export const liste = gestionErreur(
 );
 export const creation = gestionErreur(
     async (req, res) => {
-        const { nom, description, ipAdresse, reponse } = req.body;
+        const { nom, description } = req.body;
         if (!nom || !description || !ipAdresse || !reponse) {
             return res.status(401).json({
                 etat: false,
@@ -25,8 +25,6 @@ export const creation = gestionErreur(
         await req.Missions.create({
             nom,
             description,
-            ipAdresse,
-            configuration: reponse,
         });
 
         return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });

@@ -17,17 +17,6 @@ export default function (bdd) {
                 type: DataTypes.STRING(255),
                 allowNull: false,
             },
-            ipAdresse: {
-                type: DataTypes.STRING(15),
-                allowNull: false,
-                validate: {
-                    isIP: true,
-                },
-            },
-            configuration: {
-                type: DataTypes.STRING(255),
-                allowNull: false,
-            },
             public: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,

@@ -5,7 +5,7 @@ export async function ConfigurationInterfaceAdmin(req) {
     // Missions
     const missionsListe = await req.Missions.findAll({
         raw: true,
-        attributes: ["id", "nom", "description", "ipAdresse", "configuration"],
+        attributes: ["id", "nom", "description"],
     });
 
     // Deroulé

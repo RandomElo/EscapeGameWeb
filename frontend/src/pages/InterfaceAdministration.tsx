@@ -57,7 +57,7 @@ export type RecuperationDonnees = {
     messagesAudio: MessageAudio[];
 };
 
-export type ContenuModal = "ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio" | "menuScenario" | "gererDeroulerScenario" | "modifierNomScenario" | "modifierDescriptionScenario" | "supprimerScenario" | "menuMission" | "modifierAdresseIPMission" | "supprimerMission" | "modifierNomMission" | "modifierDescriptionMission" | "modifierConfigurationMission" | "ajouterMissionScenario" | "genererAudioQuiz" | "ajouterAudioScenario" | "ajouterAudiosAideScenario" | "audiosAideScenario";
+export type ContenuModal = "ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio" | "menuScenario" | "gererDeroulerScenario" | "modifierNomScenario" | "modifierDescriptionScenario" | "supprimerScenario" | "menuMission" | "supprimerMission" | "modifierNomMission" | "modifierDescriptionMission" | "ajouterMissionScenario" | "genererAudioQuiz" | "ajouterAudioScenario" | "ajouterAudiosAideScenario" | "audiosAideScenario";
 
 export default function InterfaceAdministration() {
     const { estAuth, chargement } = useAuth();
@@ -123,8 +123,6 @@ export default function InterfaceAdministration() {
                             <tr>
                                 <th>Nom</th>
                                 <th>Description</th>
-                                <th>Adresse IP</th>
-                                <th>Configuration</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -133,8 +131,6 @@ export default function InterfaceAdministration() {
                                 <tr key={key}>
                                     <td className="tdNom">{mission.nom}</td>
                                     <td className="tdDescription">{mission.description}</td>
-                                    <td className="tdIpAdresse">{mission.ipAdresse}</td>
-                                    <td className="tdReponse">{mission.configuration}</td>
                                     <td
                                         className="tdAction"
                                         onClick={() => {
@@ -281,10 +277,8 @@ export default function InterfaceAdministration() {
 
                                 const nom = document.querySelector<HTMLInputElement>("#inputNom")!.value;
                                 const description = document.querySelector<HTMLInputElement>("#inputDescription")!.value;
-                                const ipAdresse = document.querySelector<HTMLInputElement>("#inputAdresseIp")!.value;
-                                const reponseInput = document.querySelector<HTMLInputElement>("#inputReponse")!.value;
 
-                                const reponse = await requete({ url: "/admins/missions/creation", methode: "POST", corps: { nom, description, ipAdresse, reponse: reponseInput } });
+                                const reponse = await requete({ url: "/admins/missions/creation", methode: "POST", corps: { nom, description } });
                                 setTimeout(() => {
                                     recuperationDonnees(reponse);
                                     setChargementRequete(false);
@@ -294,23 +288,6 @@ export default function InterfaceAdministration() {
                         >
                             <ChampDonneesForm id="inputNom" typeInput="text" placeholder="Mission 1" label="Nom :" focus={true} />
                             <ChampDonneesForm id="inputDescription" typeInput="textearea" label="Description :" />
-                            <ChampDonneesForm
-                                id="inputAdresseIp"
-                                typeInput="text"
-                                placeholder="192.168.1.12"
-                                label="Adresse IP :"
-                                onBlur={(e) => {
-                                    const valeur = e.target.value.trim();
-                                    const regexIP = /^(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}$/;
-
-                                    if (valeur && !regexIP.test(valeur)) {
-                                        setErreur("Adresse IP invalide.");
-                                    } else {
-                                        setErreur("");
-                                    }
-                                }}
-                            />
-                            <ChampDonneesForm id="inputReponse" typeInput="textearea" label="Réponse :" />
 
                             {erreur && <p id="pErreur">{erreur}</p>}
 
@@ -862,79 +839,10 @@ export default function InterfaceAdministration() {
                             <a className="bouton" onClick={() => setContenuModal("modifierDescriptionMission")}>
                                 Modifier description
                             </a>
-                            <a className="bouton" onClick={() => setContenuModal("modifierAdresseIPMission")}>
-                                Modifier adresse IP
-                            </a>
-                            <a className="bouton" onClick={() => setContenuModal("modifierConfigurationMission")}>
-                                Modifier configuration
-                            </a>
                             <a className="bouton" onClick={() => setContenuModal("supprimerMission")}>
                                 Supprimer la mission
                             </a>
                         </div>
-                    </div>
-                )}
-                {contenuModal == "modifierConfigurationMission" && (
-                    <div id="divModalmodifierConfigurationMission">
-                        <RetourArriere clique={() => setContenuModal("menuMission")} />
-
-                        <h2>Modifier la configuration</h2>
-                        <form
-                            onSubmit={async (e) => {
-                                e.preventDefault();
-                                setChargementRequete(true);
-
-                                const configuration = document.querySelector<HTMLInputElement>("#inputConfiguration")!.value;
-
-                                const reponse = await requete({ url: `/admins/missions/${detailsModal}/modification-configuration`, methode: "PATCH", corps: { configuration } });
-
-                                setTimeout(() => {
-                                    recuperationDonnees(reponse);
-                                    setChargementRequete(false);
-                                    setAfficherModal(false);
-                                }, 1000);
-                            }}
-                        >
-                            <ChampDonneesForm id="inputConfiguration" typeInput="textearea" value={missions?.filter((scenario) => scenario.id == Number(detailsModal))[0].configuration} focus={true} />
-
-                            <button type="submit" className="bouton">
-                                {chargementRequete ? <Chargement variant="button" /> : "Modifier"}
-                            </button>
-                        </form>
-                    </div>
-                )}
-                {contenuModal == "modifierAdresseIPMission" && (
-                    <div id="divModalmodifierAdresseIPMission">
-                        <RetourArriere clique={() => setContenuModal("menuMission")} />
-
-                        <h2>Modifier adresse IP</h2>
-
-                        <form
-                            onSubmit={async (e) => {
-                                e.preventDefault();
-                                setChargementRequete(true);
-
-                                const adresseIp = document.querySelector<HTMLInputElement>("#inputAdresseIP")!.value;
-
-                                const reponse = await requete({
-                                    url: `/admins/missions/${detailsModal}/modification-adresse-ip`,
-                                    methode: "PATCH",
-                                    corps: { adresseIp },
-                                });
-
-                                setTimeout(() => {
-                                    recuperationDonnees(reponse);
-                                    setChargementRequete(false);
-                                    setAfficherModal(false);
-                                }, 1000);
-                            }}
-                        >
-                            <ChampDonneesForm id="inputAdresseIP" typeInput="text" value={missions?.filter((scenario) => scenario.id == Number(detailsModal))[0].ipAdresse} focus={true} />
-
-                            <button type="submit" className="bouton">
-                                {chargementRequete ? <Chargement variant="button" /> : "Modifier"}
-                            </button>
-                        </form>
                     </div>
                 )}
             </Modal>

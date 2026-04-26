@@ -15,8 +15,11 @@ export default function Compte() {
 
     const [donnees, setDonnees] = useState<{ nom: string; mail: string; doubleAuthentificationActive: boolean; nbrParties?: number }>();
     const [chargementRequete, setChargementRequete] = useState<boolean>(false);
+
     const [afficherModal, setAfficherModal] = useState<boolean>(false);
     const [contenuModal, setContenuModal] = useState<"modifierMail">();
+    const [detailsModal, setDetailsModal] = useState<string>();
+
     const [erreur, setErreur] = useState<string>();
 
     // mettre en place le chargement de deconnexion + verification auth
@@ -55,6 +58,7 @@ export default function Compte() {
                         className="bouton"
                         onClick={() => {
                             setContenuModal("modifierMail");
+                            setDetailsModal("");
                             setAfficherModal(true);
                         }}
                     >
@@ -87,8 +91,11 @@ export default function Compte() {
                                 e.preventDefault();
                                 setChargementRequete(true);
                                 const mail = document.querySelector<HTMLInputElement>("#inputMail")!.value.trim();
-                                const reponse = await requete({ url: "/utilisateurs/modifier-mail", methode: "PUT", corps: { mail } });
-                                console.log(reponse);
+                                await requete({ url: "/utilisateurs/modifier-mail", methode: "PUT", corps: { mail } });
+                                setTimeout(() => {
+                                    setDetailsModal("✅ Vérifier votre boîte mail");
+                                    setChargementRequete(false);
+                                }, 1000);
                             }}
                         >
                             <ChampDonneesForm
@@ -115,9 +122,15 @@ export default function Compte() {
                                     <p id="pErreur">{erreur}</p>
                                 </div>
                             )}
-                            <button type="submit" className="bouton">
-                                Enregistrer
-                            </button>
+                            {detailsModal ? (
+                                <button className="bouton" disabled>
+                                    {detailsModal}
+                                </button>
+                            ) : (
+                                <button type="submit" className="bouton">
+                                    Enregistrer
+                                </button>
+                            )}
                         </form>
                     </div>
                 )}

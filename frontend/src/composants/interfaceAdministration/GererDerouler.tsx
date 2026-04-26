@@ -22,9 +22,27 @@ type Props = {
 
 export default function GererDeroulerMissions({ scenario, setContenuModal, setDetails2Modal, setAfficherModal, recuperationDonnees }: Props) {
     const requete = useRequete();
+    const safeParse = (valeur: any) => {
+        try {
+            const parsed = JSON.parse(valeur);
 
-    const [deroule, setDeroule] = useState<DerouleItem[]>(scenario.deroule);
+            // si c’est encore une string → reparse
+            if (typeof parsed === "string") {
+                return JSON.parse(parsed);
+            }
 
+            return parsed;
+        } catch {
+            return {};
+        }
+    };
+    const [deroule, setDeroule] = useState<DerouleItem[]>(
+        scenario.deroule.map((el) => ({
+            ...el,
+            configurationTexte: el.configuration || "{}",
+            configuration: el.configuration ? safeParse(el.configuration) : {},
+        })),
+    );
     const [modification, setModification] = useState(false);
     const [chargementRequete, setChargementRequete] = useState(false);
 
@@ -45,7 +63,25 @@ export default function GererDeroulerMissions({ scenario, setContenuModal, setDe
     };
 
     const modifierConfiguration = (index: number, valeur: string) => {
-        setDeroule((prev) => prev.map((el, i) => (i === index ? { ...el, configuration: valeur } : el)));
+        setDeroule((prev) =>
+            prev.map((el, i) => {
+                if (i !== index) return el;
+
+                try {
+                    return {
+                        ...el,
+                        configurationTexte: valeur,
+                        configuration: JSON.parse(valeur),
+                    };
+                } catch {
+                    return {
+                        ...el,
+                        configurationTexte: valeur,
+                    };
+                }
+            }),
+        );
+
         setModification(true);
     };
 
@@ -81,7 +117,8 @@ export default function GererDeroulerMissions({ scenario, setContenuModal, setDe
 
                                 <td>{el.type === "mission" ? el.mission?.nom : "Audio"}</td>
 
-                                <td>{el.type == "mission" ? <ChampDonneesForm typeInput="texteOnChange" id="inputConfiguration" value={el.configuration} onChange={(valeur) => modifierConfiguration(index, valeur)} /> : el.fichierDetail}</td>
+                                <td>{el.type == "mission" ? <ChampDonneesForm typeInput="texteOnChange" id="inputConfiguration" value={el.configurationTexte} onChange={(valeur) => modifierConfiguration(index, valeur)} /> : el.fichierDetail}</td>
+
                                 <td className="tdSupprimer">
                                     <Trash2 />
                                 </td>
@@ -97,14 +134,11 @@ export default function GererDeroulerMissions({ scenario, setContenuModal, setDe
                     onClick={async () => {
                         setChargementRequete(true);
 
-                        console.log(deroule);
-
                         const donnees = deroule.map((etape) => ({
                             type: etape.type,
                             id: etape.type == "mission" ? etape.mission?.id : etape.fichierId,
-                            configuration: etape.type == "mission" ? etape.configuration : "",
+                            configuration: etape.type == "mission" ? JSON.stringify(etape.configuration) : "",
                         }));
-                        console.log(donnees);
 
                         const reponse = await requete({
                             url: `/admins/scenarios/${scenario.id}/modification-deroule`,

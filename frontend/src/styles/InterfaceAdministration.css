@@ -160,8 +160,7 @@
     }
 }
 #divModalModifierNomScenario,
-#divModalModifierNomMission,
-#divModalmodifierAdresseIPMission {
+#divModalModifierNomMission {
     text-align: center;
     form {
         display: flex;
@@ -172,8 +171,7 @@
 }
 
 #divModalModifierDescriptionScenario,
-#divModalModifierDescriptionMission,
-#divModalmodifierConfigurationMission {
+#divModalModifierDescriptionMission {
     text-align: center;
     form {
         display: flex;

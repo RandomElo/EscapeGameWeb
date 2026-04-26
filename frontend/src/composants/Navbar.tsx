@@ -53,7 +53,7 @@ export default function Navbar({ estAuth, role, demandesAdhesion, setAfficherMod
                                         <li>
                                             <NavLink className="navbarLien" to="/classements" onClick={fermerMenu}>
                                                 <Trophy size={16} />
-                                                Classement
+                                                Classements
                                             </NavLink>
                                         </li>
                                         <li>
