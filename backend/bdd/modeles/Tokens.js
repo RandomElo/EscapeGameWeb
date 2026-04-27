@@ -18,7 +18,7 @@ export default function (bdd) {
                 },
             },
             type: {
-                type: DataTypes.ENUM("recapPartie", "resetMdp","changementMail", "invitationEquipe", "validationCompte", "demandeAdhesion", "creationCompte", 'accesBackendAudio', "accesBackendCamera"),
+                type: DataTypes.ENUM("recapPartie", "resetMdp", "changementMail", "invitationEquipe", "validationCompte", "demandeAdhesion", "creationCompte", 'accesBackendAudio', "accesBackendCamera", "changementMdp"),
                 allowNull: false,
             },
             details: {

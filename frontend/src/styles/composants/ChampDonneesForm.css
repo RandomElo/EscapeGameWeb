@@ -27,4 +27,21 @@
         padding: 5px;
         font-size: 0.9em;
     }
+    #divInputMdp {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 100%;
+        input {
+            flex: 1;
+            box-sizing: border-box;
+            padding-left: 10px;
+        }
+        svg {
+            position: absolute;
+            right: 8px;
+            top: 11px;
+            cursor: pointer;
+        }
+    }
 }

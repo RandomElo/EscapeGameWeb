@@ -23,3 +23,19 @@
         margin-top: 10px;
     }
 }
+#divModalNouveauMdp {
+    form {
+        #divDetailsModal {
+            margin-bottom: 10px;
+            #lienDeconnexion {
+                color: #0085ff;
+                text-decoration: underline;
+                cursor: pointer;
+                font-weight: bold;
+            }
+            #pConnecterMauvaisUtilisateur {
+                width: 100%;
+            }
+        }
+    }
+}

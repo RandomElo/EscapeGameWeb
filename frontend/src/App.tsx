@@ -13,6 +13,7 @@ import SuiviPartie from "./pages/SuiviPartie";
 import { ResponsiveProvider } from "./contexts/ResponsiveContext";
 import { redirect } from "react-router-dom";
 import Compte from "./pages/Compte";
+import ChangementMail from "./pages/ChangementMail";
 async function verifUtilisateur() {
     const requeteVerification = await fetch("/utilisateurs/verification", {
         method: "GET",
@@ -65,7 +66,6 @@ const router = createBrowserRouter([
                 path: "/equipe",
                 element: <Equipe />,
             },
-
             {
                 path: "/interface-administration",
                 element: <InterfaceAdministration />,
@@ -141,6 +141,10 @@ const router = createBrowserRouter([
                         });
                     }
                 },
+            },
+            {
+                path: "/changement-mail",
+                element: <ChangementMail />,
             },
             {
                 path: "*",
