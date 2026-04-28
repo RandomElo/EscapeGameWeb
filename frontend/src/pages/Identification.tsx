@@ -6,6 +6,7 @@ import ChampDonneesForm from "../composants/ChampDonneesForm";
 import "../styles/Identification.css";
 import { useRequete } from "../fonctions/requete";
 import Modal from "../composants/Modal";
+import Chargement from "../composants/Chargement";
 
 export default function Identification({ mode }: { mode: "connexion" | "inscription" }) {
     const { estAuth, verificationConnexion, chargement } = useAuth();
@@ -21,8 +22,9 @@ export default function Identification({ mode }: { mode: "connexion" | "inscript
     const [typeModal, setTypeModal] = useState<"configuration2FA" | "connexion2FA">();
     const [configuration2FA, setConfiguration2FA] = useState<{ qrCode: string; token2FA: string }>();
     const [connexion2FA, setConnexion2FA] = useState<boolean>(false);
-    const [token, setToken] = useState<string | null>();
     const [mail, setMail] = useState<string>();
+    const [chargementRequete, setChargementRequete] = useState<boolean>(false);
+
     interface CorpsRequete {
         nom?: string;
         mail: string;
@@ -47,7 +49,6 @@ export default function Identification({ mode }: { mode: "connexion" | "inscript
         const recuperationToken = async () => {
             const t = rechercheParametres.get("token");
             if (t) {
-                setToken(t);
                 const reponse = await requete({ url: `/utilisateurs/details-token?token=${t}` });
                 if (!reponse.trouver) {
                     return navigation("/" + mode);
@@ -68,7 +69,8 @@ export default function Identification({ mode }: { mode: "connexion" | "inscript
                 <form
                     onSubmit={async (e) => {
                         e.preventDefault();
-
+                        setChargementRequete(true);
+                        
                         const corpsRequete: CorpsRequete = {
                             mail: document.querySelector<HTMLInputElement>("#champMail")!.value,
                             mdp: document.querySelector<HTMLInputElement>("#champMdp")!.value,
@@ -97,6 +99,7 @@ export default function Identification({ mode }: { mode: "connexion" | "inscript
                         } else {
                             setErreur({ bloquante: false, detail: reponse.detail });
                         }
+                        
                     }}
                 >
                     <div id="divChamps">
@@ -171,8 +174,8 @@ export default function Identification({ mode }: { mode: "connexion" | "inscript
                         </div>
                     )}
 
-                    <button type="submit" disabled={erreur?.bloquante} className="bouton">
-                        {mode === "connexion" ? "Se connecter" : "S'inscrire"}
+                    <button type="submit" disabled={erreur?.bloquante || chargementRequete} className="bouton">
+                        {chargementRequete ? <Chargement variant="button" /> : mode === "connexion" ? "Se connecter" : "S'inscrire"}
                     </button>
                 </form>
                 <div id="divChangementModeAuthentification">

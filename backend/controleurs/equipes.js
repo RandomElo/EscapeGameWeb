@@ -228,7 +228,12 @@ export const ajoutUtilisateur = gestionErreur(
                 });
 
                 const liste = await RecuperationMesEquipes(req);
-                return res.json({ etat: true, detail: { utilisateurExistant: false, detail: liste } });
+
+                return res.json({ etat: true, detail: { utilisateurExistant: true, detail: liste } });
+            } else {
+                const liste = await RecuperationMesEquipes(req);
+
+                return res.json({ etat: true, detail: { utilisateurExistant: true, detail: liste } });
             }
         }
     },

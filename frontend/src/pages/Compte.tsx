@@ -18,7 +18,7 @@ export default function Compte() {
     const type = searchParams.get("type");
 
     const [donnees, setDonnees] = useState<{ nom: string; mail: string; doubleAuthentificationActive: boolean; nbrParties?: number }>();
-    const [chargementRequete, setChargementRequete] = useState<"changerMail" | "notificationChangerMdp" | "deconnexion" | "modalNouveauMdp" | "qrCode2FA" | "verifier2FA" | null>(null);
+    const [chargementRequete, setChargementRequete] = useState<"changerMail" | "notificationChangerMdp" | "deconnexion" | "modalNouveauMdp" | "qrCode2FA" | "verifier2FA" | "desactiver2FA" | null>(null);
 
     // --- MODAL ---
     const [afficherModal, setAfficherModal] = useState<boolean>(false); // Oui ou non j'affiche la modal
@@ -66,9 +66,9 @@ export default function Compte() {
                         {donnees?.doubleAuthentificationActive ? "active" : "inactive"}
                     </p>
 
-                    {donnees?.nbrParties && (
+                    {donnees?.nbrParties != null && (
                         <p>
-                            <span className="gras">Nombres de parties jouées :</span>
+                            <span className="gras">Nombres de parties jouées : </span>
                             {donnees?.nbrParties}
                         </p>
                     )}
@@ -98,7 +98,7 @@ export default function Compte() {
                     >
                         {chargementRequete == "notificationChangerMdp" ? detailsModal?.contenu ? detailsModal?.contenu : <Chargement variant="button" /> : "Changer de mot de passe"}
                     </button>
-                    {!donnees?.doubleAuthentificationActive && (
+                    {!donnees?.doubleAuthentificationActive ? (
                         <button
                             className="bouton"
                             onClick={async () => {
@@ -113,6 +113,21 @@ export default function Compte() {
                             }}
                         >
                             {chargementRequete == "qrCode2FA" ? detailsModal?.contenu ? detailsModal?.contenu : <Chargement variant="button" /> : "Activer la 2FA"}
+                        </button>
+                    ) : (
+                        <button
+                            className="bouton rouge"
+                            onClick={async () => {
+                                setChargementRequete("desactiver2FA");
+                                const reponse = await requete({ url: "/utilisateurs/desactiver-2fa", methode: "DELETE" });
+                                setTimeout(() => {
+                                    setDonnees(reponse);
+                                    setAfficherModal(false);
+                                    setChargementRequete(null);
+                                }, 1000);
+                            }}
+                        >
+                            {chargementRequete == "desactiver2FA" ? <Chargement variant="button" /> : "Désactiver 2FA"}
                         </button>
                     )}
 
@@ -277,7 +292,7 @@ export default function Compte() {
                                 setChargementRequete("verifier2FA");
                                 const code = document.querySelector<HTMLInputElement>("#champ2FA")!.value;
                                 const reponse = await requete({
-                                    url: "/utilisateurs/initialisation-code-2FA",
+                                    url: "/utilisateurs/initialisation-code-2fa",
                                     methode: "POST",
                                     corps: { code },
                                 });

@@ -352,227 +352,25 @@
     /* AUCUNE PARTIE EN COURS */
     /* ============================= */
 
-    .aucunePartie {
-        max-width: 520px;
-        margin: auto;
-
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-
-        text-align: center;
-
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-
-            h2 {
-                font-size: 22px;
-                font-weight: 600;
-            }
-
-            svg {
-                color: #0ea5e9;
-            }
-        }
-
-        .description {
-            color: #64748b;
-            font-size: 14px;
-            max-width: 420px;
-            margin: auto;
-        }
-
-        /* FORM */
-
-        .divChargement {
-            height: 30px;
-            width: 50px;
-            margin: 0 auto;
-            background-color: #0085ff;
-            border-radius: 8px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .formulaire {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .champ {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            text-align: left;
-
-            label {
-                font-size: 13px;
-                font-weight: 500;
-                color: #0f172a;
-            }
-        }
-
-        .selectWrapper {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 0 10px;
-
-            height: 36px;
-            background: white;
-
-            transition: border 0.15s ease;
-
-            svg {
-                color: #64748b;
-            }
-
-            &:focus-within {
-                border-color: #0ea5e9;
-            }
-
-            select {
-                border: none;
-                outline: none;
-                width: 100%;
-                font-size: 14px;
-                background: transparent;
-                cursor: pointer;
-            }
-        }
-
-        /* BOUTON */
-
-        .lancerBouton {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-
-            margin-top: 8px;
-        }
-
-        .lancerBouton:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-    }
-
-    .selectionPartie {
-        max-width: 1200px;
-        margin: auto;
-        padding: 32px;
-
-        h2 {
-            font-size: 22px;
-            font-weight: 600;
-            margin-bottom: 24px;
-            text-align: center;
-        }
-        .divChargement {
-            height: 30px;
-            width: 100%;
-            background-color: #0085ff;
-        }
-        .listeParties {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 24px;
-        }
-
-        .cartePartie {
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 24px;
-            cursor: pointer;
-            transition:
-                transform 0.15s ease,
-                box-shadow 0.15s ease;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-
-            &:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            }
-
-            .header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-
-                .equipe {
-                    font-size: 16px;
-                    font-weight: 600;
-                    color: var(--text);
-                }
-
-                .date {
-                    font-size: 13px;
-                    color: #64748b;
-                }
-            }
-
-            .infos {
-                display: flex;
-                flex-direction: column;
-                gap: 12px;
-
-                .bloc {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-
-                    .label {
-                        font-size: 12px;
-                        color: #64748b;
-                    }
-
-                    .valeur {
-                        font-size: 15px;
-                        font-weight: 600;
-                    }
-                }
-            }
-
-            button {
-                margin: auto;
-                width: 70%;
-            }
-        }
-
-        /* Carte mise en avant si partie en cours */
-        .cartePartie.enCours {
-            border: 2px solid #0ea5e9;
-            background: #e0f2fe;
-            transform: scale(1.02);
-        }
-
-        /* Message si aucune partie disponible */
         .aucunePartie {
+            max-width: 520px;
+            margin: auto;
+        margin-top: 40px;
+
             display: flex;
             flex-direction: column;
-            align-items: center;
-            text-align: center;
             gap: 24px;
-            padding: 48px 16px;
+
+            text-align: center;
 
             .header {
                 display: flex;
                 align-items: center;
-                gap: 12px;
+                justify-content: center;
+                gap: 10px;
 
-                h3 {
-                    font-size: 18px;
+                h2 {
+                    font-size: 22px;
                     font-weight: 600;
                 }
 
@@ -582,12 +380,91 @@
             }
 
             .description {
-                font-size: 14px;
                 color: #64748b;
+                font-size: 14px;
                 max-width: 420px;
+                margin: auto;
+            }
+
+            /* FORM */
+
+            .divChargement {
+                height: 30px;
+                width: 50px;
+                margin: 0 auto;
+                background-color: #0085ff;
+                border-radius: 8px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .formulaire {
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .champ {
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+                text-align: left;
+
+                label {
+                    font-size: 13px;
+                    font-weight: 500;
+                    color: #0f172a;
+                }
+            }
+
+            .selectWrapper {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+
+                border: 1px solid #e5e7eb;
+                border-radius: 8px;
+                padding: 0 10px;
+
+                height: 36px;
+                background: white;
+
+                transition: border 0.15s ease;
+
+                svg {
+                    color: #64748b;
+                }
+
+                &:focus-within {
+                    border-color: #0ea5e9;
+                }
+
+                select {
+                    border: none;
+                    outline: none;
+                    width: 100%;
+                    font-size: 14px;
+                    background: transparent;
+                    cursor: pointer;
+                }
+            }
+
+            /* BOUTON */
+
+            .lancerBouton {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+
+                margin-top: 8px;
+            }
+
+            .lancerBouton:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
             }
         }
-    }
 }
 
 #divModalAudioAide {

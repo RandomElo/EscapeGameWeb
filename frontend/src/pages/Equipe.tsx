@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import "../styles/Equipe.css";
-import { useNavigate } from "react-router-dom";
+import { useLoaderData, useNavigate } from "react-router-dom";
 import { useRequete } from "../fonctions/requete";
 import Modal from "../composants/Modal";
 import ChampDonneesForm from "../composants/ChampDonneesForm";
 import { Crown, EllipsisVertical, Trash2, TriangleAlert } from "lucide-react";
+import Chargement from "../composants/Chargement";
+import RetourArriere from "../composants/RetourArriere";
 
 export default function Equipe() {
     const { estAuth, chargement } = useAuth();
     const navigation = useNavigate();
     const requete = useRequete();
+    const donneesLoader = useLoaderData();
 
     const [afficherModal, setAfficherModal] = useState<boolean>(false);
     const [contenuModal, setContenuModal] = useState<"creationEquipe" | "optionsEquipe" | "menuEquipeSupprimer" | "menuEquipeModifierNom" | "menuAjouterMembre" | "menuListeMembres" | "menuQuitterEquipe" | "demandeAdhesion">();
@@ -18,20 +21,19 @@ export default function Equipe() {
     const [equipesListe, setEquipesListe] = useState<[{ nom: string; estChef: boolean; listeMembres: { nom: string; mail?: string; estChef: boolean }[] }]>();
     const [donneesModal, setDonneesModal] = useState<string>();
     const [etatModal, setEtatModal] = useState<string>();
+    const [chargementRequete, setChargementRequete] = useState<boolean>(false);
 
     useEffect(() => {
         if (!estAuth && !chargement) {
             navigation("/connexion");
         } else {
             // recupération de la liste des équipes
-            const recuperationDonnees = async () => {
-                const reponse = await requete({ url: "/equipes/mes-equipes" });
-                console.log(reponse);
-                setEquipesListe(reponse);
+            const attributionDonnees = async () => {
+                setEquipesListe(donneesLoader);
             };
-            recuperationDonnees();
+            attributionDonnees();
         }
-    }, [chargement, estAuth, navigation]);
+    }, [chargement, estAuth, navigation, donneesLoader]);
 
     return (
         <>
@@ -96,6 +98,7 @@ export default function Equipe() {
                 estOuvert={afficherModal}
                 fermeture={() => {
                     setAfficherModal(false);
+                    setChargementRequete(false);
                     setEtatModal("");
                 }}
             >
@@ -155,17 +158,26 @@ export default function Equipe() {
                 )}
                 {contenuModal == "creationEquipe" && (
                     <div id="modalCreationEquipe">
+                        <RetourArriere clique={() => setContenuModal("optionsEquipe")} />
+
                         <h1>Création d'équipe</h1>
                         <form
                             onSubmit={async (e) => {
                                 e.preventDefault();
+                                setChargementRequete(true);
+
                                 const nom = document.querySelector<HTMLInputElement>("#champNom")!.value;
                                 const reponse = await requete({ url: "/equipes/creation", methode: "POST", corps: { nom } });
-                                if (reponse.cree) {
-                                    setEquipesListe(reponse.detail);
-                                } else {
-                                    setErreur(reponse.detail);
-                                }
+
+                                setTimeout(() => {
+                                    setChargementRequete(false);
+                                    if (reponse.cree) {
+                                        setEquipesListe(reponse.detail);
+                                        setAfficherModal(false);
+                                    } else {
+                                        setErreur(reponse.detail);
+                                    }
+                                }, 1000);
                             }}
                         >
                             <ChampDonneesForm
@@ -177,22 +189,22 @@ export default function Equipe() {
                                     if (erreur) setErreur("");
                                 }}
                             />
-                            {/* je doit verifier si le champ nom est bien unique */}
-                            {/* gestion des erreurs */}
                             {erreur && (
                                 <div id="divErreurFormulaire">
                                     <TriangleAlert />
                                     <p id="pErreur">{erreur}</p>
                                 </div>
                             )}
-                            <button type="submit" className="bouton" disabled={!!erreur}>
-                                Crée
+                            <button type="submit" className="bouton" disabled={!!erreur || chargementRequete}>
+                                {chargementRequete ? <Chargement variant="button" /> : "Crée"}
                             </button>
                         </form>
                     </div>
                 )}
                 {contenuModal == "menuEquipeSupprimer" && (
                     <div id="modalSupprimerEquipe">
+                        <RetourArriere clique={() => setContenuModal("optionsEquipe")} />
+
                         <h1>Suppression</h1>
                         <p>Êtes vous sur de vouloir supprimer l'équipe ?</p>
                         <div id="divChoix">
@@ -219,39 +231,53 @@ export default function Equipe() {
                 )}
                 {contenuModal == "menuEquipeModifierNom" && (
                     <div id="modalModifierEquipe">
+                        <RetourArriere clique={() => setContenuModal("optionsEquipe")} />
+
                         <h1>Modifier le nom</h1>
                         <form
                             onSubmit={async (e) => {
                                 e.preventDefault();
+                                setChargementRequete(true);
                                 const nom = document.querySelector<HTMLInputElement>("#inputNouveauNom")!.value;
 
                                 const reponse = await requete({ url: "/equipes/modification-nom", methode: "PATCH", corps: { nouveauNom: nom, ancienNom: donneesModal } });
 
-                                setEquipesListe(reponse);
-                                setAfficherModal(false);
+                                setTimeout(() => {
+                                    setEquipesListe(reponse);
+                                    setChargementRequete(false);
+                                    setAfficherModal(false);
+                                }, 1000);
                             }}
                         >
                             <ChampDonneesForm id="inputNouveauNom" typeInput="text" placeholder={donneesModal} focus={true} />
-                            <button type="submit" className="bouton">
-                                Modifier
+                            <button type="submit" className="bouton" disabled={chargementRequete}>
+                                {chargementRequete ? <Chargement variant="button" /> : "Modifier"}
                             </button>
                         </form>
                     </div>
                 )}
                 {contenuModal == "menuAjouterMembre" && (
                     <div id="modalAjouterMembre">
+                        <RetourArriere clique={() => setContenuModal("optionsEquipe")} />
+
                         <h1>Inviter une personne</h1>
                         <form
                             onSubmit={async (e) => {
                                 e.preventDefault();
+                                setChargementRequete(true);
+
                                 const mail = document.querySelector<HTMLInputElement>("#inputMail")!.value;
                                 const activerNotification = document.querySelector<HTMLInputElement>("#checkboxEnvoyerMail")?.checked;
 
                                 const reponse = await requete({ url: "/equipes/ajout-utilisateur", methode: "POST", corps: { mail, activerNotification, nomEquipe: donneesModal } });
-                                if (reponse.utilisateurExistant) {
-                                    setEquipesListe(reponse.detail);
-                                }
-                                setAfficherModal(false);
+                                setTimeout(() => {
+                                    setChargementRequete(false);
+                                    console.log(reponse);
+                                    if (reponse.utilisateurExistant) {
+                                        setEquipesListe(reponse.detail);
+                                    }
+                                    setContenuModal("menuListeMembres");
+                                }, 1000);
                             }}
                         >
                             <ChampDonneesForm
@@ -274,14 +300,16 @@ export default function Equipe() {
                                 <label htmlFor="checkboxEnvoyerMail">Envoyer une notification par mail</label>
                             </div>
                             {erreur && <p id="pErreur"> {erreur}</p>}
-                            <button type="submit" className="bouton" disabled={!!erreur}>
-                                Ajouter
+                            <button type="submit" className="bouton" disabled={!!erreur || chargementRequete}>
+                                {chargementRequete ? <Chargement variant="button" /> : "Ajouter"}
                             </button>
                         </form>
                     </div>
                 )}
                 {contenuModal === "menuListeMembres" && (
                     <div id="modalListesMembres">
+                        <RetourArriere clique={() => setContenuModal("optionsEquipe")} />
+
                         <h1>Liste des membres</h1>
 
                         {equipesListe
@@ -325,6 +353,8 @@ export default function Equipe() {
 
                 {contenuModal == "menuQuitterEquipe" && (
                     <div id="modalQuitterEquipe">
+                        <RetourArriere clique={() => setContenuModal("optionsEquipe")} />
+
                         <h1>Quitter l'équipe</h1>
                         <form
                             onSubmit={(e) => {
@@ -368,7 +398,6 @@ export default function Equipe() {
                                         setAfficherModal(false);
                                     }, 700);
                                 } else {
-                                    // je doit afficher le message et en grisant le bouton
                                     setErreur(reponse.detail);
                                 }
                             }}
@@ -383,7 +412,6 @@ export default function Equipe() {
                         </form>
                     </div>
                 )}
-                {/* {contenuModal == "menu" && <div id="modal"></div>} */}
             </Modal>
         </>
     );

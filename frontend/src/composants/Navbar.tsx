@@ -15,7 +15,7 @@ type Props = {
 
 export default function Navbar({ estAuth, role, demandesAdhesion, setAfficherModal }: Props) {
     const [menuOuvert, setMenuOuvert] = useState(false);
-    const [navigationEnCours, setNavigationEnCours] = useState<string>("");
+    const [navigationEnCours, setNavigationEnCours] = useState<"administration" | "suiviPartie" | "monCompte">();
     const fermerMenu = () => setMenuOuvert(false);
     const location = useLocation();
 
@@ -66,8 +66,18 @@ export default function Navbar({ estAuth, role, demandesAdhesion, setAfficherMod
                                 ) : (
                                     <>
                                         <li>
-                                            <NavLink className="navbarLien" to="/suivi-partie" onClick={fermerMenu}>
-                                                <MonitorPlay size={16} />
+                                            <NavLink
+                                                className="navbarLien"
+                                                to="/suivi-partie"
+                                                onClick={() => {
+                                                    fermerMenu();
+
+                                                    if (location.pathname !== "/suivi-partie") {
+                                                        setNavigationEnCours("suiviPartie");
+                                                    }
+                                                }}
+                                            >
+                                                {navigationEnCours == "suiviPartie" ? <Chargement variant="button" /> : <MonitorPlay size={16} />}
                                                 Suivi partie
                                             </NavLink>
                                         </li>
@@ -116,8 +126,18 @@ export default function Navbar({ estAuth, role, demandesAdhesion, setAfficherMod
                                     </button>
                                 )}
 
-                                <NavLink className="navbarProfil navbarLien" to="/mon-compte" onClick={fermerMenu}>
-                                    <UserCircle2 size={18} />
+                                <NavLink
+                                    className="navbarProfil navbarLien"
+                                    to="/mon-compte"
+                                    onClick={() => {
+                                        fermerMenu();
+
+                                        if (location.pathname !== "/mon-compte") {
+                                            setNavigationEnCours("monCompte");
+                                        }
+                                    }}
+                                >
+                                    {navigationEnCours == "monCompte" ? <Chargement variant="button" /> : <UserCircle2 size={18} />}
                                     Mon compte
                                 </NavLink>
                             </>

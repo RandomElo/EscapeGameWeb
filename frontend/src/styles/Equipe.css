@@ -54,6 +54,8 @@
         }
         button {
             width: 50px;
+            display: flex;
+            justify-content: center;
         }
         #divErreurFormulaire {
             width: 100%;
@@ -165,10 +167,6 @@
 
         .tdPoubelle:hover svg {
             color: red;
-        }
-
-        .tdPoubelle:hover svg {
-            color: gray;
         }
     }
 }

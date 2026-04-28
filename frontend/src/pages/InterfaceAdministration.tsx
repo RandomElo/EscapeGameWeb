@@ -458,7 +458,7 @@ export default function InterfaceAdministration() {
                                     recuperationDonnees(reponse);
                                     setChargementRequete(false);
                                     setAfficherModal(false);
-                                }, 1000);
+                                }, 500);
                             }}
                         >
                             <ChampDonneesForm id="inputNom" label="Nom :" typeInput="text" placeholder="Scénario alarme" focus={true} />

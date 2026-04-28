@@ -123,6 +123,19 @@
                 color: #0284c7;
             }
             
+            .Chargement {
+                margin-right: 2px;
+                .loader-ring--button {
+                    width: 14px;
+                    height: 14px;
+                    span:nth-child(1) {
+                        border-top-color: #0085ff;
+                        width: 14px;
+                        height: 14px;
+                    }
+                }
+            }
+
             .navbarListeLiens {
                 display: flex;
                 align-items: center;
@@ -130,19 +143,6 @@
                 list-style: none;
                 padding: 0;
                 margin: 0;
-
-                .Chargement {
-                    margin-right: 2px;
-                    .loader-ring--button {
-                        width: 14px;
-                        height: 14px;
-                        span:nth-child(1) {
-                            border-top-color: #0085ff;
-                            width: 14px;
-                            height: 14px;
-                        }
-                    }
-                }
             }
             .navbarActions {
                 display: flex;

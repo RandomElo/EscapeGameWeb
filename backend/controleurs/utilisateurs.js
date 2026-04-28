@@ -238,6 +238,23 @@ export const initialisationCode2FA = gestionErreur(async (req, res) => {
 
 }, "controleurInitialisation2FA", "Erreur lors de la vérification du code de double authentification")
 
+export const desactiver2FA = gestionErreur(async (req, res) => {
+    const utilisateur = await req.Utilisateurs.findByPk(req.idUtilisateur)
+    if (utilisateur.role == "controleur") {
+        return res.status(403).json({
+            etat: false,
+            detail: "Fonctionnalité interdite",
+        });
+    }
+
+    utilisateur.doubleAuthentificationActive = false
+    utilisateur.doubleAuthentificationSecret = ""
+    await utilisateur.save()
+
+    return res.json({ etat: true, detail: await RecuperationMonCompte(req) })
+
+}, "controleurDesactiver2FA", "Erreur lors de la désactivation de la double authentification")
+
 // --- MODIFICATIONS PARAMETRES COMPTE ---
 export const modifierMail = gestionErreur(
     async (req, res) => {
