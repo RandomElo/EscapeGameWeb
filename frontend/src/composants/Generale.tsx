@@ -6,6 +6,7 @@ import { useRequete } from "../fonctions/requete";
 import { BellDot, Check, X } from "lucide-react";
 import Modal from "./Modal";
 import Navbar from "./Navbar";
+import Footer from "./Footer";
 export type DemandeAdhesion = {
     nom: string;
     mail: string;
@@ -68,64 +69,6 @@ export default function Generale({ children }: { children?: ReactNode }) {
     return (
         <>
             <header>
-                {/* <nav className="navbar">
-                    <NavLink className="logo" to="/">
-                        Escape Game
-                    </NavLink>
-                    <div className="navLinks">
-                        <ul>
-                            <li>
-                                <NavLink to="/">Accueil</NavLink>
-                            </li>
-                            {estAuth ? (
-                                <>
-                                    {role == "joueur" ? (
-                                        <>
-                                            <li>
-                                                <NavLink to="/equipe">Équipe</NavLink>
-                                            </li>
-                                            <li>
-                                                <NavLink to="/classements">Classements</NavLink>
-                                            </li>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <li>
-                                                <NavLink to="/suivi-partie">Suivi partie</NavLink>
-                                            </li>
-                                            <li>
-                                                <NavLink to="/interface-administration">Interface d'administration</NavLink>
-                                            </li>
-                                        </>
-                                    )}
-
-                                    <li>
-                                        <NavLink to="/mon-compte">Mon compte</NavLink>
-                                    </li>
-                                    {demandesAdhesion && demandesAdhesion?.length > 0 && (
-                                        <li
-                                            className="notificationDemandesAdhesion"
-                                            onClick={() => {
-                                                setAfficherModal(true);
-                                            }}
-                                        >
-                                            <BellDot />
-                                        </li>
-                                    )}
-                                </>
-                            ) : (
-                                <>
-                                    <li>
-                                        <NavLink to="/inscription">Inscription</NavLink>
-                                    </li>
-                                    <li>
-                                        <NavLink to="/connexion">Connexion</NavLink>
-                                    </li>
-                                </>
-                            )}
-                        </ul>
-                    </div>
-                </nav> */}
                 <Navbar estAuth={estAuth} role={role} demandesAdhesion={demandesAdhesion} setAfficherModal={setAfficherModal} />
             </header>
             {erreur ? (
@@ -180,6 +123,9 @@ export default function Generale({ children }: { children?: ReactNode }) {
                     </div>
                 )}
             </Modal>
+            <footer>
+                <Footer />
+            </footer>
         </>
     );
 }

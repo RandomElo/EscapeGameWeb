@@ -14,8 +14,8 @@ export const liste = gestionErreur(
 );
 export const creation = gestionErreur(
     async (req, res) => {
-        const { nom, description } = req.body;
-        if (!nom || !description) {
+        const { nom, description, topicMQTT } = req.body;
+        if (!nom || !description || !topicMQTT) {
             return res.status(401).json({
                 etat: false,
                 detail: "Requête incorrecte",
@@ -25,6 +25,7 @@ export const creation = gestionErreur(
         await req.Missions.create({
             nom,
             description,
+            topicMQTT
         });
 
         return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });

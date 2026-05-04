@@ -14,7 +14,7 @@ type Mission = {
     id: number;
     nom: string;
     description: string;
-    ipAdresse: string;
+    topicMQTT: string;
     configuration: string;
 };
 
@@ -123,6 +123,7 @@ export default function InterfaceAdministration() {
                             <tr>
                                 <th>Nom</th>
                                 <th>Description</th>
+                                <th>Topic MQTT</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -131,6 +132,7 @@ export default function InterfaceAdministration() {
                                 <tr key={key}>
                                     <td className="tdNom">{mission.nom}</td>
                                     <td className="tdDescription">{mission.description}</td>
+                                    <td className="tdTopic">{mission.topicMQTT}</td>
                                     <td
                                         className="tdAction"
                                         onClick={() => {
@@ -277,17 +279,19 @@ export default function InterfaceAdministration() {
 
                                 const nom = document.querySelector<HTMLInputElement>("#inputNom")!.value;
                                 const description = document.querySelector<HTMLInputElement>("#inputDescription")!.value;
+                                const topicMQTT = document.querySelector<HTMLInputElement>("#inputTopic")!.value;
 
-                                const reponse = await requete({ url: "/admins/missions/creation", methode: "POST", corps: { nom, description } });
+                                const reponse = await requete({ url: "/admins/missions/creation", methode: "POST", corps: { nom, description, topicMQTT } });
                                 setTimeout(() => {
                                     recuperationDonnees(reponse);
                                     setChargementRequete(false);
-                                    // setAfficherModal(false);
+                                    setAfficherModal(false);
                                 }, 1000);
                             }}
                         >
                             <ChampDonneesForm id="inputNom" typeInput="text" placeholder="Mission 1" label="Nom :" focus={true} />
                             <ChampDonneesForm id="inputDescription" typeInput="textearea" label="Description :" />
+                            <ChampDonneesForm id="inputTopic" typeInput="text" label="Topic MQTT :" placeholder="1" />
 
                             {erreur && <p id="pErreur">{erreur}</p>}
 

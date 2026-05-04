@@ -17,6 +17,10 @@ export default function (bdd) {
                 type: DataTypes.STRING(255),
                 allowNull: false,
             },
+            topicMQTT: {
+                type: DataTypes.STRING(255),
+                allowNull: false,
+            },
             public: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,

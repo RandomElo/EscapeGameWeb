@@ -74,10 +74,6 @@ export default function Equipe() {
                                     >
                                         <EllipsisVertical />
                                     </td>
-                                    {/* je doit mettre les détails des membres */}
-                                    {/* <td className="action"><UserPlus /></td>
-                                            <td className="action"><Pencil /></td>
-                                            <td className="action"><Trash2 /></td> */}
                                 </tr>
                             ))}
                         </tbody>
