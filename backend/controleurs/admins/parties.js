@@ -97,7 +97,7 @@ async function recuperationDetailsPartie(partie, req) {
                     type: "audio",
                     ordre: step.ordre,
                     nom: audio?.detail || null,
-                    etat: index == 0 ? "Terminée" : "EnAttente",
+                    etat: index == 0 ? "EnCours" : "EnAttente",
                 };
             }
 
@@ -121,6 +121,7 @@ export const partieEnCours = gestionErreur(
     async (req, res) => {
         const partie = await req.Parties.findOne({ where: { statut: "enCours" } });
         if (partie) {
+            console.log("il y a partie")
             return res.json({ etat: true, detail: { partieEnCours: true, details: await recuperationDetailsPartie(partie, req) } });
         } else {
             const equipes = await req.Equipes.findAll();

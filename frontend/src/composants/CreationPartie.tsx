@@ -1,6 +1,7 @@
 import { Gamepad2, Play, Users } from "lucide-react";
 import { useRequete } from "../fonctions/requete";
 import Chargement from "./Chargement";
+import { useRevalidator } from "react-router-dom";
 
 type Props = {
     lancementPartie: {
@@ -47,6 +48,7 @@ type Props = {
 
 export default function CreationPartie({ lancementPartie, setLancementPartie, scenarios, equipes, erreur, setErreur, setPartiesEnCours, setDetailsPartie, chargementInfos }: Props) {
     const requete = useRequete();
+    const { revalidate } = useRevalidator();
     return (
         <div className="aucunePartie card">
             <div className="header">
@@ -128,7 +130,8 @@ export default function CreationPartie({ lancementPartie, setLancementPartie, sc
                 onClick={async () => {
                     console.log(lancementPartie);
                     const reponse = await requete({ url: "/admins/parties/lancer", methode: "POST", corps: lancementPartie });
-                    console.log(reponse);
+                    revalidate();
+
                     if (reponse.partieLancer) {
                         setDetailsPartie(reponse.details);
                         setPartiesEnCours(true);

@@ -170,7 +170,7 @@ const router = createBrowserRouter([
                         }
                         const donnees = reponsePartie.detail.details;
                         if (reponsePartie.detail.partieEnCours) {
-                            return { partieEnCours: false, detailsPartie: donnees.detailsPartie, deroule: donnees.derouleScenario };
+                            return { partieEnCours: true, detailsPartie: donnees.detailsPartie, deroule: donnees.derouleScenario };
                         } else {
                             return { partieEnCours: false, equipes: donnees.equipes, scenarios: donnees.scenarios };
                         }

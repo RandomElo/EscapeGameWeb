@@ -15,7 +15,7 @@ export const liste = gestionErreur(
 export const creation = gestionErreur(
     async (req, res) => {
         const { nom, description } = req.body;
-        if (!nom || !description || !ipAdresse || !reponse) {
+        if (!nom || !description) {
             return res.status(401).json({
                 etat: false,
                 detail: "Requête incorrecte",

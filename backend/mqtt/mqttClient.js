@@ -130,6 +130,7 @@ client.on("message", async (topic, messageBuffer) => {
             const missionId = stateMatch[1];
 
             try {
+                logger.info(msg)
                 const data = JSON.parse(msg);
 
                 logger.info(`State mission ${missionId} : ${msg}`);
@@ -190,7 +191,7 @@ client.on("message", async (topic, messageBuffer) => {
 
             client.publish(
                 `escape/mission/${missionId}/state`,
-                "start"
+                JSON.stringify("start")
             );
         }
 

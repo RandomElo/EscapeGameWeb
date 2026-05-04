@@ -47,13 +47,15 @@ export default function SuiviPartie() {
                 navigation("/");
             } else {
                 async function attributionDonnees() {
+                    console.log(donneesLoader);
                     if (donneesLoader.partieEnCours) {
+                        console.log(donneesLoader);
                         setDetailsPartie(donneesLoader.detailsPartie);
                         setDeroule(donneesLoader.deroule);
                         setPartiesEnCours(true);
                     } else {
-                        console.log("EQUIPESS: "+donneesLoader.equipes)
-                        console.log("SCENARIOS: "+donneesLoader.scenarios)
+                        console.log("EQUIPESS: " + donneesLoader.equipes);
+                        console.log("SCENARIOS: " + donneesLoader.scenarios);
                         setEquipes(donneesLoader.equipes);
                         setScenarios(donneesLoader.scenarios);
                         setPartiesEnCours(false);

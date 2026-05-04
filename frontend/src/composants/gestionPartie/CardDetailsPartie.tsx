@@ -1,6 +1,7 @@
 import { CircleAlert, Power } from "lucide-react";
 import { useRequete } from "../../fonctions/requete";
 import type { DetailsPartie } from "../GestionPartie";
+import { useRevalidator } from "react-router-dom";
 
 type Props = {
     detailsPartie: DetailsPartie;
@@ -10,7 +11,7 @@ type Props = {
 
 export default function CardDetailsPartie({ detailsPartie, setPartiesEnCours, now }: Props) {
     const requete = useRequete();
-
+    const { revalidate } = useRevalidator();
     function formatDureeDepuis(dateDebut: string, now: number): string {
         const debut = new Date(dateDebut).getTime();
         const diffMs = now - debut;
@@ -65,6 +66,8 @@ export default function CardDetailsPartie({ detailsPartie, setPartiesEnCours, no
                         onClick={async () => {
                             const reponse2 = await requete({ url: "/admins/parties/avorter-partie", methode: "PATCH" });
                             console.log(reponse2);
+                            revalidate();
+
                             setPartiesEnCours(false);
                         }}
                     >

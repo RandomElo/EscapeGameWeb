@@ -3,14 +3,24 @@ import path from "path";
 import { stat } from "fs/promises";
 import gestionErreur from "../../middlewares/gestionErreur.js";
 import { fileURLToPath } from "url";
+import logger from "../../mqtt/logger.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export const stream = gestionErreur(async (req, res) => {
-    const nomFichier = req.params.nomFichier;
-    const cheminFichier = path.join(__dirname, "../../audios/morse", nomFichier);
-    console.log(cheminFichier)
+    const { type, nomFichier } = req.params;
+    let cheminFichier = "";
+
+    if (type == "morse") {
+        cheminFichier = path.join(__dirname, "../../audios/morse", nomFichier);
+    } else if (type == "message") {
+        cheminFichier = path.join(__dirname, "../../audios/messages", nomFichier);
+    } else{
+        console.log("DEHORSSSSSSSSSS")
+    }
+    logger.info(cheminFichier);
+
     if (!fs.existsSync(cheminFichier)) {
         return res.status(404).json({
             etat: false,

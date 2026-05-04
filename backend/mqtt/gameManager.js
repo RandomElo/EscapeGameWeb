@@ -102,7 +102,7 @@ async function playCurrentStep() {
         }
 
         // trigger mission
-        client.publish(`escape/mission/${missionId}/state`, "start");
+        client.publish(`escape/mission/${missionId}/state`, JSON.stringify("start"));
     }
 
     // ==========================
@@ -125,6 +125,7 @@ async function playCurrentStep() {
             "escape/speaker/play",
             JSON.stringify({
                 nomFichier: audio.nomFichier,
+                type:"message"
             }),
         );
 

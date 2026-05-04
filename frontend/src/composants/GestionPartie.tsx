@@ -62,6 +62,8 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
 
     useEffect(() => {
         const ordreMissionEnCours = deroule.filter((etape) => etape.etat == "EnCours")[0].ordre;
+        console.log("Mission en cours : "+ordreMissionEnCours)
+        console.log(deroule)
         const missionSuivante = deroule.filter((etape) => etape.ordre > ordreMissionEnCours && etape.type == "mission")[0].ordre;
 
         setMissionEnCours(ordreMissionEnCours);

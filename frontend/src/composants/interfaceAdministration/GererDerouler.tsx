@@ -117,7 +117,7 @@ export default function GererDeroulerMissions({ scenario, setContenuModal, setDe
 
                                 <td>{el.type === "mission" ? el.mission?.nom : "Audio"}</td>
 
-                                <td>{el.type == "mission" ? <ChampDonneesForm typeInput="texteOnChange" id="inputConfiguration" value={el.configurationTexte} onChange={(valeur) => modifierConfiguration(index, valeur)} /> : el.fichierDetail}</td>
+                                <td>{el.type == "mission" ? <ChampDonneesForm typeInput="texteOnChange" id="inputConfiguration" value={JSON.parse(el.configurationTexte)} onChange={(valeur) => modifierConfiguration(index, valeur)} /> : el.fichierDetail}</td>
 
                                 <td className="tdSupprimer">
                                     <Trash2 />
@@ -133,11 +133,11 @@ export default function GererDeroulerMissions({ scenario, setContenuModal, setDe
                     className="bouton"
                     onClick={async () => {
                         setChargementRequete(true);
-
+                        console.log(deroule);
                         const donnees = deroule.map((etape) => ({
                             type: etape.type,
                             id: etape.type == "mission" ? etape.mission?.id : etape.fichierId,
-                            configuration: etape.type == "mission" ? JSON.stringify(etape.configuration) : "",
+                            configuration: etape.type == "mission" ? (typeof etape.configuration === "string" ? etape.configuration : JSON.stringify(etape.configuration)) : "",
                         }));
 
                         const reponse = await requete({

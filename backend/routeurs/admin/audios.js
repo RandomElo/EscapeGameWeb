@@ -12,6 +12,6 @@ routeurAudios.delete("/suppression", accesAdmin, suppression);
 routeurAudios.post("/recuperation-lien", accesAdmin, recuperationLien);
 
 routeurAudios.get("/lecture/:nomFichier", lecture);
-routeurAudios.get("/stream/:nomFichier", stream);
+routeurAudios.get("/stream/:type/:nomFichier", stream);
 routeurAudios.get("/recuperation-morse", recuperationMorse);
 export default routeurAudios;
