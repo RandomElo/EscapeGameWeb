@@ -122,7 +122,6 @@
                 background: #e0f2fe;
                 color: #0284c7;
             }
-            
             .Chargement {
                 margin-right: 2px;
                 .loader-ring--button {
@@ -135,7 +134,7 @@
                     }
                 }
             }
-
+            
             .navbarListeLiens {
                 display: flex;
                 align-items: center;

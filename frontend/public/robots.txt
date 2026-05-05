@@ -1,0 +1,9 @@
+User-agent: *
+
+Disallow: /suivi-partie
+Disallow: /mon-compte
+Disallow: /administration
+
+Allow: /
+
+Sitemap: https://escape+-game.fr/sitemap.xml

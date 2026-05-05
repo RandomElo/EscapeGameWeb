@@ -84,11 +84,11 @@ export default function Navbar({ estAuth, role, demandesAdhesion, setAfficherMod
                                         <li>
                                             <NavLink
                                                 className="navbarLien"
-                                                to="/interface-administration"
+                                                to="/administration"
                                                 onClick={() => {
                                                     fermerMenu();
 
-                                                    if (location.pathname !== "/interface-administration") {
+                                                    if (location.pathname !== "/administration") {
                                                         setNavigationEnCours("administration");
                                                     }
                                                 }}
