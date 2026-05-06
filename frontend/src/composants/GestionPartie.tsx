@@ -37,7 +37,8 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
     const [missionEnCours, setMissionEnCours] = useState<number>();
     const [missionSuivante, setMissionSuivante] = useState<number>();
     const [afficherModal, setAfficherModal] = useState<boolean>(false);
-    const [contenuModal, setContenuModal] = useState<"audioAide">();
+    const [contenuModal, setContenuModal] = useState<"audioAide" | "lancementAudioVolee">();
+
     const [detailModal, setDetailModal] = useState<string>("");
     const [missionsDeconnectee, setMissionsDeconnectee] = useState<string[]>([]);
     const [chargementPage, setChargementPage] = useState<boolean>(false);
@@ -62,8 +63,8 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
 
     useEffect(() => {
         const ordreMissionEnCours = deroule.filter((etape) => etape.etat == "EnCours")[0].ordre;
-        console.log("Mission en cours : "+ordreMissionEnCours)
-        console.log(deroule)
+        console.log("Mission en cours : " + ordreMissionEnCours);
+        console.log(deroule);
         const missionSuivante = deroule.filter((etape) => etape.ordre > ordreMissionEnCours && etape.type == "mission")[0].ordre;
 
         setMissionEnCours(ordreMissionEnCours);
@@ -92,7 +93,7 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
         });
 
         client.on("message", (topic, payload) => {
-            const msg = payload.toString();
+            let msg = payload.toString().trim();
             console.log("Message reçu :", topic, msg);
 
             setMessages((prev) => [...prev, { topic, msg }]);
@@ -112,6 +113,30 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
                 }
 
                 return; // important → éviter traitement global
+            }
+
+            const regexChangementMission = topic.match(/^escape\/mission\/(\d+)\/state$/);
+            if (regexChangementMission) {
+                msg = JSON.parse(payload.toString());
+
+                const missionId = regexChangementMission[1];
+
+                if (msg == "start") {
+                    console.log(`Mission ${missionId} démarrée`);
+                    console.log(deroule.filter((mission) => mission.topicMQTT == missionId)[0].ordre);
+                    setMissionSuivante(deroule.filter((mission) => mission.topicMQTT == missionId)[0].ordre + 1);
+                    // Exemple
+                    setListeNotifications((prev) => [
+                        ...prev,
+                        {
+                            niveau: "succes",
+                            titre: `Mission ${missionId}`,
+                            description: "Démarrée",
+                        },
+                    ]);
+                } else console.log("dehors");
+
+                return;
             }
         });
 
@@ -160,7 +185,7 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
                         <CardAvertissements missionsDeconnectee={missionsDeconnectee} />
                         <CardTimelineScenario deroule={deroule} setContenuModal={setContenuModal} setDetailModal={setDetailModal} setAfficherModal={setAfficherModal} missionSuivante={missionSuivante} />
                         <CardCamera />
-                        <CardLancementAudioVolee />
+                        <CardLancementAudioVolee setContenuModal={setContenuModal} setAfficherModal={setAfficherModal} />
                     </>
                 ) : (
                     <>
@@ -175,7 +200,7 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
                         {/* RIGHT PANEL */}
                         <div className="scenarioRight">
                             <CardDetailsPartie detailsPartie={detailsPartie} setPartiesEnCours={setPartiesEnCours} now={now} />
-                            <CardLancementAudioVolee />
+                            <CardLancementAudioVolee setContenuModal={setContenuModal} setAfficherModal={setAfficherModal} />
                         </div>
                     </>
                 )}
@@ -198,6 +223,11 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
                                     ))}
                             </tbody>
                         </table>
+                    </div>
+                )}
+                {contenuModal == "lancementAudioVolee" && (
+                    <div id="divModalLancementAudioVolee">
+                        <h1>Lancement audio</h1>
                     </div>
                 )}
             </Modal>

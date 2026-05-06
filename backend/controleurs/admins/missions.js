@@ -139,30 +139,3 @@ export const modificationConfiguration = gestionErreur(
     "controleurModificationConfiguration",
     "Erreur lors de la modification de la configuration",
 );
-
-export const modificationAdresseIp = gestionErreur(
-    async (req, res) => {
-        const { id } = req.params;
-        const { adresseIp } = req.body;
-        if (!req.params.id || !adresseIp) {
-            return res.status(400).json({
-                etat: false,
-                detail: "Requête incorrecte",
-            });
-        }
-
-        const mission = await req.Missions.findByPk(id, { raw: true });
-        if (!mission) {
-            return res.status(404).json({
-                etat: true,
-                detail: "Ressource introuvable",
-            });
-        }
-
-        await req.Missions.update({ ipAdresse: adresseIp }, { where: { id } });
-
-        return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
-    },
-    "controleurModificationAdresseIp",
-    "Erreur lors de la modification de la adresse IP",
-);

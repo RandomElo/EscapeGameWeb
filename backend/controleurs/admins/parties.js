@@ -36,7 +36,7 @@ async function recuperationDetailsPartie(partie, req) {
     const [missions, audios, aideAudios] = await Promise.all([
         req.Missions.findAll({
             where: { id: missionIds },
-            attributes: ["id", "nom", "description"],
+            attributes: ["id", "nom", "description", "topicMQTT"],
             raw: true,
         }),
         req.MessagesAudio.findAll({
@@ -81,6 +81,7 @@ async function recuperationDetailsPartie(partie, req) {
                 return {
                     type: "mission",
                     ordre: step.ordre,
+                    topicMQTT: mission.topicMQTT,
                     nom: mission?.nom || null,
                     description: mission?.description || null,
                     configuration: step.configuration,
@@ -121,7 +122,7 @@ export const partieEnCours = gestionErreur(
     async (req, res) => {
         const partie = await req.Parties.findOne({ where: { statut: "enCours" } });
         if (partie) {
-            console.log("il y a partie")
+            console.log("il y a partie");
             return res.json({ etat: true, detail: { partieEnCours: true, details: await recuperationDetailsPartie(partie, req) } });
         } else {
             const equipes = await req.Equipes.findAll();

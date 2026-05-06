@@ -4,7 +4,7 @@ import type { Deroule } from "../../pages/SuiviPartie";
 
 type Props = {
     deroule: Deroule;
-    setContenuModal: React.Dispatch<React.SetStateAction<"audioAide" | undefined>>;
+    setContenuModal: React.Dispatch<React.SetStateAction<"audioAide" | "lancementAudioVolee" | undefined>>;
     setDetailModal: React.Dispatch<React.SetStateAction<string>>;
     setAfficherModal: React.Dispatch<React.SetStateAction<boolean>>;
     missionSuivante: number | undefined;

@@ -3,7 +3,7 @@ import { randomUUID } from "crypto";
 
 import { spawn } from "child_process";
 import fs from "fs/promises";
-import fsSync from "fs";
+import fsSync, { cp } from "fs";
 import { stat } from "fs/promises"; // pour async
 import path from "path";
 import { fileURLToPath } from "url";
@@ -60,7 +60,7 @@ export const generation = gestionErreur(
             });
         }
 
-        const cheminDossierAudio = path.join(process.cwd(),"audios", "messages");
+        const cheminDossierAudio = path.join(process.cwd(), "audios", "messages");
         const nomFichier = `${Date.now()}.wav`;
         try {
             if (process.env.TYPE_ENV == "reel") {
@@ -204,7 +204,7 @@ export const recuperationMorse = gestionErreur(
             });
         }
 
-        const filePath = path.join(process.cwd(),"audios", "morse", nomFichier);
+        const filePath = path.join(process.cwd(), "audios", "morse", nomFichier);
         try {
             await fs.access(filePath, fsSync.constants.R_OK);
         } catch {
@@ -330,4 +330,18 @@ export const generationQuiz = gestionErreur(
     },
     "controleurGenerationQuiz",
     "Erreur lors de la génération de l'audio pour le quiz",
+);
+
+export const generationDevinette = gestionErreur(
+    async (req, res) => {
+        const { nom, devinette } = req.body;
+        if (!nom || !devinette) {
+            return res.status(400).json({
+                etat: false,
+                detail: "Requête incorrecte",
+            });
+        }
+    },
+    "controleurGenerationDevinette",
+    "Erreur lors de la génération des devinettes",
 );

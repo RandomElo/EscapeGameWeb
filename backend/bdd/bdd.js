@@ -26,6 +26,9 @@ import MorseAudios from "./modeles/MorseAudios.js";
 import QuizAudios from "./modeles/QuizAudios.js";
 import QuizQuestions from "./modeles/QuizQuestions.js";
 import AideAudios from "./modeles/AideAudios.js";
+import Devinettes from "./modeles/Devinettes.js";
+
+
 const cheminBDD = "./bdd/bdd.sqlite";
 
 // Initialisation de l'ORM
@@ -59,6 +62,7 @@ const bdd = {
     QuizAudios: QuizAudios(sequelize),
     QuizQuestions: QuizQuestions(sequelize),
     AideAudios: AideAudios(sequelize),
+    Devinettes: Devinettes(sequelize),
 };
 
 // Initialisation de la bdd

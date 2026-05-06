@@ -40,7 +40,7 @@ export default function GererDeroulerMissions({ scenario, setContenuModal, setDe
         scenario.deroule.map((el) => ({
             ...el,
             configurationTexte: el.configuration || "{}",
-            configuration: el.configuration ? safeParse(el.configuration) : {},
+            configuration: el.configuration ? JSON.parse(el.configuration) : {},
         })),
     );
     const [modification, setModification] = useState(false);
@@ -117,7 +117,7 @@ export default function GererDeroulerMissions({ scenario, setContenuModal, setDe
 
                                 <td>{el.type === "mission" ? el.mission?.nom : "Audio"}</td>
 
-                                <td>{el.type == "mission" ? <ChampDonneesForm typeInput="texteOnChange" id="inputConfiguration" value={JSON.parse(el.configurationTexte)} onChange={(valeur) => modifierConfiguration(index, valeur)} /> : el.fichierDetail}</td>
+                                <td>{el.type == "mission" ? <ChampDonneesForm typeInput="texteOnChange" id="inputConfiguration" value={el.configurationTexte} onChange={(valeur) => modifierConfiguration(index, valeur)} /> : el.fichierDetail}</td>
 
                                 <td className="tdSupprimer">
                                     <Trash2 />

@@ -57,7 +57,7 @@ export type RecuperationDonnees = {
     messagesAudio: MessageAudio[];
 };
 
-export type ContenuModal = "ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio" | "menuScenario" | "gererDeroulerScenario" | "modifierNomScenario" | "modifierDescriptionScenario" | "supprimerScenario" | "menuMission" | "supprimerMission" | "modifierNomMission" | "modifierDescriptionMission" | "ajouterMissionScenario" | "genererAudioQuiz" | "ajouterAudioScenario" | "ajouterAudiosAideScenario" | "audiosAideScenario";
+export type ContenuModal = "ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio" | "menuScenario" | "gererDeroulerScenario" | "modifierNomScenario" | "modifierDescriptionScenario" | "supprimerScenario" | "menuMission" | "supprimerMission" | "modifierNomMission" | "modifierDescriptionMission" | "ajouterMissionScenario" | "genererAudioQuiz" | "ajouterAudioScenario" | "ajouterAudiosAideScenario" | "audiosAideScenario" | "generationDevinettes";
 
 export default function InterfaceAdministration() {
     const { estAuth, chargement } = useAuth();
@@ -266,6 +266,14 @@ export default function InterfaceAdministration() {
                     >
                         Générer des audios
                     </button>
+                </div>
+
+                <div id="divDevinettes">
+                    <h2>Génération devinettes</h2>
+                    <button className="bouton" onClick={() => {
+                        setContenuModal("generationDevinettes")
+                        setAfficherModal(true)
+                    }}>Générer des devinettes</button>
                 </div>
             </main>
             <Modal estOuvert={afficherModal} fermeture={() => setAfficherModal(false)}>

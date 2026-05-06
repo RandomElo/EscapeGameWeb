@@ -98,83 +98,37 @@ function createWavFile(filePath, audioBuffer) {
 const generationLocks = new Map();
 
 export default async function generateMorseAudio(text) {
-
     const cleanText = text.toUpperCase().replace(/[^A-Z0-9]/g, "");
 
-    // 🔥 LOCK MÉMOIRE (clé du fix)
-    if (generationLocks.has(cleanText)) {
-        return generationLocks.get(cleanText);
+    let buffers = [];
+
+    for (let char of cleanText) {
+        const morse = MORSE[char];
+        if (!morse) continue;
+
+        for (let symbol of morse) {
+            buffers.push(symbol === "." ? generateTone(dot) : generateTone(dash));
+            buffers.push(generateSilence(dot));
+        }
+
+        // pause entre caractères
+        buffers.push(generateSilence(dot * 3));
     }
 
-    const promise = (async () => {
+    const audioBuffer = Buffer.concat(buffers);
 
-        // 🔎 check DB
-        const existing = await bdd.MorseAudios.findOne({
-            where: { reponse: cleanText }
-        });
+    const nomFichier = `morse_${Date.now()}.wav`;
+    const wavPath = path.join(AUDIO_DIR, nomFichier);
 
-        if (existing) {
-            return {
-                fileName: existing.nomFichier,
-                texte: cleanText,
-            };
-        }
+    createWavFile(wavPath, audioBuffer);
+    
+    await bdd.MorseAudios.create({
+        reponse: cleanText,
+        nomFichier
+    });
 
-        // ================= GÉNÉRATION =================
-
-        let buffers = [];
-
-        for (let char of cleanText) {
-            const morse = MORSE[char];
-            if (!morse) continue;
-
-            for (let symbol of morse) {
-                buffers.push(symbol === "." ? generateTone(dot) : generateTone(dash));
-                buffers.push(generateSilence(dot));
-            }
-
-            buffers.push(generateSilence(dot * 3));
-        }
-
-        const audioBuffer = Buffer.concat(buffers);
-
-        const nomFichier = `morse_${Date.now()}.wav`;
-        const wavPath = path.join(AUDIO_DIR, nomFichier);
-
-        createWavFile(wavPath, audioBuffer);
-
-        try {
-
-            await bdd.MorseAudios.create({
-                reponse: cleanText,
-                nomFichier
-            });
-
-            return {
-                fileName: nomFichier,
-                texte: cleanText,
-            };
-
-        } catch (err) {
-
-            // 🔁 si doublon DB → récupérer l’existant
-            const existing = await bdd.MorseAudios.findOne({
-                where: { reponse: cleanText }
-            });
-
-            return {
-                fileName: existing.nomFichier,
-                texte: cleanText,
-            };
-        }
-
-    })();
-
-    generationLocks.set(cleanText, promise);
-
-    try {
-        return await promise;
-    } finally {
-        generationLocks.delete(cleanText);
-    }
+    return {
+        morse: cleanText,
+        nomFichier
+    };
 }

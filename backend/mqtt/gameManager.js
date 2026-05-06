@@ -1,6 +1,7 @@
 import bdd from "../bdd/bdd.js";
 import client from "./mqttClient.js";
 import logger from "./logger.js";
+import CommunicationBDD from "./CommunicationBDD.js";
 
 let currentScenario = null;
 let currentStepIndex = 0;
@@ -78,6 +79,18 @@ export async function NextMission() {
     await playCurrentStep();
 }
 
+//Passage mission suivante
+export function setAudioFinished() {
+
+    if (!waitingForAudio) return;
+
+    waitingForAudio = false;
+
+    logger.info("Audio terminé → passage à l'étape suivante");
+
+    NextMission();
+}
+
 // ============================================
 // PLAY STEP
 // ============================================
@@ -93,16 +106,26 @@ async function playCurrentStep() {
 
     if (step.type === "mission") {
         const missionId = step.missionId;
-
+        const topicMQTT = await CommunicationBDD.getTopicMqtt(missionId);
         logger.info(`Lancement mission ${missionId}`);
 
         // envoyer config spécifique si besoin
         if (step.configuration) {
-            client.publish(`escape/mission/${missionId}/config`, JSON.stringify(step.configuration));
+            if(step.configuration.morse) {
+                const tableauConfiguration = []
+                for(const messageMorse of step.configuration.morse) {
+                    const configuration =await CommunicationBDD.getAudioMorse(messageMorse)
+                    
+                    tableauConfiguration.push(configuration)
+                }
+                console.log(tableauConfiguration)
+                step.configuration = tableauConfiguration;
+            }
+            client.publish(`escape/mission/${topicMQTT}/config`, JSON.stringify(step.configuration));
         }
 
         // trigger mission
-        client.publish(`escape/mission/${missionId}/state`, JSON.stringify("start"));
+        client.publish(`escape/mission/${topicMQTT}/state`, JSON.stringify("start"));
     }
 
     // ==========================

@@ -12,6 +12,7 @@ export type Deroule = {
     type: "mission" | "audio";
     nom: string;
     description?: string;
+    topicMQTT?:string;
     tags?: string[];
     etat: "EnCours" | "EnAttente" | "Terminée";
     audiosAide: { nomFichier: string; detail: string }[];

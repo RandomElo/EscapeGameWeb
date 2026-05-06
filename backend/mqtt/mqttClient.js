@@ -2,7 +2,7 @@ import mqtt from "mqtt";
 import config from "./config.js";
 import logger from "./logger.js";
 import CommunicationBDD from "./CommunicationBDD.js";
-import { startGame, stopGame, NextMission } from "./gameManager.js";
+import { startGame, stopGame, NextMission, setAudioFinished } from "./gameManager.js";
 import verifierMorseConfig from "../fonctions/verifierMorseConfig.js";
 // Téléchargement : http://172.18.201.101:8100/admins/audios/recuperation-morse?nomFichier=morse_1773393734861.wav
 
@@ -58,7 +58,7 @@ client.on("message", async (topic, messageBuffer) => {
         }
         
         // ================= Web → config brute =================
-        const webConfigMatch = topic.match(/^escape\/mission\/(\d+)\/config\/web$/);
+  /**      const webConfigMatch = topic.match(/^escape\/mission\/(\d+)\/config\/web$/);
 
         if (webConfigMatch) {
 
@@ -96,7 +96,7 @@ client.on("message", async (topic, messageBuffer) => {
             logger.info(`Mission ${missionId} lancée`);
 
             return;
-        }
+        } */
 
         // ================= Lest will =================
         const statusMatch = topic.match(/^escape\/mission\/(\d+)\/status$/);
@@ -166,10 +166,11 @@ client.on("message", async (topic, messageBuffer) => {
             if (data.status === "finished") {
 
                 logger.info(`Audio terminé : ${data.file}`);
+
+                setAudioFinished(); 
             }
 
             return;   
-
         }
 
         if (msg === "online") {
