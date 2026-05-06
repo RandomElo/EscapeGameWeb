@@ -36,7 +36,7 @@
         }
         .modalDetail {
             margin-top: 10px;
-            h1 {
+            h1, h2 {
                 margin-top: 0;
                 margin-bottom: 1rem;
             }

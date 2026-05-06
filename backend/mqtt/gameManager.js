@@ -111,15 +111,16 @@ async function playCurrentStep() {
 
         // envoyer config spécifique si besoin
         if (step.configuration) {
-            if(step.configuration.morse) {
+            if (step.configuration.morse) {
                 const tableauConfiguration = []
-                for(const messageMorse of step.configuration.morse) {
-                    const configuration =await CommunicationBDD.getAudioMorse(messageMorse)
-                    
+                for (const messageMorse of step.configuration.morse) {
+                    const configuration = await CommunicationBDD.getAudioMorse(messageMorse)
+
                     tableauConfiguration.push(configuration)
                 }
-                console.log(tableauConfiguration)
                 step.configuration = tableauConfiguration;
+            } else if (step.configuration.devinette) {
+                const configuration = await CommunicationBDD.getDevinette(step.configuration.devinette)
             }
             client.publish(`escape/mission/${topicMQTT}/config`, JSON.stringify(step.configuration));
         }
@@ -148,7 +149,7 @@ async function playCurrentStep() {
             "escape/speaker/play",
             JSON.stringify({
                 nomFichier: audio.nomFichier,
-                type:"message"
+                type: "message"
             }),
         );
 

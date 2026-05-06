@@ -7,11 +7,15 @@ export default function (bdd) {
             autoIncrement: true,
             primaryKey: true,
         },
-        nom: {
+        reponse: {
             type: DataTypes.STRING(255),
             allowNull: false,
         },
         devinette: {
+            type: DataTypes.STRING(255),
+            allowNull: false,
+        },
+        nomFichier: {
             type: DataTypes.STRING(255),
             allowNull: false,
         },

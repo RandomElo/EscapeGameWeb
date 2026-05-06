@@ -292,5 +292,23 @@
         width: 209px;
         margin: 10px auto 0 auto;
     }
-
+}
+#divModalGenerationDevinettes {
+    #pFormat {
+        margin-bottom: 1rem;
+    }
+    #pResultatsGeneration {
+        text-align: center;
+    }
+    #divinputDevinettes {
+        width: 100%;
+        height: 160px;
+        textarea {
+            height: 100%;
+            resize: none;
+        }
+    }
+    button {
+        margin-top: 10px;
+    }
 }

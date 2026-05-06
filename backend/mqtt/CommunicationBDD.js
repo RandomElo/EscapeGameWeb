@@ -1,7 +1,14 @@
+import { access } from "fs/promises";
 import bdd from "../bdd/bdd.js";
 import generateMorseAudio from "../fonctions/genererMorse.js";
 import logger from "./logger.js";
+import path from "path";
+import { fileURLToPath } from "url";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const cheminDossierAudios = path.resolve(__dirname, "../../audios");
 class CommunicationBDD {
     // =====================================================
     // UPDATE MISSION CONFIG
@@ -76,20 +83,44 @@ class CommunicationBDD {
     }
 
     async getAudioMorse(message) {
-        
+
         try {
-            const audio = await bdd.MorseAudios.findOne({where:{reponse:message}, raw:true});
+            const audio = await bdd.MorseAudios.findOne({ where: { reponse: message }, raw: true });
 
             if (!audio) {
                 logger.info(`Génération morse :  ${message}`);
-                
+
                 return await generateMorseAudio(message);
             } else {
-                return {morse: audio.reponse,nomFichier:audio.nomFichier};
+                return { morse: audio.reponse, nomFichier: audio.nomFichier };
             }
 
         } catch (err) {
             logger.error(`Erreur getAudioMorse : ${err.message}`);
+            return null;
+        }
+    }
+
+    async getDevinette(reponse) {
+        try {
+            const devinette = await bdd.Devinettes.findOne({ where: { reponse }, raw: true });
+
+            if (!devinette) {
+                logger.info(`Devinette inexistante :  ${reponse}`);
+                return false
+            } else {
+                try {
+                    await access(path.resolve(__dirname, "../../audios/devinette", devinette.nomFichier), constants.F_OK);
+
+                    return true;
+                } catch {
+                    console.log("je doit générer la DEVINETTTE")
+                }
+                return { reponse: devinette.reponse, nomFichier: audio.devinette };
+            }
+
+        } catch (err) {
+            logger.error(`Erreur getDevinette : ${err.message}`);
             return null;
         }
     }

@@ -270,10 +270,16 @@ export default function InterfaceAdministration() {
 
                 <div id="divDevinettes">
                     <h2>Génération devinettes</h2>
-                    <button className="bouton" onClick={() => {
-                        setContenuModal("generationDevinettes")
-                        setAfficherModal(true)
-                    }}>Générer des devinettes</button>
+                    <button
+                        className="bouton"
+                        onClick={() => {
+                            setDetailsModal("");
+                            setContenuModal("generationDevinettes");
+                            setAfficherModal(true);
+                        }}
+                    >
+                        Générer des devinettes
+                    </button>
                 </div>
             </main>
             <Modal estOuvert={afficherModal} fermeture={() => setAfficherModal(false)}>
@@ -855,6 +861,44 @@ export default function InterfaceAdministration() {
                                 Supprimer la mission
                             </a>
                         </div>
+                    </div>
+                )}
+
+                {contenuModal == "generationDevinettes" && (
+                    <div id="divModalGenerationDevinettes">
+                        <h2>Génération devinettes</h2>
+                        {detailsModal ? (
+                            <p id="pResultatsGeneration">Résultats génération : {detailsModal}</p>
+                        ) : (
+                            <>
+                                <p id="pFormat">⚠️ Format : Devinette;Réponse</p>
+
+                                <form
+                                    onSubmit={async (e) => {
+                                        e.preventDefault();
+                                        setChargementRequete(true);
+
+                                        const devinettes = document.querySelector<HTMLInputElement>("#inputDevinettes")!.value;
+                                        const reponse = await requete({ url: "/admins/audios/generation-devinette", methode: "POST", corps: { devinettes } });
+
+                                        setTimeout(() => {
+                                            setDetailsModal(`${reponse.succes} succès et ${reponse.erreurs.length} erreurs`);
+                                            setChargementRequete(false);
+
+                                            setTimeout(() => {
+                                                setAfficherModal(false);
+                                            }, 2000);
+                                        }, 1000);
+                                    }}
+                                >
+                                    <ChampDonneesForm id="inputDevinettes" typeInput="textearea" label="Devinettes à générer :" />
+
+                                    <button type="submit" className="bouton" disabled={chargementRequete}>
+                                        {chargementRequete ? <Chargement variant="button" /> : "Générer"}
+                                    </button>
+                                </form>
+                            </>
+                        )}
                     </div>
                 )}
             </Modal>

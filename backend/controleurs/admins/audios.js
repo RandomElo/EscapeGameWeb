@@ -224,26 +224,57 @@ export const recuperationMorse = gestionErreur(
     "Erreur lors de la récupération du fichier morse",
 );
 
-async function generationAudiosSimple(entree, type, req) {
-    const valeurs = entree
-        .split("\n")
-        .map((v) => v.trim())
-        .filter((v) => v.length > 0);
+// Permet la génération a partri d'un texte
+async function generationAudiosSimple(typeGeneration, entree, req, type) {
+    let cheminDossier;
+    let valeurs = [];
+    if (typeGeneration == "quiz") {
+        cheminDossier = path.join(cheminDossierAudios, "quiz", type);
+        valeurs = entree
+            .split("\n")
+            .map((v) => v.trim())
+            .filter((v) => v.length > 0);
+    } else if (typeGeneration == "devinette") {
+        cheminDossier = path.join(cheminDossierAudios, "devinette");
+        valeurs = entree
+            .split("\n")
+            .map((ligne) => ligne.trim())
+            .filter((ligne) => ligne.length > 0)
+            .map((ligne) => {
+                const [devinette, reponse] = ligne.split(";");
 
-    const cheminDossier = path.join(cheminDossierAudios, "quiz", type);
+                return {
+                    devinette: devinette?.trim(),
+                    reponse: reponse?.trim(),
+                };
+            });
+
+    }
 
     const resultats = await Promise.allSettled(
         valeurs.map((element) =>
             limit(async () => {
                 const nomFichier = `${randomUUID()}.wav`;
 
-                await generationTTS(cheminDossier, nomFichier, element);
+                if (process.env.TYPE_ENV == "reel") {
+                    await generationTTS(cheminDossier, nomFichier, typeGeneration == "quiz" ? element : element.devinette);
+                }
 
-                return await req.QuizAudios.create({
-                    type,
-                    texte: element,
-                    nomFichier: path.join(type, nomFichier),
-                });
+                if (typeGeneration == "quiz") {
+                    return await req.QuizAudios.create({
+                        type,
+                        texte: element,
+                        nomFichier: path.join(type, nomFichier),
+                    });
+                } else if (typeGeneration == "devinette") {
+                    return await req.Devinettes.create({
+                        reponse: element.reponse,
+                        devinette: element.devinette,
+                        nomFichier: path.join(nomFichier),
+                    });
+                }
+
+
             }),
         ),
     );
@@ -251,6 +282,7 @@ async function generationAudiosSimple(entree, type, req) {
     return resultats;
 }
 
+// Pemret la génération à partir d'un fichier JSON
 async function generationQuestion(entree, req) {
     let entreeMiseEnForme;
 
@@ -313,7 +345,7 @@ export const generationQuiz = gestionErreur(
                 });
             }
         } else {
-            resultats = await generationAudiosSimple(valeur, type, req);
+            resultats = await generationAudiosSimple("quiz", valeur, req, type);
         }
         const succes = resultats.filter((r) => r.status === "fulfilled").map((r) => r.value);
         const erreurs = resultats.filter((r) => r.status === "rejected").map((r) => r.reason?.message);
@@ -334,13 +366,24 @@ export const generationQuiz = gestionErreur(
 
 export const generationDevinette = gestionErreur(
     async (req, res) => {
-        const { nom, devinette } = req.body;
-        if (!nom || !devinette) {
+        const { devinettes } = req.body;
+        if (!devinettes) {
             return res.status(400).json({
                 etat: false,
                 detail: "Requête incorrecte",
             });
         }
+        const resultats = await generationAudiosSimple("devinette", devinettes, req);
+        const succes = resultats.filter((r) => r.status === "fulfilled").map((r) => r.value);
+        const erreurs = resultats.filter((r) => r.status === "rejected").map((r) => r.reason?.message);
+        return res.json({
+            etat: true,
+            detail: {
+                succes: succes.length,
+                erreurs,
+            },
+        });
+
     },
     "controleurGenerationDevinette",
     "Erreur lors de la génération des devinettes",
