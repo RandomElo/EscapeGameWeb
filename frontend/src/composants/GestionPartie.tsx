@@ -12,6 +12,7 @@ import CardCamera from "./gestionPartie/Camera";
 import CardDetailsPartie from "./gestionPartie/CardDetailsPartie";
 import CardLancementAudioVolee from "./gestionPartie/CardLancementAudioVolee";
 import CardTimelineScenario from "./gestionPartie/CardTimelineScenario";
+import ChampDonneesForm from "./ChampDonneesForm";
 export type DetailsPartie = { equipeNom: string; nbrMembres: number; scenarioNom: string; nbrMissions: number; dateDebut: string } | undefined;
 type Props = {
     deroule: Deroule;
@@ -41,7 +42,8 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
 
     const [detailModal, setDetailModal] = useState<string>("");
     const [missionsDeconnectee, setMissionsDeconnectee] = useState<string[]>([]);
-    const [chargementPage, setChargementPage] = useState<boolean>(false);
+    const [chargementRequete, setChargementRequete] = useState<boolean>(false);
+
     const requete = useRequete();
     const { estMobile } = useResponsive();
 
@@ -228,6 +230,29 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
                 {contenuModal == "lancementAudioVolee" && (
                     <div id="divModalLancementAudioVolee">
                         <h1>Lancement audio</h1>
+                        
+                        <form
+                            onSubmit={async (e) => {
+                                e.preventDefault();
+                                setChargementRequete(true);
+                                const texte = document.querySelector<HTMLInputElement>("#inputTexte")!.value;
+
+                                const reponse = await requete({ url: "/admins/audio/generer-et-lancer", methode: "POST", corps: { texte } });
+                                setTimeout(() => {
+                                    setChargementRequete(false);
+                                    setDetailModal("✅ Audio lancer avec succès");
+                                    setTimeout(() => {
+                                        setAfficherModal(false);
+                                    }, 2000);
+                                }, 1000);
+                            }}
+                        >
+                            <ChampDonneesForm id="inputTexte" typeInput="text" placeholder="Pour avancer vous devez ..." label="Texte à envoyer :" />
+
+                            <button type="submit" className="bouton" disabled={chargementRequete}>
+                                {chargementRequete ? <Chargement variant="button" /> : "Générer et lancer"}
+                            </button>
+                        </form>
                     </div>
                 )}
             </Modal>

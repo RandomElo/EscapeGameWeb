@@ -4,6 +4,7 @@ import generateMorseAudio from "../fonctions/genererMorse.js";
 import logger from "./logger.js";
 import path from "path";
 import { fileURLToPath } from "url";
+import { generationTTS } from "../controleurs/admins/audios.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -115,8 +116,10 @@ class CommunicationBDD {
                     return true;
                 } catch {
                     console.log("je doit générer la DEVINETTTE")
+                    const cheminDossier = path.resolve(__dirname, "../../audios/devinette")
+                    await generationTTS(cheminDossier, devinette.nomFichier, devinette.devinette)
                 }
-                return { reponse: devinette.reponse, nomFichier: audio.devinette };
+                return { reponse: devinette.reponse, nomFichier: devinette.devinette };
             }
 
         } catch (err) {

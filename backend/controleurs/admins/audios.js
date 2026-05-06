@@ -10,6 +10,7 @@ import { fileURLToPath } from "url";
 import { ConfigurationInterfaceAdmin } from "./scenarios.js";
 import jwt from "jsonwebtoken";
 import pLimit from "p-limit";
+import { lancerAudioVolee } from "../../mqtt/gameManager.js";
 
 const limit = pLimit(2); // max 3 TTS en parallèle
 
@@ -23,7 +24,7 @@ const cheminPiper = path.join(cheminTTS, "piper", "piper");
 // const cheminModeleVoix = path.join(cheminTTS, "voices", "fr_FR-tom-medium", "fr_FR-tom-medium.onnx");
 const cheminModeleVoix = path.join(cheminTTS, "voices", "fr_FR-siwis-medium", "fr_FR-siwis-medium.onnx");
 
-function generationTTS(cheminDossier, nomFichier, texte) {
+export function generationTTS(cheminDossier, nomFichier, texte) {
     return new Promise((resolve, reject) => {
         fsSync.mkdirSync(cheminDossier, { recursive: true });
 
@@ -62,28 +63,20 @@ export const generation = gestionErreur(
 
         const cheminDossierAudio = path.join(process.cwd(), "audios", "messages");
         const nomFichier = `${Date.now()}.wav`;
-        try {
-            if (process.env.TYPE_ENV == "reel") {
-                await generationTTS(cheminDossierAudio, nomFichier, texte);
-            }
-
-            await req.MessagesAudio.create({
-                detail: texte,
-                scenarioId,
-                missionId,
-                nomFichier,
-            });
-
-            return res.json({
-                etat: true,
-                detail: await ConfigurationInterfaceAdmin(req),
-            });
-        } catch (err) {
-            return res.status(500).json({
-                etat: false,
-                detail: err.message,
-            });
+        if (process.env.TYPE_ENV == "reel") {
+            await generationTTS(cheminDossierAudio, nomFichier, texte);
         }
+
+        await req.MessagesAudio.create({
+            detail: texte,
+            nomFichier,
+        });
+
+        return res.json({
+            etat: true,
+            detail: await ConfigurationInterfaceAdmin(req),
+        });
+
     },
     "controleurGenerationAudio",
     "Erreur lors de la génération de l'audio",
@@ -388,3 +381,28 @@ export const generationDevinette = gestionErreur(
     "controleurGenerationDevinette",
     "Erreur lors de la génération des devinettes",
 );
+export const genererEtLancer = gestionErreur(async (req, res) => {
+    const { texte } = req.body
+    if (!texte) {
+        return res.status(400).json({
+            etat: false,
+            detail: "Requête incorrecte",
+        });
+    }
+
+    const cheminDossierAudio = path.join(process.cwd(), "audios", "messages");
+    const nomFichier = `${Date.now()}.wav`;
+    if (process.env.TYPE_ENV == "reel") {
+        await generationTTS(cheminDossierAudio, nomFichier, texte);
+    }
+
+    await req.MessagesAudio.create({
+        detail: texte,
+        nomFichier,
+    });
+
+    await lancerAudioVolee(nomFichier, "message")
+
+    return res.json({ etat: true, detail: "ok" })
+
+}, "controleurGenererEtLancer", "Erreur lors de la génération de l'audio")

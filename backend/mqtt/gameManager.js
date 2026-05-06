@@ -121,6 +121,7 @@ async function playCurrentStep() {
                 step.configuration = tableauConfiguration;
             } else if (step.configuration.devinette) {
                 const configuration = await CommunicationBDD.getDevinette(step.configuration.devinette)
+                step.configuration = configuration;
             }
             client.publish(`escape/mission/${topicMQTT}/config`, JSON.stringify(step.configuration));
         }
@@ -155,4 +156,15 @@ async function playCurrentStep() {
 
         return;
     }
+}
+
+export async function lancerAudioVolee(fichier, type) {
+    client.publish(
+        "escape/speaker/play",
+        JSON.stringify({
+            nomFichier: fichier,
+            type: type
+        }),
+    );
+    return
 }

@@ -9,26 +9,6 @@ export default function (bdd) {
                 autoIncrement: true,
                 primaryKey: true,
             },
-            scenarioId: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                references: {
-                    model: "Scenarios",
-                    key: "id",
-                },
-                onDelete: "CASCADE",
-                onUpdate: "CASCADE",
-            },
-            missionId: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                references: {
-                    model: "Missions",
-                    key: "id",
-                },
-                onDelete: "CASCADE",
-                onUpdate: "CASCADE",
-            },
             detail: {
                 type: DataTypes.STRING(255),
                 allowNull: false,
