@@ -1,5 +1,9 @@
 import gestionErreur from "../../middlewares/gestionErreur.js";
 import { ConfigurationInterfaceAdmin } from "./scenarios.js";
+import AdmZip from "adm-zip";
+import fs from "fs";
+import path from "path";
+import logger from "../../mqtt/logger.js";
 
 async function RecuperationMissions(req) {
     return await req.Missions.findAll();
@@ -25,7 +29,7 @@ export const creation = gestionErreur(
         await req.Missions.create({
             nom,
             description,
-            topicMQTT
+            topicMQTT,
         });
 
         return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
@@ -138,4 +142,80 @@ export const modificationConfiguration = gestionErreur(
     },
     "controleurModificationConfiguration",
     "Erreur lors de la modification de la configuration",
+);
+
+export const enregistrementDiapo = gestionErreur(
+    async (req, res) => {
+        if (!req.file) {
+            return res.status(400).json({
+                erreur: "Aucun fichier",
+            });
+        }
+
+        const zip = new AdmZip(req.file.path);
+
+        const entries = zip.getEntries();
+        console.log("entries:", entries.length);
+        const dossierImages = "uploads";
+
+        if (!fs.existsSync(dossierImages)) {
+            fs.mkdirSync(dossierImages);
+        }
+        const nomDossier = path.parse(req.file.originalname).name;
+        if (await req.Diapos.findOne({ where: { nom: nomDossier } })) {
+            return res.json({ etat: true, detail: { cree: false, detail: "Nom déjà présent" } });
+        }
+        const diapo = await req.Diapos.create({ nom: path.parse(req.file.originalname).name });
+
+        for (const entry of entries) {
+            // ignorer dossiers
+            if (entry.isDirectory) {
+                continue;
+            }
+
+            // uniquement png
+            if (!entry.entryName.endsWith(".png")) {
+                continue;
+            }
+
+            // récupérer le numéro
+            const match = entry.entryName.match(/^(\d+)\.png$/);
+
+            if (!match) {
+                continue;
+            }
+            console.log(entry.entryName);
+            const ordre = parseInt(match[1]);
+
+            const nomFichier = `${Date.now()}-${entry.entryName}`;
+
+            const chemin = path.join(dossierImages, nomFichier);
+
+            // extraction
+            fs.writeFileSync(chemin, entry.getData());
+
+            logger.info({
+                ordre,
+                nomFichier,
+                chemin,
+                diapoId: diapo.id,
+            });
+            // BDD
+            await req.Images.create({
+                ordre,
+                nomFichier,
+                chemin,
+                diapoId: diapo.id,
+            });
+        }
+
+        fs.unlinkSync(req.file.path);
+
+        res.json({
+            etat: true,
+            detail: "ok",
+        });
+    },
+    "controleurEnregistrementDiapo",
+    "Erreur lors de l'enregistrement du diapo",
 );

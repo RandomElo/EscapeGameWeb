@@ -57,7 +57,7 @@ export type RecuperationDonnees = {
     messagesAudio: MessageAudio[];
 };
 
-export type ContenuModal = "ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio" | "menuScenario" | "gererDeroulerScenario" | "modifierNomScenario" | "modifierDescriptionScenario" | "supprimerScenario" | "menuMission" | "supprimerMission" | "modifierNomMission" | "modifierDescriptionMission" | "ajouterMissionScenario" | "genererAudioQuiz" | "ajouterAudioScenario" | "ajouterAudiosAideScenario" | "audiosAideScenario" | "generationDevinettes";
+export type ContenuModal = "ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio" | "menuScenario" | "gererDeroulerScenario" | "modifierNomScenario" | "modifierDescriptionScenario" | "supprimerScenario" | "menuMission" | "supprimerMission" | "modifierNomMission" | "modifierDescriptionMission" | "ajouterMissionScenario" | "genererAudioQuiz" | "ajouterAudioScenario" | "ajouterAudiosAideScenario" | "audiosAideScenario" | "generationDevinettes" | "ajoutDiapo";
 
 export default function InterfaceAdministration() {
     const { estAuth, chargement } = useAuth();
@@ -80,6 +80,7 @@ export default function InterfaceAdministration() {
 
     const [idAudioEnCours, setIdAudioEnCours] = useState<number | null>(null);
     const [chargementRequete, setChargementRequete] = useState<boolean>(false);
+    const [fichier, setFichier] = useState<File>();
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -279,6 +280,19 @@ export default function InterfaceAdministration() {
                         }}
                     >
                         Générer des devinettes
+                    </button>
+                </div>
+
+                <div id="divPhotosDiapo">
+                    <h2>Gestion diapo</h2>
+                    <button
+                        className="bouton"
+                        onClick={() => {
+                            setContenuModal("ajoutDiapo");
+                            setAfficherModal(true);
+                        }}
+                    >
+                        Ajouter une diapositive
                     </button>
                 </div>
             </main>
@@ -899,6 +913,38 @@ export default function InterfaceAdministration() {
                                 </form>
                             </>
                         )}
+                    </div>
+                )}
+
+                {contenuModal == "ajoutDiapo" && (
+                    <div id="divAjoutDiapo">
+                        <h2>Enregistrement d'un diapo</h2>
+                        <p id="pDetail">Il faut envoyer un fichier .zip qui contient uniquement des fichiers .png numéroté à partir de 1.</p>
+                        <p>Le nom du fichier .zip sera le nom du diapo.</p>
+                        <form
+                            onSubmit={async (e) => {
+                                e.preventDefault();
+                                const formData = new FormData();
+                                formData.append("zip", fichier!);
+
+                                const reponse = await requete({ url: "/admins/missions/enregistrement-diapo", methode: "POST", corps: formData, formData: true });
+                            }}
+                        >
+                            <input
+                                type="file"
+                                accept=".zip"
+                                onChange={(e) => {
+                                    if (e.target.files) {
+                                        setFichier(e.target.files[0]);
+                                    }
+                                }}
+                                required
+                            />
+
+                            <button type="submit" className="bouton">
+                                Envoyer
+                            </button>
+                        </form>
                     </div>
                 )}
             </Modal>

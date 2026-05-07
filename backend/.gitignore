@@ -7,3 +7,5 @@ tts/piper
 mqtt/logs
 morseAudios
 audios
+tmp
+uploads

@@ -6,23 +6,27 @@ interface RequeteParametres {
     methode?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
     corps?: object;
     enTete?: Record<string, string>;
+    formData?: boolean;
 }
 
 export function useRequete() {
     const { setErreur } = useErreur();
     const { estAuth, deconnexion } = useAuth();
 
-    return async function requete({ url, methode = "GET", corps, enTete = {} }: RequeteParametres): Promise<any> {
+    return async function requete({ url, methode = "GET", corps, enTete = {}, formData = false }: RequeteParametres): Promise<any> {
+        console.log(url);
+        console.log("Form DATA : " + formData);
         try {
-            const req = await fetch(`${ url}`, {
+            const req = await fetch(`${url}`, {
                 method: methode,
                 headers: {
-                    "Content-Type": "application/json",
+                    ...(!formData && {
+                        "Content-Type": "application/json",
+                    }),
                     ...enTete,
                 },
                 credentials: "include",
-                body: corps ? JSON
-                .stringify(corps) : undefined,
+                body: formData ? (corps as FormData) : corps ? JSON.stringify(corps) : undefined,
             });
 
             if (!req.ok) {

@@ -27,7 +27,8 @@ import QuizAudios from "./modeles/QuizAudios.js";
 import QuizQuestions from "./modeles/QuizQuestions.js";
 import AideAudios from "./modeles/AideAudios.js";
 import Devinettes from "./modeles/Devinettes.js";
-
+import Diapos from "./modeles/Diapos.js";
+import Images from "./modeles/Images.js";
 
 const cheminBDD = "./bdd/bdd.sqlite";
 
@@ -63,6 +64,8 @@ const bdd = {
     QuizQuestions: QuizQuestions(sequelize),
     AideAudios: AideAudios(sequelize),
     Devinettes: Devinettes(sequelize),
+    Diapos: Diapos(sequelize),
+    Images: Images(sequelize),
 };
 
 // Initialisation de la bdd
