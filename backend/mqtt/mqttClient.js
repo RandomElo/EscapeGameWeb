@@ -21,7 +21,6 @@ client.on("connect", () => {
 
 client.on("message", async (topic, messageBuffer) => {
     const msg = messageBuffer.toString();
-
     logger.info(`MQTT | ${topic} | ${msg}`);
 
     try {
@@ -29,87 +28,75 @@ client.on("message", async (topic, messageBuffer) => {
         // GAME CONTROL (START / STOP / SKIP)
         // =====================================================
         if (topic === "escape/game/start") {
-
             const scenarioId = parseInt(msg);
 
             logger.info(`Start game scenario ${scenarioId}`);
 
             startGame(scenarioId);
-
             return;
         }
 
         if (topic === "escape/game/stop") {
-
             logger.warn("Stop game");
-
             stopGame();
-
             return;
         }
 
         if (topic === "escape/game/skip") {
-
             logger.warn("Skip mission");
-
             NextMission();
-
             return;
         }
-        
+
         // ================= Web → config brute =================
-  /**      const webConfigMatch = topic.match(/^escape\/mission\/(\d+)\/config\/web$/);
-
-        if (webConfigMatch) {
-
-            const missionId = webConfigMatch[1];
-            const missionConfig = JSON.parse(msg);
-
-            logger.info(`Config brute reçue du WEB pour mission ${missionId}`);
-
-            const morseAudios = await verifierMorseConfig(missionConfig);
-
-            if (!morseAudios) {
-                logger.warn(`Pas de morse valide`);
-                return;
-            }
-
-            const finalConfig = {
-                ...missionConfig,
-                morse: morseAudios
-            };
-
-            console.log(finalConfig)
-            
-            await CommunicationBDD.updateMissionConfig(missionId, finalConfig);
-
-            client.publish(
-                `escape/mission/${missionId}/config`,
-                JSON.stringify(finalConfig)
-            );
-
-            client.publish(
-                `escape/mission/${missionId}/state`,
-                JSON.stringify("start")
-            );
-
-            logger.info(`Mission ${missionId} lancée`);
-
-            return;
-        } */
+        /**      const webConfigMatch = topic.match(/^escape\/mission\/(\d+)\/config\/web$/);
+      
+              if (webConfigMatch) {
+      
+                  const missionId = webConfigMatch[1];
+                  const missionConfig = JSON.parse(msg);
+      
+                  logger.info(`Config brute reçue du WEB pour mission ${missionId}`);
+      
+                  const morseAudios = await verifierMorseConfig(missionConfig);
+      
+                  if (!morseAudios) {
+                      logger.warn(`Pas de morse valide`);
+                      return;
+                  }
+      
+                  const finalConfig = {
+                      ...missionConfig,
+                      morse: morseAudios
+                  };
+      
+                  console.log(finalConfig)
+                  
+                  await CommunicationBDD.updateMissionConfig(missionId, finalConfig);
+      
+                  client.publish(
+                      `escape/mission/${missionId}/config`,
+                      JSON.stringify(finalConfig)
+                  );
+      
+                  client.publish(
+                      `escape/mission/${missionId}/state`,
+                      JSON.stringify("start")
+                  );
+      
+                  logger.info(`Mission ${missionId} lancée`);
+      
+                  return;
+              } */
 
         // ================= Lest will =================
         const statusMatch = topic.match(/^escape\/mission\/(\d+)\/status$/);
 
         if (statusMatch) {
-
             const missionId = statusMatch[1];
-
             logger.info(`Mission ${missionId} status : ${msg}`);
 
             if (msg === "online") {
-
-                // 🔥 demander config automatiquement
                 client.publish(
                     `escape/mission/${missionId}/state`,
                     JSON.stringify("config")
@@ -117,14 +104,12 @@ client.on("message", async (topic, messageBuffer) => {
             }
 
             if (msg === "offline") {
-
                 logger.warn(`Mission ${missionId} déconnectée !`);
             }
-
             return;
         }
-        const stateMatch = topic.match(/^escape\/mission\/(\d+)\/state$/);
 
+        const stateMatch = topic.match(/^escape\/mission\/(\d+)\/state$/);
         if (stateMatch) {
 
             const missionId = stateMatch[1];
@@ -142,9 +127,7 @@ client.on("message", async (topic, messageBuffer) => {
 
                 // ================= SUCCESS =================
                 if (data.state === "success") {
-
                     logger.info(`Mission ${missionId} SUCCESS`);
-
                     NextMission();
                 }
 
@@ -160,40 +143,36 @@ client.on("message", async (topic, messageBuffer) => {
         // ============================================
 
         if (topic === "escape/speaker/status") {
-
             const data = JSON.parse(msg);
 
             if (data.status === "finished") {
-
                 logger.info(`Audio terminé : ${data.file}`);
-
-                setAudioFinished(); 
+                setAudioFinished();
             }
-
-            return;   
+            return;
         }
 
-        if (msg === "online") {
+        // ============================================
+        // RECUPERER NOUVELLES QUESTIONS
+        // ============================================
 
-            logger.info(`Mission ${missionId} connectée`);
+        const recupererQuestionsMatch = topic.match(/^escape\/mission\/(\d+)\/recuperer-questions$/);
+        if (recupererQuestionsMatch) {
+            const missionId = recupererQuestionsMatch[1];
+            try {
+                const data = JSON.parse(msg); // ex: { type: "facile", nombre: 5 }
+                logger.info(`Récupération questions pour mission ${missionId} : ${msg}`);
 
-            // 🔥 ENVOIE DIRECT CONFIG
-            const missionConfig = await CommunicationBDD.getMissionConfig(missionId);
+                const questions = await CommunicationBDD.recupererQuestions(data.type, data.nombre);
 
-            if (!missionConfig) {
-                logger.warn(`Pas de config pour mission ${missionId}`);
-                return;
+                client.publish(
+                    `escape/mission/${missionId}/questions`,
+                    JSON.stringify(questions)
+                );
+            } catch (err) {
+                logger.error(`Erreur recuperer-questions mission ${missionId} : ${err.message}`);
             }
-
-            client.publish(
-                `escape/mission/${missionId}/config`,
-                JSON.stringify(missionConfig)
-            );
-
-            client.publish(
-                `escape/mission/${missionId}/state`,
-                JSON.stringify("start")
-            );
+            return;
         }
 
     } catch (err) {

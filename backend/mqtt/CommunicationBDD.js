@@ -5,6 +5,8 @@ import logger from "./logger.js";
 import path from "path";
 import { fileURLToPath } from "url";
 import { generationTTS } from "../controleurs/admins/audios.js";
+import { Sequelize } from "sequelize";
+import { Op } from "sequelize";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -127,6 +129,101 @@ class CommunicationBDD {
             return null;
         }
     }
+
+    async getDiaporama(nom) {
+        try {
+            const diaporama = await bdd.Diapos.findOne({ where: { nom }, raw: true });
+
+            if (!diaporama) {
+                logger.info(`Diaporama inexistant :  ${nom}`);
+                return false
+            } else {
+                const images = await bdd.Images.findAll({
+                    where: { diapoId: diaporama.id },
+                    order: [["ordre", "ASC"]],
+                    attributes: ["ordre", "nom"],
+                    raw: true
+                })
+
+                return images
+            }
+
+        } catch (err) {
+            logger.error(`Erreur getDiaporama : ${err.message}`);
+            return null;
+        }
+    }
+
+    async recupererQuestions(type, nombre) {
+        const partieId = (await bdd.Parties.findOne({ where: { statut: "enCours" } })).id
+
+        const questionsPosees = await bdd.QuestionPoseesPartie.findAll({ where: { partieId }, attributes: ["questionId"], raw: true })
+
+        const idsQuestionsPosees = questionsPosees.map((q) => q.questionId);
+
+        const questions = await bdd.QuizQuestions.findAll({
+            where: { difficulte: type, id: { [Op.notIn]: idsQuestionsPosees, }, },
+            attributes: ["id", "nomFichier", "type", "reponse"],
+            order: bdd.sequelize.random(),
+            limit: nombre,
+            raw: true
+        })
+
+        await bdd.QuestionPoseesPartie.bulkCreate(
+            questions.map(q => ({
+                partieId,
+                questionId: q.id,
+            }))
+        );
+
+        return questions;
+
+    }
+    async getBoiteAQuizInitialisation() {
+        try {
+            const questionFacile = this.recupererQuestions("facile", 21)
+            const questionDur = this.recupererQuestions("difficile", 3)
+
+            const comboFlop = (await bdd.QuizAudios.findAll({
+                where: { type: "serieErreurs" },
+                attributes: ["nomFichier"],
+                order: bdd.sequelize.random(),
+                limit: 3,
+                raw: true
+            })).map((q) => q.nomFichier);
+
+            const comboTop = (await bdd.QuizAudios.findAll({
+                where: { type: "finQuiz" },
+                attributes: ["nomFichier"],
+                order: bdd.sequelize.random(),
+                limit: 1,
+                raw: true
+            })).map((q) => q.nomFichier);[0]
+
+            const bonneReponse = (await bdd.QuizAudios.findAll({
+                where: { type: "bonneReponse" },
+                attributes: ["nomFichier"],
+                order: bdd.sequelize.random(),
+                limit: 10,
+                raw: true
+            })).map((q) => q.nomFichier);
+
+            const mauvaiseReponse = (await bdd.QuizAudios.findAll({
+                where: { type: "mauvaiseReponse" },
+                attributes: ["nomFichier"],
+                order: bdd.sequelize.random(),
+                limit: 10,
+                raw: true
+            })).map((q) => q.nomFichier);
+
+            return { questionFacile, questionDur, comboFlop, comboTop, bonneReponse, mauvaiseReponse }
+
+        } catch (err) {
+            logger.error(`Erreur getBoiteAQuiz : ${err.message}`);
+            return null;
+        }
+    }
+
 }
 
 export default new CommunicationBDD();

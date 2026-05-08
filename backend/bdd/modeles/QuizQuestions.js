@@ -24,6 +24,9 @@ export default function (bdd) {
             difficulte: {
                 type: DataTypes.STRING(255),
                 allowNull: false,
+                validate: {
+                    isIn: [["facile", "difficile"]],
+                },
             },
             nomFichier: {
                 type: DataTypes.STRING(255),

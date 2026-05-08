@@ -284,7 +284,7 @@ export default function InterfaceAdministration() {
                 </div>
 
                 <div id="divPhotosDiapo">
-                    <h2>Gestion diapo</h2>
+                    <h2>Gestion diaporama</h2>
                     <button
                         className="bouton"
                         onClick={() => {
@@ -292,7 +292,7 @@ export default function InterfaceAdministration() {
                             setAfficherModal(true);
                         }}
                     >
-                        Ajouter une diapositive
+                        Ajouter un diaporama
                     </button>
                 </div>
             </main>
@@ -421,20 +421,19 @@ export default function InterfaceAdministration() {
                                 setChargementRequete(true);
 
                                 const valeur = document.querySelector<HTMLInputElement>("#inputTexte")!.value;
-                                const type = document.querySelector<HTMLInputElement>("#selectScenario")!.value;
+                                const type = document.querySelector<HTMLInputElement>("#selectType")!.value;
                                 console.log({ valeur, type });
                                 await requete({ url: "/admins/audios/generation-quiz", methode: "POST", corps: { valeur, type } });
                                 setTimeout(() => {
+                                    document.querySelector<HTMLInputElement>("#inputTexte")!.value = "";
+                                    document.querySelector<HTMLInputElement>("#selectType")!.value = "";
                                     setChargementRequete(false);
-                                    setAfficherModal(false);
                                 }, 1000);
-
-                                setAfficherModal(false);
                             }}
                         >
                             <ChampDonneesForm id="inputTexte" label="Texte :" typeInput="textearea" />
 
-                            <select id="selectScenario" required>
+                            <select id="selectType" required>
                                 <option value="" selected disabled>
                                     --- Sélectionnez un type ---
                                 </option>
@@ -918,7 +917,7 @@ export default function InterfaceAdministration() {
 
                 {contenuModal == "ajoutDiapo" && (
                     <div id="divAjoutDiapo">
-                        <h2>Enregistrement d'un diapo</h2>
+                        <h2>Enregistrement d'un diaporama</h2>
                         <p id="pDetail">Il faut envoyer un fichier .zip qui contient uniquement des fichiers .png numéroté à partir de 1.</p>
                         <p>Le nom du fichier .zip sera le nom du diapo.</p>
                         <form

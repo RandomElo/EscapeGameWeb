@@ -16,6 +16,7 @@ export const liste = gestionErreur(
     "controleurRecuperationListeMission",
     "Erreur lors de la récupération de la liste des missions",
 );
+
 export const creation = gestionErreur(
     async (req, res) => {
         const { nom, description, topicMQTT } = req.body;
@@ -148,74 +149,145 @@ export const enregistrementDiapo = gestionErreur(
     async (req, res) => {
         if (!req.file) {
             return res.status(400).json({
-                erreur: "Aucun fichier",
+                etat: false,
+                detail: "Requête incorrecte",
             });
         }
 
         const zip = new AdmZip(req.file.path);
-
         const entries = zip.getEntries();
-        console.log("entries:", entries.length);
         const dossierImages = "uploads";
 
         if (!fs.existsSync(dossierImages)) {
-            fs.mkdirSync(dossierImages);
+            fs.mkdirSync(dossierImages, {
+                recursive: true,
+            });
         }
-        const nomDossier = path.parse(req.file.originalname).name;
-        if (await req.Diapos.findOne({ where: { nom: nomDossier } })) {
-            return res.json({ etat: true, detail: { cree: false, detail: "Nom déjà présent" } });
+
+        const nomDiapo = path.parse(req.file.originalname).name;
+        const diapoExistant = await req.Diapos.findOne({
+            where: {
+                nom: nomDiapo,
+            },
+        });
+
+        if (diapoExistant) {
+            fs.unlinkSync(req.file.path);
+            return res.json({
+                etat: true,
+                detail: {
+                    cree: false,
+                    detail: "Nom déjà présent",
+                },
+            });
         }
-        const diapo = await req.Diapos.create({ nom: path.parse(req.file.originalname).name });
+
+        const diapo = await req.Diapos.create({
+            nom: nomDiapo,
+        });
+
+        let nombreImages = 0;
+        const fichiersCrees = [];
 
         for (const entry of entries) {
-            // ignorer dossiers
             if (entry.isDirectory) {
                 continue;
             }
 
-            // uniquement png
-            if (!entry.entryName.endsWith(".png")) {
+            const nomFichierZip = path.basename(entry.entryName);
+            if (!nomFichierZip.toLowerCase().endsWith(".png")) {
                 continue;
             }
 
-            // récupérer le numéro
-            const match = entry.entryName.match(/^(\d+)\.png$/);
-
+            const match = nomFichierZip.match(/^(\d+)\.png$/i);
             if (!match) {
                 continue;
             }
-            console.log(entry.entryName);
+
             const ordre = parseInt(match[1]);
+            const nomFichierPhysique = `${Date.now()}-${ordre}.png`;
+            const chemin = path.join(dossierImages, nomFichierPhysique);
 
-            const nomFichier = `${Date.now()}-${entry.entryName}`;
-
-            const chemin = path.join(dossierImages, nomFichier);
-
-            // extraction
-            fs.writeFileSync(chemin, entry.getData());
-
-            logger.info({
-                ordre,
-                nomFichier,
+            fs.writeFileSync(
                 chemin,
-                diapoId: diapo.id,
-            });
-            // BDD
-            await req.Images.create({
-                ordre,
-                nomFichier,
-                chemin,
-                diapoId: diapo.id,
+                entry.getData(),
+            );
+
+            fichiersCrees.push(chemin);
+
+            try {
+                const buffer = entry.getData();
+                const image = await req.Images.create({
+                    ordre,
+                    image: buffer,
+                    chemin,
+                    diapoId: diapo.id,
+                });
+
+                nombreImages++;
+
+            } catch (e) {
+                if (fs.existsSync(chemin)) {
+                    fs.unlinkSync(chemin);
+                }
+            }
+        }
+
+        if (fs.existsSync(req.file.path)) {
+            fs.unlinkSync(req.file.path);
+        }
+
+        if (nombreImages === 0) {
+            for (const fichier of fichiersCrees) {
+
+                if (fs.existsSync(fichier)) {
+                    fs.unlinkSync(fichier);
+                }
+            }
+
+            await diapo.destroy();
+
+            return res.status(400).json({
+                etat: true,
+                detail: { cree: false, detail: "Aucune image valide" },
             });
         }
 
-        fs.unlinkSync(req.file.path);
-
         res.json({
             etat: true,
-            detail: "ok",
+            detail: {
+                cree: true,
+            },
         });
     },
+
     "controleurEnregistrementDiapo",
     "Erreur lors de l'enregistrement du diapo",
 );
+
+export const recupererDiapositive = gestionErreur(async (req, res) => {
+    const { nom } = req.params;
+
+    if (!nom) {
+        return res.status(400).json({
+            etat: false,
+            detail: "Requête incorrecte",
+        });
+    }
+
+    const image = await req.Images.findOne({ where: { nom }, raw: true })
+    if (!image) {
+        return res.status(404).json({
+            etat: false,
+            detail: "Ressource inexistante",
+        });
+    }
+
+    res.setHeader(
+        "Content-Type",
+        "image/png"
+    );
+
+    res.send(image.image);
+
+}, "controleurRecueprerDiapositive", "Erreur lors de la récupération de la diapositive")

@@ -1,4 +1,5 @@
 import { DataTypes } from "sequelize";
+import { randomUUID } from "crypto";
 
 export default function (bdd) {
     const Images = bdd.define(
@@ -9,9 +10,12 @@ export default function (bdd) {
                 autoIncrement: true,
                 primaryKey: true,
             },
-
-            nomFichier: {
+            nom: {
                 type: DataTypes.STRING(255),
+                defaultValue: randomUUID()
+            },
+            image: {
+                type: DataTypes.BLOB("long"),
                 allowNull: false,
             },
 

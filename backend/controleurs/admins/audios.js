@@ -257,13 +257,13 @@ async function generationAudiosSimple(typeGeneration, entree, req, type) {
                     return await req.QuizAudios.create({
                         type,
                         texte: element,
-                        nomFichier: path.join(type, nomFichier),
+                        nomFichier: nomFichier,
                     });
                 } else if (typeGeneration == "devinette") {
                     return await req.Devinettes.create({
                         reponse: element.reponse,
                         devinette: element.devinette,
-                        nomFichier: path.join(nomFichier),
+                        nomFichier
                     });
                 }
 
@@ -290,19 +290,22 @@ async function generationQuestion(entree, req) {
     const resultats = await Promise.allSettled(
         entreeMiseEnForme.map((element) =>
             limit(async () => {
-                if (!element.question || !element.type || !element.reponse) {
+                if (!element.question || !element.type || !element.reponse || !element.difficulte) {
                     throw new Error("Format question invalide");
                 }
                 const nomFichier = `${randomUUID()}.wav`;
 
-                await generationTTS(cheminDossier, nomFichier, element.question);
+                if (process.env.TYPE_ENV == "reel") {
+                    await generationTTS(cheminDossier, nomFichier, element.question);
+                }
 
                 return await req.QuizQuestions.create({
                     question: element.question,
                     type: element.type,
                     reponse: element.reponse,
                     difficulte: element.difficulte,
-                    nomFichier: path.join("audios/quiz/questions", nomFichier),
+                    // nomFichier: path.join("audios/quiz/questions", nomFichier),
+                    nomFichier,
                 });
             }),
         ),

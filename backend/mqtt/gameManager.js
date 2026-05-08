@@ -111,6 +111,7 @@ async function playCurrentStep() {
 
         // envoyer config spécifique si besoin
         if (step.configuration) {
+            // Morse
             if (step.configuration.morse) {
                 const tableauConfiguration = []
                 for (const messageMorse of step.configuration.morse) {
@@ -119,10 +120,19 @@ async function playCurrentStep() {
                     tableauConfiguration.push(configuration)
                 }
                 step.configuration = tableauConfiguration;
+
+                // Devinette
             } else if (step.configuration.devinette) {
                 const configuration = await CommunicationBDD.getDevinette(step.configuration.devinette)
                 step.configuration = configuration;
+            } else if (step.configuration.diaporama) {
+                const configuration = await CommunicationBDD.getDiaporama(step.configuration.diaporama)
+                step.configuration = configuration;
+            } else if (step.configuration.boitequiz) {
+                const configuration = await CommunicationBDD.getBoiteAQuizInitialisation()
+                step.configuration = configuration;
             }
+            logger.info("Configuration : " + JSON.stringify(step.configuration))
             client.publish(`escape/mission/${topicMQTT}/config`, JSON.stringify(step.configuration));
         }
 

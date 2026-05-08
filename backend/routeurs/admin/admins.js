@@ -10,7 +10,7 @@ import routeurParties from "./parties.js";
 const routeurAdmins = e.Router();
 
 routeurAdmins.use("/scenarios", accesAdmin, routeurScenarios);
-routeurAdmins.use("/missions", accesAdmin, routeurMissions);
+routeurAdmins.use("/missions", routeurMissions);
 routeurAdmins.use("/cameras", accesAdmin, routeurCameras);
 routeurAdmins.use("/classements", accesAdmin, routeurClassementsAdmin);
 routeurAdmins.use("/parties", accesAdmin, routeurParties);

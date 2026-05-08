@@ -64,13 +64,19 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
     }, []);
 
     useEffect(() => {
-        const ordreMissionEnCours = deroule.filter((etape) => etape.etat == "EnCours")[0].ordre;
-        console.log("Mission en cours : " + ordreMissionEnCours);
-        console.log(deroule);
-        const missionSuivante = deroule.filter((etape) => etape.ordre > ordreMissionEnCours && etape.type == "mission")[0].ordre;
+        function calculMissions() {
+            const ordreMissionEnCours = deroule.filter((etape) => etape.etat == "EnCours")[0].ordre;
+            if (deroule.filter((etape) => etape.ordre > ordreMissionEnCours && etape.type == "mission")[0]) {
+                const missionSuivante = deroule.filter((etape) => etape.ordre > ordreMissionEnCours && etape.type == "mission")[0].ordre;
+                setMissionSuivante(missionSuivante);
+            } else {
+                setMissionSuivante(undefined);
+            }
 
-        setMissionEnCours(ordreMissionEnCours);
-        setMissionSuivante(missionSuivante);
+            setMissionEnCours(ordreMissionEnCours);
+        }
+
+        calculMissions();
     }, [deroule]);
 
     useEffect(() => {
@@ -230,7 +236,7 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
                 {contenuModal == "lancementAudioVolee" && (
                     <div id="divModalLancementAudioVolee">
                         <h1>Lancement audio</h1>
-                        
+
                         <form
                             onSubmit={async (e) => {
                                 e.preventDefault();
