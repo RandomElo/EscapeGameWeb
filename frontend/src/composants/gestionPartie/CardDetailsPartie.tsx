@@ -28,9 +28,9 @@ export default function CardDetailsPartie({ detailsPartie, setPartiesEnCours, no
     }
 
     return (
-        <div className="card cardDetailsPartie">
+        <div className="card cardDetailsPartie coinsHud">
             <div className="cardHeader">
-                <h3>Détails de la partie</h3>
+                <h3>Détails</h3>
                 <span className="badge badge-info">
                     <CircleAlert size={14} />
                     Étape 1 / 5

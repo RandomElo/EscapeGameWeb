@@ -1,56 +1,153 @@
 .Modal {
     position: fixed;
     inset: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    background: rgba(4, 7, 17, 0.85);
+    backdrop-filter: blur(4px);
     display: flex;
-    justify-content: center;
     align-items: center;
-    z-index: 999;
+    justify-content: center;
+    z-index: 1000;
 
-    .modalContenu {
-        background: #fff;
-        width: 400px;
-        padding: 2rem;
-        border-radius: 12px;
+    .modalConteneur {
         position: relative;
-        box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.15);
-        animation: fadeIn 0.5s ease;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, var(--bg-card), var(--bg-elevated));
+        border: 1px solid var(--border-hover);
+        padding: var(--space-lg);
+        width: min(520px, 90vw);
+        box-shadow: var(--glow-md);
+        animation: apparition 0.2s ease;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
 
+    /* ============================================================
+   EN-TÊTE MODAL
+   ============================================================ */
+    .modalEntete {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        margin-bottom: var(--space-lg);
+        padding-bottom: var(--space-md);
+        border-bottom: 1px solid var(--border);
+        position: relative;
+
+        /* Bouton retour arrière */
         .boutonRetourArriere {
-            position: absolute;
-            top: 10px;
-            left: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
             cursor: pointer;
-            color: #888;
+            padding: 2px;
+            transition: color 0.2s ease;
+            flex-shrink: 0;
         }
-        .boutonFermer {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            cursor: pointer;
-            color: #888;
+        .boutonRetourArriere:hover {
+            color: var(--amber);
         }
 
-        .boutonFermer:hover {
-            color: #000;
+        .modalTitre {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            flex: 1;
         }
-        .modalDetail {
-            margin-top: 10px;
-            h1, h2 {
-                margin-top: 0;
-                margin-bottom: 1rem;
-            }
+
+        /* Bouton fermer */
+        .boutonFermer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 2px;
+            transition: color 0.2s ease;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+        .boutonFermer:hover {
+            color: var(--amber);
+        }
+    }
+
+    /* ============================================================
+   CORPS MODAL
+   ============================================================ */
+    .modalCorps {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-md);
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--border) transparent;
+    }
+
+    /* ============================================================
+   PIED MODAL
+   ============================================================ */
+    .modalPied {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: var(--space-sm);
+        margin-top: var(--space-lg);
+        padding-top: var(--space-md);
+        border-top: 1px solid var(--border);
+
+        /* Boutons */
+        .boutonAction {
+            background: var(--amber-dim);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: var(--amber);
+            padding: 0.5rem 1.2rem;
+            font-size: 0.78rem;
+            font-family: inherit;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            transition: all 0.2s ease;
+        }
+        .boutonAction:hover {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--gold);
+            box-shadow: var(--glow-sm);
+        }
+
+        .boutonDiscret {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 0.5rem 1.2rem;
+            font-size: 0.78rem;
+            font-family: inherit;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .boutonDiscret:hover {
+            border-color: var(--border-hover);
+            color: var(--text-primary);
         }
     }
 }
 
-@keyframes fadeIn {
+@keyframes apparition {
     from {
+        transform: translateY(100px);
         opacity: 0;
-        transform: translateY(-100px);
     }
     to {
+        transform: none;
         opacity: 1;
-        transform: translateY(0);
     }
 }

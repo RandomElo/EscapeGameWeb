@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useLoaderData, useNavigate } from "react-router-dom";
 
-import "../styles/SuiviPartie.css";
+// import "../styles/SuiviPartie.css";
 import Notifications from "../composants/Notifications";
 import { useRequete } from "../fonctions/requete";
 import CreationPartie from "../composants/CreationPartie";
@@ -12,7 +12,7 @@ export type Deroule = {
     type: "mission" | "audio";
     nom: string;
     description?: string;
-    topicMQTT?:string;
+    topicMQTT?: string;
     tags?: string[];
     etat: "EnCours" | "EnAttente" | "Terminée";
     audiosAide: { nomFichier: string; detail: string }[];
@@ -68,10 +68,10 @@ export default function SuiviPartie() {
     }, [estAuth, navigation, partiesEnCours, donneesLoader]);
 
     return (
-        <main className="SuiviPartie">
+        <>
             {partiesEnCours && deroule ? <GestionPartie deroule={deroule} detailsPartie={detailsPartie} setListeNotifications={setListeNotifications} setPartiesEnCours={setPartiesEnCours} /> : <CreationPartie lancementPartie={lancementPartie} setLancementPartie={setLancementPartie} scenarios={scenarios} equipes={equipes} erreur={erreur} setErreur={setErreur} setPartiesEnCours={setPartiesEnCours} setDetailsPartie={setDetailsPartie} chargementInfos={chargementInfos} />}
 
             <Notifications liste={listeNotifications} setListe={setListeNotifications} />
-        </main>
+        </>
     );
 }

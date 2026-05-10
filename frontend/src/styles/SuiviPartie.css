@@ -35,7 +35,7 @@
             margin-bottom: 16px;
         }
     }
-
+    /*
     .gestionPartie {
         display: grid;
         grid-template-columns: 280px 1fr 320px;
@@ -46,10 +46,6 @@
         padding: 48px 32px;
 
         align-items: center;
-
-        /* ============================= */
-        /* PANELS */
-        /* ============================= */
 
         .scenarioLeft,
         .scenarioRight {
@@ -68,9 +64,7 @@
             flex-direction: column;
         }
 
-        /* ============================= */
-        /* CAMERA */
-        /* ============================= */
+   
 
         .cameraCard {
             .cameraPreview {
@@ -80,16 +74,12 @@
             }
         }
 
-        /* ============================= */
-        /* AVERTISSEMENTS */
-        /* ============================= */
+ 
 
         .avertissementsCard {
         }
 
-        /* ============================= */
-        /* TIMELINE */
-        /* ============================= */
+   
 
         .timeline {
             position: relative;
@@ -126,9 +116,6 @@
                     z-index: 1;
                 }
 
-                /* ============================= */
-                /* MISSION CARD */
-                /* ============================= */
 
                 .missionCard {
                     width: 100%;
@@ -209,9 +196,6 @@
                     opacity: 0.85;
                 }
 
-                /* ============================= */
-                /* AUDIO CARD */
-                /* ============================= */
 
                 .audioCard {
                     display: flex;
@@ -231,9 +215,6 @@
             }
         }
 
-        /* ============================= */
-        /* AUDIO CONTROL PANEL */
-        /* ============================= */
 
         .audioControl {
             display: flex;
@@ -246,9 +227,6 @@
             }
         }
 
-        /* ============================= */
-        /* PANNEL DETAILS PARTIES */
-        /* ============================= */
 
         .cardDetailsPartie {
             display: flex;
@@ -322,9 +300,7 @@
             }
         }
 
-        /* ============================= */
-        /* BADGE */
-        /* ============================= */
+ 
 
         .badge {
             display: flex;
@@ -352,119 +328,119 @@
     /* AUCUNE PARTIE EN COURS */
     /* ============================= */
 
-        .aucunePartie {
-            max-width: 520px;
-            margin: auto;
+    .aucunePartie {
+        max-width: 520px;
+        margin: auto;
         margin-top: 40px;
 
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+
+        text-align: center;
+
+        .header {
             display: flex;
-            flex-direction: column;
-            gap: 24px;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
 
-            text-align: center;
-
-            .header {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 10px;
-
-                h2 {
-                    font-size: 22px;
-                    font-weight: 600;
-                }
-
-                svg {
-                    color: #0ea5e9;
-                }
+            h2 {
+                font-size: 22px;
+                font-weight: 600;
             }
 
-            .description {
-                color: #64748b;
-                font-size: 14px;
-                max-width: 420px;
-                margin: auto;
-            }
-
-            /* FORM */
-
-            .divChargement {
-                height: 30px;
-                width: 50px;
-                margin: 0 auto;
-                background-color: #0085ff;
-                border-radius: 8px;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-            }
-            .formulaire {
-                display: flex;
-                flex-direction: column;
-                gap: 16px;
-            }
-
-            .champ {
-                display: flex;
-                flex-direction: column;
-                gap: 6px;
-                text-align: left;
-
-                label {
-                    font-size: 13px;
-                    font-weight: 500;
-                    color: #0f172a;
-                }
-            }
-
-            .selectWrapper {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-
-                border: 1px solid #e5e7eb;
-                border-radius: 8px;
-                padding: 0 10px;
-
-                height: 36px;
-                background: white;
-
-                transition: border 0.15s ease;
-
-                svg {
-                    color: #64748b;
-                }
-
-                &:focus-within {
-                    border-color: #0ea5e9;
-                }
-
-                select {
-                    border: none;
-                    outline: none;
-                    width: 100%;
-                    font-size: 14px;
-                    background: transparent;
-                    cursor: pointer;
-                }
-            }
-
-            /* BOUTON */
-
-            .lancerBouton {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 8px;
-
-                margin-top: 8px;
-            }
-
-            .lancerBouton:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
+            svg {
+                color: #0ea5e9;
             }
         }
+
+        .description {
+            color: #64748b;
+            font-size: 14px;
+            max-width: 420px;
+            margin: auto;
+        }
+
+        /* FORM */
+
+        .divChargement {
+            height: 30px;
+            width: 50px;
+            margin: 0 auto;
+            background-color: #0085ff;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .formulaire {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .champ {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            text-align: left;
+
+            label {
+                font-size: 13px;
+                font-weight: 500;
+                color: #0f172a;
+            }
+        }
+
+        .selectWrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 0 10px;
+
+            height: 36px;
+            background: white;
+
+            transition: border 0.15s ease;
+
+            svg {
+                color: #64748b;
+            }
+
+            &:focus-within {
+                border-color: #0ea5e9;
+            }
+
+            select {
+                border: none;
+                outline: none;
+                width: 100%;
+                font-size: 14px;
+                background: transparent;
+                cursor: pointer;
+            }
+        }
+
+        /* BOUTON */
+
+        .lancerBouton {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+
+            margin-top: 8px;
+        }
+
+        .lancerBouton:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
 }
 
 #divModalAudioAide {

@@ -4,15 +4,49 @@
     font-style: normal;
 }
 
-/* @font-face {
-  font-family: 'GoogleFonts';
-  src: url('/fonts/MaPolice-Bold.woff2') format('woff2'),
-       url('/fonts/MaPolice-Bold.woff') format('woff');
-  font-weight: 700;  Bold
-  font-style: normal;
-  font-display: swap;
-} 
-*/
+:root {
+    /* Fonds */
+    --bg-deep: #040711; /* fond le plus sombre, body */
+    --bg-base: #070b14; /* fond principal de la page */
+    --bg-card: #111827; /* fond des cartes / panels */
+    --bg-elevated: #0c1220; /* fond légèrement surélevé */
+
+    /* Accent principal — Amber / Gold */
+    --amber: #f59e0b; /* couleur primaire, CTA, icônes actives */
+    --gold: #fbbf24; /* variante plus claire, hover */
+    --amber-dim: rgba(245, 158, 11, 0.1); /* fond de bouton, badge */
+
+    /* Statuts sémantiques */
+    --green: #22c55e; /* salle active, joueurs en cours, succès */
+    --red: #ef4444; /* alerte, erreur, action destructive */
+    --blue: #3b82f6; /* info, neutre secondaire */
+
+    /* Texte */
+    --text-primary: #f1f5f9; /* titres, valeurs importantes */
+    --text-secondary: #cbd5e1; /* corps de texte, labels */
+    --text-muted: rgba(203, 213, 225, 0.5); /* placeholders, meta */
+
+    /* Bordures */
+    --border: rgba(245, 158, 11, 0.12); /* bordure par défaut */
+    --border-hover: rgba(245, 158, 11, 0.3); /* bordure au survol */
+    --border-focus: rgba(245, 158, 11, 0.6); /* bordure focus / actif */
+
+    /* Effets */
+    --glow-sm: 0 0 10px rgba(245, 158, 11, 0.08);
+    --glow-md: 0 0 20px rgba(245, 158, 11, 0.12);
+    --glow-lg: 0 0 40px rgba(245, 158, 11, 0.18);
+    --glow-red: 0 0 20px rgba(239, 68, 68, 0.2);
+
+    /* Espacements */
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-2xl: 3rem;
+
+    --navbar-width: 240px;
+}
 
 * {
     margin: 0;
@@ -20,10 +54,46 @@
     font-family: "GoogleFonts", sans-serif;
     text-decoration: none;
 }
+
+#root {
+    display: flex;
+    min-height: 100vh;
+}
+
+body {
+    margin: 0;
+    background: var(--bg-base);
+    color: var(--text-secondary);
+    font-family:
+        system-ui,
+        -apple-system,
+        sans-serif;
+    min-height: 100vh;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(rgba(245, 158, 11, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(245, 158, 11, 0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+main {
+    display: flex;
+    justify-content: center;
+    margin-left: calc(var(--navbar-width) + (2 * (var(--space-md)))); /* pousse le contenu après la navbar */
+    flex: 1;
+    min-width: 0;
+    padding: var(--space-lg);
+}
+
 .gras {
     font-weight: bold;
 }
-.input {
+/* .input {
     border: 2px solid #f2f2f2;
     outline: none;
     margin-top: 8px;
@@ -31,7 +101,7 @@
 
     height: 31px;
     border-radius: 5px;
-}
+} */
 
 .bouton {
     height: 31px;
@@ -55,10 +125,84 @@
     cursor: not-allowed;
     background-color: #808793;
 }
+/* Coins HUD */
+.coinsHud::before,
+.coinsHud::after {
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-color: var(--amber);
+}
+.coinsHud::before {
+    top: 0;
+    left: 0;
+    border-top: 1px solid;
+    border-left: 1px solid;
+}
+.coinsHud::after {
+    bottom: 0;
+    right: 0;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+}
+/* GESTIONS DE TITRE */
+h1 {
+    font-size: 1.5rem; /* 24px */
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: 0.02em;
+}
+
+h2 {
+    font-size: 1rem; /* 16px */
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+h3 {
+    font-size: 0.875rem; /* 14px */
+    font-weight: 500;
+    color: var(--text-secondary);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
 
 #titre {
     margin-top: 12px;
     text-align: center;
+}
+/* FIN DE LA GESTION DES TITRES */
+
+/* TABLEAU */
+.tableau {
+    width: 100%;
+    border-collapse: collapse;
+    th {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-muted);
+        padding: var(--space-sm);
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+    }
+    td {
+        padding: 0.55rem var(--space-sm);
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        vertical-align: middle;
+    }
+    tr:last-child td {
+        border-bottom: none;
+    }
+    tr:hover td {
+        background: rgba(245, 158, 11, 0.03);
+        color: var(--text-primary);
+    }
 }
 
 #divErreurFormulaire {
@@ -73,7 +217,7 @@
     }
     svg {
         display: block;
-        color:#b91c1c; 
+        color: #b91c1c;
         width: 24px;
         height: 24px;
     }
@@ -128,6 +272,7 @@
         }
     }
 }
+
 .Chargement {
     display: flex;
     .loader-ring {

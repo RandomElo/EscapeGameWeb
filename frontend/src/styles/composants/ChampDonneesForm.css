@@ -1,23 +1,53 @@
 .ChampDonneesForm {
-    width: 247px;
-    height: 54px;
-
+    width: 100%; /* flex, plus de largeur fixe */
     display: flex;
     flex-direction: column;
+    gap: var(--space-xs);
 
     label {
-        width: 247px;
-        height: 15px;
-        /* je veut du semi bold */
-        font-weight: bold;
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-muted);
+    }
+
+    .input {
+        background: var(--bg-deep);
+        border: 1px solid var(--border);
+        color: var(--text-primary);
+        padding: 0.5rem 0.75rem;
+        font-family: "Courier New", monospace;
+        width: 100%;
+        outline: none;
+        transition:
+            border-color 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+
+    .input::placeholder {
+        color: var(--text-muted);
     }
 
     .input:focus {
-        border-color: #0185fe;
+        border-color: var(--border-focus);
+        box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.08);
     }
-    input::placeholder {
-        color: #d2d2d2;
+
+    .input:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
     }
+
+    /* Textarea */
+    .textarea {
+        resize: vertical;
+        min-height: 80px;
+        line-height: 1.5;
+        padding: 0.5rem 0.75rem;
+    }
+
+    /* Suppression des flèches sur input number */
     input[type="number"]::-webkit-outer-spin-button,
     input[type="number"]::-webkit-inner-spin-button {
         -webkit-appearance: none;
@@ -26,30 +56,30 @@
     input[type="number"] {
         -moz-appearance: textfield;
     }
-    .textarea {
-        padding: 5px;
-        font-size: 0.9em;
-    }
+
+    /* Champ mot de passe avec icône */
     #divInputMdp {
         position: relative;
         display: flex;
         align-items: center;
         width: 100%;
+
         input {
             flex: 1;
-            box-sizing: border-box;
-            padding-left: 10px;
+            padding-right: 2.2rem; /* espace pour l'icône */
         }
+
         svg {
             position: absolute;
-            right: 8px;
-            top: 11px;
+            right: 0.6rem;
             cursor: pointer;
+            color: var(--text-muted);
+            transition: color 0.2s ease;
+            flex-shrink: 0;
         }
-    }
-}
-#divModalLancementAudioVolee {
-    button {
-        margin-top: 10px;
+
+        svg:hover {
+            color: var(--amber);
+        }
     }
 }

@@ -13,6 +13,9 @@ import CardDetailsPartie from "./gestionPartie/CardDetailsPartie";
 import CardLancementAudioVolee from "./gestionPartie/CardLancementAudioVolee";
 import CardTimelineScenario from "./gestionPartie/CardTimelineScenario";
 import ChampDonneesForm from "./ChampDonneesForm";
+
+import "../styles/composants/GestionPartie.css";
+
 export type DetailsPartie = { equipeNom: string; nbrMembres: number; scenarioNom: string; nbrMissions: number; dateDebut: string } | undefined;
 type Props = {
     deroule: Deroule;

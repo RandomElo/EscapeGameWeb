@@ -82,7 +82,7 @@ export default function Generale({ children }: { children?: ReactNode }) {
                     </button>
                 </div>
             ) : (
-                children || <Outlet />
+                <main>{children || <Outlet />}</main>
             )}
             <Modal estOuvert={afficherModal} fermeture={() => setAfficherModal(false)}>
                 {afficherModal && demandesAdhesion && (

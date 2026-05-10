@@ -55,6 +55,12 @@ export async function ConfigurationInterfaceAdmin(req) {
         attributes: ["missionId", "scenarioId", "audioId"],
     });
 
+    // Audios du quizz
+    const quizAudio = await req.QuizQuestions.findAll({ raw: true, attributes: ["question", "type", "reponse", "difficulte", "nomFichier"] })
+
+    // Devinette
+    const devinettes = await req.Devinettes.findAll({ raw: true, attributes: ["devinette", "reponse", "nomFichier"] })
+
     // Permet de les parcourirs plus rapidement
     const mapMissions = Object.fromEntries(missionsListe.map((m) => [m.id, m]));
     const mapAudios = Object.fromEntries(messagesAudio.map((a) => [a.id, a]));
@@ -114,6 +120,8 @@ export async function ConfigurationInterfaceAdmin(req) {
         missions,
         scenarios,
         messagesAudio,
+        quizAudio,
+        devinettes
     };
 }
 
@@ -125,9 +133,9 @@ export const configurationComplete = gestionErreur(
     "Erreur lors de la récupération des données pour l'interface d'administration",
 );
 
-export const liste = gestionErreur((req, res) => {}, "controleurListeScenarios", "Erreur lors de la récupération de la liste des scénarios");
+export const liste = gestionErreur((req, res) => { }, "controleurListeScenarios", "Erreur lors de la récupération de la liste des scénarios");
 
-export const details = gestionErreur((req, res) => {}, "controleurDetailsScenario", "Erreur lors de la récupération des détails du scénario");
+export const details = gestionErreur((req, res) => { }, "controleurDetailsScenario", "Erreur lors de la récupération des détails du scénario");
 
 export const creation = gestionErreur(
     async (req, res) => {
@@ -204,7 +212,7 @@ export const modificationDescription = gestionErreur(
     "Erreur lors de la modification du scénario",
 );
 
-export const modificationEnTete = gestionErreur((req, res) => {}, "controleurModificationEnTete", "Erreur lors de la modification de l'en-tête du scénario");
+export const modificationEnTete = gestionErreur((req, res) => { }, "controleurModificationEnTete", "Erreur lors de la modification de l'en-tête du scénario");
 
 async function ajoutElement(type, req, res) {
     const { id } = req.params;
@@ -345,10 +353,10 @@ export const modificationDeroule = gestionErreur(
     "Erreur lors de la modification du déroulé du scénario",
 );
 
-export const suppressionMission = gestionErreur((req, res) => {}, "controleurSuppressionMissionScenario", "Erreur lors de la suppression de mission dans la scénario");
+export const suppressionMission = gestionErreur((req, res) => { }, "controleurSuppressionMissionScenario", "Erreur lors de la suppression de mission dans la scénario");
 
-export const modifierReponses = gestionErreur((req, res) => {}, "controleurModifierReponses", "Erreur lors de la mise a jour des réponses");
-export const generationAudiosAide = gestionErreur((req, res) => {}, "controleurGenerationAudiosAide", "Erreur lors de la génération des audios d'aide");
+export const modifierReponses = gestionErreur((req, res) => { }, "controleurModifierReponses", "Erreur lors de la mise a jour des réponses");
+export const generationAudiosAide = gestionErreur((req, res) => { }, "controleurGenerationAudiosAide", "Erreur lors de la génération des audios d'aide");
 
 export const suppression = gestionErreur(
     async (req, res) => {

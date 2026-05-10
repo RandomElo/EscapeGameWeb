@@ -7,7 +7,7 @@ type Props = {
 
 export default function CardLancementAudioVolee({ setContenuModal, setAfficherModal }: Props) {
     return (
-        <div className="card audioControl">
+        <div className="card audioControl coinsHud">
             <h3>Envoyer un message audio</h3>
 
             <p className="textSecondary">Enregistrer et envoyer un message vocal aux joueurs.</p>

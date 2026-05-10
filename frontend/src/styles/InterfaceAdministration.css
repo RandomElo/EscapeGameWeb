@@ -1,65 +1,228 @@
 .InterfaceAdministration {
-    table {
-        border-collapse: collapse;
-        margin: 0 auto;
-        td {
-            height: 35px;
-            line-height: 25px;
+    background: var(--bg-base);
+    color: var(--text-secondary);
+    font-family:
+        system-ui,
+        -apple-system,
+        sans-serif;
+    font-size: 0.875rem;
+    padding: var(--space-xl);
+    min-height: 100vh;
+
+    /* EN-TÊTE */
+    .entetePage {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-bottom: var(--space-xl);
+        padding-bottom: var(--space-lg);
+        border-bottom: 1px solid var(--border);
+    }
+    .titrePage {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: 0.02em;
+    }
+    .sousTitrePage {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-top: 0.25rem;
+    }
+
+    /* GRILLE TABLEAUX */
+    .grilleTableaux {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-lg);
+        margin-bottom: var(--space-xl);
+    }
+
+    /* CARTE INTERFACE */
+    .carteInterface {
+        position: relative;
+        background: linear-gradient(135deg, var(--bg-card), var(--bg-elevated));
+        border: 1px solid var(--border);
+        padding: var(--space-lg);
+        transition: border-color 0.3s ease;
+    }
+    .carteInterface:hover {
+        border-color: var(--border-hover);
+    }
+
+    .enteteCarte {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--space-md);
+        padding-bottom: var(--space-sm);
+        border-bottom: 1px solid var(--border);
+
+        .titreCarte {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--amber);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
         }
 
-        .tdAction {
-            cursor: pointer;
-            width: 50px;
-            text-align: center;
+        .titreCarte::before {
+            content: "";
+            width: 5px;
+            height: 5px;
+            background: var(--amber);
+            display: inline-block;
+            flex-shrink: 0;
         }
-    }
-    .divVerificationCommunication {
-    }
-    #divMissions,
-    #divScenarios {
-        table {
-            text-align: center;
-            .tdNom {
-                width: 100px;
-            }
-            .tdDescription {
-                width: 300px;
-            }
-            .tdIpAdresse {
-                width: 100px;
-            }
-        }
-    }
-    #divMissions {
-        table {
-            .tdReponse {
-                width: 200px;
+
+        .detailsCarte {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            /* COMPTEUR */
+            .compteurBadge {
+                font-size: 0.65rem;
+                color: var(--text-muted);
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid var(--border);
+                padding: 2px 8px;
+                letter-spacing: 0.06em;
             }
         }
     }
-    #divMessagesAudio {
-        table {
-            .tdTexte {
-                width: 600px;
-            }
-            .tdAction {
-                cursor: pointer;
-                width: 50px;
-                text-align: center;
-            }
-            .tdPlay:hover svg {
-                fill: green;
-                stroke: green;
-                color: green;
-            }
-            .tdStop:hover svg {
-                fill: red;
-                stroke: red;
-            }
-            .tdPoubelle:hover {
-                color: red;
-            }
-        }
+    /* BOUTON ACTION */
+    .boutonAction {
+        background: var(--amber-dim);
+        border: 1px solid rgba(245, 158, 11, 0.3);
+        color: var(--amber);
+        padding: 0.4rem 0.9rem;
+        font-size: 0.72rem;
+        font-family: inherit;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+    .boutonAction:hover {
+        background: rgba(245, 158, 11, 0.2);
+        color: var(--gold);
+        box-shadow: var(--glow-sm);
+    }
+
+    .tdNom {
+        font-weight: 500;
+        color: var(--text-primary);
+        min-width: 90px;
+    }
+    .tdDescription {
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        max-width: 160px;
+    }
+    .tdTopic {
+        font-family: "Courier New", monospace;
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .tdAction {
+        width: 32px;
+        text-align: center;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+    .tdAction:hover {
+        color: var(--amber);
+    }
+
+    /* SECTION OUTILS */
+    .titreSectionOutils {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--text-muted);
+        margin-bottom: var(--space-md);
+    }
+
+    .grilleOutils {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-md);
+    }
+
+    .carteOutil {
+        position: relative;
+        background: linear-gradient(135deg, var(--bg-card), var(--bg-elevated));
+        border: 1px solid var(--border);
+        padding: var(--space-md);
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-sm);
+        transition:
+            border-color 0.3s ease,
+            box-shadow 0.3s ease;
+        position: relative;
+        cursor: default;
+    }
+    .carteOutil:hover {
+        border-color: var(--border-hover);
+        box-shadow: var(--glow-sm);
+    }
+
+    .iconeOutil {
+        color: var(--amber);
+        opacity: 0.7;
+        margin-bottom: 2px;
+    }
+
+    .nomOutil {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+    .descriptionOutil {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+        flex: 1;
+    }
+
+    .piedCarte {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: var(--space-sm);
+        border-top: 1px solid var(--border);
+        margin-top: auto;
+    }
+
+    .compteurOutil {
+        font-size: 0.65rem;
+        color: var(--text-muted);
+        font-family: "Courier New", monospace;
+    }
+
+    /* Données de démo */
+    .donneeDemoMuted {
+        color: var(--text-muted);
+        font-style: italic;
+        font-size: 0.75rem;
     }
 }
 
@@ -314,6 +477,37 @@
 }
 
 #divAjoutDiapo {
-    #pDetail  {
+    #pDetail {
+    }
+}
+#divModalGestionAudios, #divModalGestionQuizAudios, #divModalGestionDevinette {
+    .tableau {
+        .thActions {
+            text-align: center;
+        }
+        .tdAction {
+            width: 50px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .tdPlay:hover svg {
+            fill: var(--green);
+            stroke: var(--green);
+            color: var(--green);
+        }
+        .tdStop:hover svg {
+            fill: var(--red);
+            stroke: var(--red);
+        }
+        .tdPoubelle:hover {
+            color: var(--red);
+        }
+    }
+}
+#divModalGestionQuizAudios, #divModalGestionDevinette {
+    .tableau {
+        .tdReponse {
+            text-align: center;
+        }
     }
 }

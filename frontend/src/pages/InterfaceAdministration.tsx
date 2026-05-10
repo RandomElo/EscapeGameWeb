@@ -5,7 +5,7 @@ import Modal from "../composants/Modal";
 import ChampDonneesForm from "../composants/ChampDonneesForm";
 import { useLoaderData, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { EllipsisVertical, GripVertical, Play, Square, Trash2 } from "lucide-react";
+import { EllipsisVertical, GripVertical, Pencil, Play, Square, Trash2 } from "lucide-react";
 import RetourArriere from "../composants/RetourArriere";
 import Chargement from "../composants/Chargement";
 import GererDerouler from "../composants/interfaceAdministration/GererDerouler";
@@ -55,9 +55,25 @@ export type RecuperationDonnees = {
     missions: MissionComplete[];
     scenarios: Scenario[];
     messagesAudio: MessageAudio[];
+    quizAudio: QuizAudio[];
+    devinettes: Devinette[];
 };
 
-export type ContenuModal = "ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio" | "menuScenario" | "gererDeroulerScenario" | "modifierNomScenario" | "modifierDescriptionScenario" | "supprimerScenario" | "menuMission" | "supprimerMission" | "modifierNomMission" | "modifierDescriptionMission" | "ajouterMissionScenario" | "genererAudioQuiz" | "ajouterAudioScenario" | "ajouterAudiosAideScenario" | "audiosAideScenario" | "generationDevinettes" | "ajoutDiapo";
+type QuizAudio = {
+    question: string;
+    type: "clavier" | "bouton";
+    reponse: string;
+    difficulte: "facile" | "difficile";
+    nomFichier: string;
+};
+
+type Devinette = {
+    devinette: string;
+    reponse: string;
+    nomFichier: string;
+};
+
+export type ContenuModal = "ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio" | "menuScenario" | "gererDeroulerScenario" | "modifierNomScenario" | "modifierDescriptionScenario" | "supprimerScenario" | "menuMission" | "supprimerMission" | "modifierNomMission" | "modifierDescriptionMission" | "ajouterMissionScenario" | "genererAudioQuiz" | "ajouterAudioScenario" | "ajouterAudiosAideScenario" | "audiosAideScenario" | "generationDevinettes" | "ajoutDiapo" | "gestionAudios" | "gestionQuizAudios" | "gestionDevinettes";
 
 export default function InterfaceAdministration() {
     const { estAuth, chargement } = useAuth();
@@ -82,6 +98,8 @@ export default function InterfaceAdministration() {
     const [chargementRequete, setChargementRequete] = useState<boolean>(false);
     const [fichier, setFichier] = useState<File>();
 
+    const [quizAudio, setQuizAudio] = useState<QuizAudio[]>();
+    const [devinettes, setDevinettes] = useState<Devinette[]>();
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
     async function recuperationDonnees(reponse: RecuperationDonnees) {
@@ -89,6 +107,8 @@ export default function InterfaceAdministration() {
         setScenarios(reponse.scenarios);
         setMissions(reponse.missions);
         setMessagesAudio(reponse.messagesAudio);
+        setQuizAudio(reponse.quizAudio);
+        setDevinettes(reponse.devinettes);
     }
 
     useEffect(() => {
@@ -296,6 +316,207 @@ export default function InterfaceAdministration() {
                     </button>
                 </div>
             </main>
+            <div className="InterfaceAdministration">
+                <div className="entetePage">
+                    <div>
+                        <h1 className="titrePage">Administration</h1>
+                        <p className="sousTitrePage">Configuration · Missions · Scénarios · Outils</p>
+                    </div>
+                </div>
+
+                <div className="grilleTableaux">
+                    <div className="carteInterface coinsHud">
+                        <div className="enteteCarte">
+                            <span className="titreCarte">Missions</span>
+                            <div className="detailsCarte">
+                                <span className="compteurBadge">
+                                    {missions ? missions?.length : "0"} mission{missions && missions?.length > 1 && "s"}
+                                </span>
+                                <button
+                                    className="boutonAction"
+                                    onClick={() => {
+                                        setContenuModal("ajouterMission");
+                                        setAfficherModal(true);
+                                    }}
+                                >
+                                    + Ajouter
+                                </button>
+                            </div>
+                        </div>
+                        <table className="tableau">
+                            <thead>
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Description</th>
+                                    <th>Topic MQTT</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {missions?.map((mission, key) => (
+                                    <tr key={key}>
+                                        <td className="tdNom">{mission.nom}</td>
+                                        <td className="tdDescription">{mission.description}</td>
+                                        <td className="tdTopic">escape/mission/{mission.topicMQTT}</td>
+                                        <td
+                                            className="tdAction"
+                                            onClick={() => {
+                                                setDetailsModal(mission.id.toString());
+                                                setContenuModal("menuMission");
+                                                setAfficherModal(true);
+                                            }}
+                                        >
+                                            <EllipsisVertical />
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div className="carteInterface coinsHud">
+                        <div className="enteteCarte">
+                            <span className="titreCarte">Scénarios</span>
+                            <div className="detailsCarte">
+                                <span className="compteurBadge">
+                                    {scenarios.length} scénario{scenarios.length > 1 && "s"}
+                                </span>
+                                <button
+                                    className="boutonAction"
+                                    onClick={() => {
+                                        setContenuModal("ajouterScenario");
+                                        setAfficherModal(true);
+                                    }}
+                                >
+                                    + Ajouter
+                                </button>
+                            </div>
+                        </div>
+                        <table className="tableau">
+                            <thead>
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Description</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {scenarios?.map((scenario, key) => (
+                                    <tr key={key}>
+                                        <td className="tdNom">{scenario.nom}</td>
+                                        <td className="tdDescription">{scenario.description}</td>
+                                        <td
+                                            className="tdAction"
+                                            onClick={() => {
+                                                setDetailsModal(scenario.id.toString());
+                                                setContenuModal("menuScenario");
+                                                setAfficherModal(true);
+                                            }}
+                                        >
+                                            <EllipsisVertical />
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <p className="titreSectionOutils">Outils de configuration</p>
+                <div className="grilleOutils">
+                    <div className="carteOutil coinsHud">
+                        <div className="iconeOutil">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M9 18V5l12-2v13" />
+                                <circle cx="6" cy="18" r="3" />
+                                <circle cx="18" cy="16" r="3" />
+                            </svg>
+                        </div>
+                        <span className="nomOutil">Audios</span>
+                        <span className="descriptionOutil">Messages audio générés localement.</span>
+                        <div className="piedCarte">
+                            <span className="compteurOutil">
+                                {messagesAudio ? messagesAudio?.length : "0"} fichier{messagesAudio && messagesAudio?.length > 1 && "s"}
+                            </span>
+
+                            <button
+                                className="boutonAction"
+                                onClick={() => {
+                                    setContenuModal("gestionAudios");
+                                    setAfficherModal(true);
+                                }}
+                            >
+                                Gérer
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="carteOutil coinsHud">
+                        <div className="iconeOutil">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                                <line x1="12" y1="17" x2="12.01" y2="17" />
+                            </svg>
+                        </div>
+                        <span className="nomOutil">Quiz</span>
+                        <span className="descriptionOutil">Audios pour la boîte à quiz.</span>
+                        <div className="piedCarte">
+                            <span className="compteurOutil donneeDemoMuted">
+                                {quizAudio ? quizAudio?.length : "0"} fichier{quizAudio && quizAudio?.length > 1 && "s"}
+                            </span>
+                            <button
+                                className="boutonAction"
+                                onClick={() => {
+                                    setContenuModal("gestionQuizAudios");
+                                    setAfficherModal(true);
+                                }}
+                            >
+                                Gérer
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="carteOutil coinsHud">
+                        <div className="iconeOutil">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                                <path d="M2 17l10 5 10-5" />
+                                <path d="M2 12l10 5 10-5" />
+                            </svg>
+                        </div>
+                        <span className="nomOutil">Devinettes</span>
+                        <span className="descriptionOutil">Génération automatique des énigmes texte.</span>
+                        <div className="piedCarte">
+                            <span className="compteurOutil donneeDemoMuted">— générées</span>
+                            <button
+                                className="boutonAction"
+                                onClick={() => {
+                                    setContenuModal("gestionDevinettes");
+                                    setAfficherModal(true);
+                                }}
+                            >
+                                Gérer
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="carteOutil coinsHud">
+                        <div className="iconeOutil">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="2" y="3" width="20" height="14" rx="2" />
+                                <path d="M8 21h8M12 17v4" />
+                            </svg>
+                        </div>
+                        <span className="nomOutil">Diaporama</span>
+                        <span className="descriptionOutil">Photos et slides affichés en salle pendant la partie.</span>
+                        <div className="piedCarte">
+                            <span className="compteurOutil donneeDemoMuted">— slides</span>
+                            <button className="boutonAction">Gérer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <Modal estOuvert={afficherModal} fermeture={() => setAfficherModal(false)}>
                 {contenuModal == "ajouterMission" && (
                     <div id="modalAjouterMission">
@@ -951,6 +1172,206 @@ export default function InterfaceAdministration() {
             {contenuModal == "gererDeroulerScenario" && detailsModal && missions && (
                 <Modal estOuvert={afficherModal} fermeture={() => setAfficherModal(false)} taille={500}>
                     <GererDerouler scenario={scenarios.filter((scenario) => scenario.id == Number(detailsModal))[0]} setContenuModal={setContenuModal} setDetails2Modal={setDetails2Modal} setAfficherModal={setAfficherModal} recuperationDonnees={recuperationDonnees} />
+                </Modal>
+            )}
+
+            {contenuModal == "gestionAudios" && (
+                <Modal estOuvert={afficherModal} fermeture={() => setAfficherModal(false)} titre="Les audios">
+                    <div id="divModalGestionAudios">
+                        <table className="tableau">
+                            <thead>
+                                <tr>
+                                    <th>Texte de l'audio</th>
+                                    <th colSpan={2} className="thActions">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {messagesAudio?.map((audio, key) => (
+                                    <tr key={key}>
+                                        <td className="tdTexte">{audio.detail}</td>
+                                        <td
+                                            className={`tdAction ${idAudioEnCours == key ? "tdStop" : "tdPlay"}`}
+                                            onClick={async () => {
+                                                if (idAudioEnCours == key && audioRef.current) {
+                                                    audioRef.current.pause();
+                                                    audioRef.current.currentTime = 0;
+                                                    setIdAudioEnCours(null);
+                                                    return;
+                                                }
+
+                                                if (audioRef.current) {
+                                                    audioRef.current.pause();
+                                                    audioRef.current.currentTime = 0;
+                                                }
+
+                                                setIdAudioEnCours(key);
+                                                const reponse = await requete({ url: "/admins/audios/recuperation-lien", methode: "POST", corps: { nomFichier: audio.nomFichier } });
+
+                                                const elementAudio = new Audio(reponse);
+                                                audioRef.current = elementAudio;
+                                                elementAudio.play();
+
+                                                elementAudio.addEventListener("ended", () => {
+                                                    setIdAudioEnCours(null);
+                                                });
+                                            }}
+                                        >
+                                            {idAudioEnCours == key ? <Square size={18} /> : <Play size={18} />}
+                                        </td>
+                                        <td
+                                            className="tdAction tdPoubelle"
+                                            onClick={() => {
+                                                setDetailsModal(audio.nomFichier);
+                                                setContenuModal("supprimerAudio");
+                                                setAfficherModal(true);
+                                            }}
+                                        >
+                                            <Trash2 size={18} />
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </Modal>
+            )}
+
+            {contenuModal == "gestionQuizAudios" && (
+                <Modal estOuvert={afficherModal} fermeture={() => setAfficherModal(false)} titre="Les audios du quiz" taille={800}>
+                    <div id="divModalGestionQuizAudios">
+                        <table className="tableau">
+                            <thead>
+                                <tr>
+                                    <th>Texte de l'audio</th>
+                                    <th>Type</th>
+                                    <th>Réponse</th>
+                                    <th colSpan={3} className="thActions">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {quizAudio?.map((audio, key) => (
+                                    <tr key={key}>
+                                        <td className="tdTexte">{audio.question}</td>
+                                        <td>{audio.type.charAt(0).toUpperCase() + audio.type.slice(1)}</td>
+                                        <td className="tdReponse">{audio.reponse == "true" || audio.reponse == "false" ? (audio.reponse == "true" ? "Vrai" : "Faux") : audio.reponse}</td>
+                                        <td
+                                            className={`tdAction ${idAudioEnCours == key ? "tdStop" : "tdPlay"}`}
+                                            onClick={async () => {
+                                                if (idAudioEnCours == key && audioRef.current) {
+                                                    audioRef.current.pause();
+                                                    audioRef.current.currentTime = 0;
+                                                    setIdAudioEnCours(null);
+                                                    return;
+                                                }
+
+                                                if (audioRef.current) {
+                                                    audioRef.current.pause();
+                                                    audioRef.current.currentTime = 0;
+                                                }
+
+                                                setIdAudioEnCours(key);
+                                                const reponse = await requete({ url: "/admins/audios/recuperation-lien", methode: "POST", corps: { nomFichier: audio.nomFichier } });
+
+                                                const elementAudio = new Audio(reponse);
+                                                audioRef.current = elementAudio;
+                                                elementAudio.play();
+
+                                                elementAudio.addEventListener("ended", () => {
+                                                    setIdAudioEnCours(null);
+                                                });
+                                            }}
+                                        >
+                                            {idAudioEnCours == key ? <Square size={18} /> : <Play size={18} />}
+                                        </td>
+                                        <td className="tdAction tdModfier">
+                                            <Pencil size={18} />
+                                        </td>
+                                        <td
+                                            className="tdAction tdPoubelle"
+                                            onClick={() => {
+                                                setDetailsModal(audio.nomFichier);
+                                                setContenuModal("supprimerAudio");
+                                                setAfficherModal(true);
+                                            }}
+                                        >
+                                            <Trash2 size={18} />
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </Modal>
+            )}
+            {contenuModal == "gestionDevinettes" && (
+                <Modal estOuvert={afficherModal} fermeture={() => setAfficherModal(false)} titre="Les devinettes" taille={700}>
+                    <div id="divModalGestionDevinette">
+                        <table className="tableau">
+                            <thead>
+                                <tr>
+                                    <th>Texte de l'audio</th>
+                                    <th>Réponse</th>
+                                    <th colSpan={3} className="thActions">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {devinettes?.map((audio, key) => (
+                                    <tr key={key}>
+                                        <td className="tdTexte">{audio.devinette}</td>
+                                        <td className="tdReponse">{audio.reponse}</td>
+                                        <td
+                                            className={`tdAction ${idAudioEnCours == key ? "tdStop" : "tdPlay"}`}
+                                            onClick={async () => {
+                                                if (idAudioEnCours == key && audioRef.current) {
+                                                    audioRef.current.pause();
+                                                    audioRef.current.currentTime = 0;
+                                                    setIdAudioEnCours(null);
+                                                    return;
+                                                }
+
+                                                if (audioRef.current) {
+                                                    audioRef.current.pause();
+                                                    audioRef.current.currentTime = 0;
+                                                }
+
+                                                setIdAudioEnCours(key);
+                                                const reponse = await requete({ url: "/admins/audios/recuperation-lien", methode: "POST", corps: { nomFichier: audio.nomFichier } });
+
+                                                const elementAudio = new Audio(reponse);
+                                                audioRef.current = elementAudio;
+                                                elementAudio.play();
+
+                                                elementAudio.addEventListener("ended", () => {
+                                                    setIdAudioEnCours(null);
+                                                });
+                                            }}
+                                        >
+                                            {idAudioEnCours == key ? <Square size={18} /> : <Play size={18} />}
+                                        </td>
+                                        <td className="tdAction tdModfier">
+                                            <Pencil size={18} />
+                                        </td>
+                                        <td
+                                            className="tdAction tdPoubelle"
+                                            onClick={() => {
+                                                setDetailsModal(audio.nomFichier);
+                                                setContenuModal("supprimerAudio");
+                                                setAfficherModal(true);
+                                            }}
+                                        >
+                                            <Trash2 size={18} />
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </Modal>
             )}
         </>

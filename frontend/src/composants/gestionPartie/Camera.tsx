@@ -52,7 +52,7 @@ export default function CardCamera() {
     }, [token]);
 
     return (
-        <div className="card cameraCard">
+        <div className="card cameraCard coinsHud">
             <h3>Aperçu caméra</h3>
             <div className="cameraPreview">{chargement ? <Chargement variant="button" /> : <img ref={imgRef} alt="stream" />}</div>
         </div>

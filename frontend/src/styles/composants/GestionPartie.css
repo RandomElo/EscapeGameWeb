@@ -1,0 +1,541 @@
+/* ============================================================
+   GESTION PARTIE — CSS
+   Charte graphique ESCAPE v1.1 · CSS Vanilla · camelCase FR
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   LAYOUT PRINCIPAL
+   ------------------------------------------------------------ */
+
+.gestionPartie {
+    display: grid;
+    grid-template-columns: 280px 1fr 280px;
+    gap: var(--space-lg);
+    align-items: center;
+    min-width: 1200px;
+    min-height: calc(100vh - var(--space-xl) * 2);
+}
+
+.scenarioLeft,
+.scenarioRight {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+/* ------------------------------------------------------------
+   CARTE DE BASE
+   ------------------------------------------------------------ */
+
+.card {
+    background: linear-gradient(135deg, var(--bg-card), var(--bg-elevated));
+    border: 1px solid var(--border);
+    padding: var(--space-md);
+    transition:
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.card:hover {
+    border-color: var(--border-hover);
+    box-shadow: var(--glow-sm);
+}
+
+.card h3 {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--amber);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 0 0 var(--space-sm) 0;
+    padding-bottom: var(--space-sm);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.card h3::before {
+    content: "";
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    background: var(--amber);
+    flex-shrink: 0;
+}
+
+/* ------------------------------------------------------------
+   CARD DÉTAILS PARTIE (colonne droite, haut)
+   ------------------------------------------------------------ */
+
+.cardDetailsPartie {
+    position: relative;
+}
+
+
+.cardHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-md);
+    padding-bottom: var(--space-sm);
+    border-bottom: 1px solid var(--border);
+}
+
+.cardHeader h3 {
+    margin: 0;
+    padding: 0;
+    border: none;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--amber);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.cardHeader h3::before {
+    content: "";
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    background: var(--amber);
+    flex-shrink: 0;
+}
+
+.detailsGrid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.premiereLigne {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+}
+
+.bloc {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.bloc .label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+}
+
+.bloc .valeur {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.bloc .meta {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.bloc.duree .valeur {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--amber);
+    letter-spacing: 0.08em;
+}
+
+/* Badge */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+}
+
+.badge-info {
+    background: rgba(59, 130, 246, 0.12);
+    color: var(--blue);
+    border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+/* Bouton terminer (critique) */
+.boutonTerminerPartie {
+    width: 100%;
+    margin-top: var(--space-xs);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+}
+
+/* ------------------------------------------------------------
+   BOUTONS
+   ------------------------------------------------------------ */
+
+.primaryButton {
+    background: var(--amber-dim);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    color: var(--amber);
+    padding: 0.5rem 1.2rem;
+    font-size: 0.8rem;
+    font-family: inherit;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.primaryButton:hover {
+    background: rgba(245, 158, 11, 0.2);
+    color: var(--gold);
+    box-shadow: var(--glow-sm);
+}
+
+.boutonTerminerPartie.primaryButton {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: var(--red);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+}
+
+.boutonTerminerPartie.primaryButton:hover {
+    background: rgba(239, 68, 68, 0.22);
+    color: var(--red);
+    box-shadow: var(--glow-red);
+}
+
+/* ------------------------------------------------------------
+   CARD AVERTISSEMENTS
+   ------------------------------------------------------------ */
+
+.avertissementsCard {
+    border-color: rgba(239, 68, 68, 0.25);
+}
+
+.avertissementsCard h3 {
+    color: var(--red);
+}
+
+.avertissementsCard h3::before {
+    background: var(--red);
+}
+
+.avertissementsCard p {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    padding: 0.3rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin: 0;
+}
+
+.avertissementsCard p:last-child {
+    border-bottom: none;
+}
+
+.avertissementsCard .gras {
+    font-weight: 600;
+    color: var(--red);
+}
+
+/* ------------------------------------------------------------
+   CARD CAMÉRA
+   ------------------------------------------------------------ */
+
+.cameraCard {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.cameraPreview {
+    background: var(--bg-deep);
+    border: 1px solid var(--border);
+    aspect-ratio: 16 / 9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin-top: var(--space-sm);
+}
+
+.cameraPreview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* ------------------------------------------------------------
+   CARD AUDIO VOLÉE
+   ------------------------------------------------------------ */
+
+.audioControl {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.audioControl .textSecondary {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.audioControl .primaryButton {
+    width: 100%;
+    justify-content: center;
+    margin-top: var(--space-xs);
+}
+
+/* ------------------------------------------------------------
+   TIMELINE SCÉNARIO (colonne centrale)
+   ------------------------------------------------------------ */
+
+.scenarioCenter {
+    display: flex;
+    flex-direction: column;
+}
+
+.timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+}
+
+/* Ligne verticale centrale */
+.timeline::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--border);
+    transform: translateX(-50%);
+    pointer-events: none;
+}
+
+.timelineBlock {
+    position: relative;
+    padding: var(--space-sm) 0;
+}
+/* Point de connexion sur la ligne */
+/* .timelineBlock::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    background: var(--bg-base);
+    transform: translate(-50%, -50%);
+    z-index: 1;
+} */
+
+/* ------------------------------------------------------------
+   MISSION CARD
+   ------------------------------------------------------------ */
+
+.missionCard {
+    position: relative;
+    margin: 0 var(--space-xl);
+    cursor: default;
+}
+
+/* États de mission */
+.missionEnCours {
+    border-color: rgba(245, 158, 11, 0.4);
+    box-shadow: var(--glow-sm);
+}
+
+.missionEnCours::before {
+    background: var(--amber);
+    box-shadow: 0 0 6px var(--amber);
+}
+
+/* .timelineBlock:has(.missionEnCours)::before {
+    background: var(--amber);
+    border-color: var(--amber);
+    box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
+} */
+
+.timelineBlock:has(.missionTerminee)::before {
+    background: var(--green);
+    border-color: var(--green);
+}
+
+.missionHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xs);
+}
+
+.missionHeader h3 {
+    margin: 0;
+    padding: 0;
+    border: none;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-transform: none;
+    letter-spacing: 0.02em;
+}
+
+.missionHeader h3::before {
+    display: none;
+}
+
+.missionSecondeLigne {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-sm);
+}
+
+.missionSecondeLigne p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin: 0;
+    line-height: 1.5;
+    flex: 1;
+}
+.missionTerminee,
+.missionEnAttente {
+    border-color: rgba(34, 197, 94, 0.2);
+
+    h3 {
+        color: #646970;
+    }
+    #missionSecondeLigne p {
+        color: #303641;
+    }
+}
+/* Bouton aide audio sur mission en cours */
+.aideAudio {
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.aideAudio:hover {
+    opacity: 1;
+}
+
+.aideAudio .primaryButton {
+    padding: 0.3rem;
+    border-radius: 0;
+    background: transparent;
+    border-color: transparent;
+    color: var(--amber);
+}
+
+/* Bouton passer mission */
+#divSkipMission {
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--border);
+
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(203, 213, 225, 0.2);
+    border-radius: inherit;
+    z-index: 10;
+
+    .primaryButton {
+        font-size: 0.75rem;
+        padding: 0.35rem 0.8rem;
+    }
+}
+#divSkipMission:hover {
+    cursor: no-drop;
+}
+#divSkipMission .primaryButton:hover {
+    cursor: pointer;
+}
+
+/* ------------------------------------------------------------
+   AUDIO CARD (événement audio dans la timeline)
+   ------------------------------------------------------------ */
+
+.audioCard {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin: 0 var(--space-2xl);
+    padding: 0.4rem var(--space-md);
+    background: var(--bg-deep);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+}
+
+.audioCard svg {
+    color: var(--amber);
+    opacity: 0.7;
+    flex-shrink: 0;
+}
+
+/* ------------------------------------------------------------
+   RESPONSIVE MOBILE
+   ------------------------------------------------------------ */
+
+@media (max-width: 768px) {
+    .gestionPartie {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-md);
+        padding-bottom: 70px; /* espace bottom nav */
+    }
+
+    .timeline::before {
+        left: var(--space-md);
+    }
+
+    .timelineBlock::before {
+        left: var(--space-md);
+    }
+
+    .missionCard,
+    .audioCard {
+        margin: 0;
+    }
+
+    .audioCard {
+        margin-left: calc(var(--space-md) * 2);
+    }
+
+    .premiereLigne {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .bloc.duree .valeur {
+        font-size: 1.1rem;
+    }
+}

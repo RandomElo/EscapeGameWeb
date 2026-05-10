@@ -1,6 +1,7 @@
 import "../styles/composants/Modal.css";
-import { X } from "lucide-react";
+import { ChevronLeft, X } from "lucide-react";
 import { type ReactNode } from "react";
+import ChampDonneesForm from "./ChampDonneesForm";
 
 interface Props {
     estOuvert: boolean;
@@ -8,9 +9,13 @@ interface Props {
     fermeture?: () => void;
     taille?: number | null;
     empecherFermeture?: boolean;
+    retourArriere?: () => void;
+    titre: string;
+    boutonValider?: () => void;
+    boutonAnnuler?: () => void;
 }
 
-export default function Modal({ estOuvert, fermeture, children, taille, empecherFermeture = false }: Props) {
+export default function Modal({ estOuvert, fermeture, children, taille, empecherFermeture = false, retourArriere, titre, boutonAnnuler, boutonValider }: Props) {
     if (!estOuvert) return null;
 
     const fermer = () => {
@@ -29,10 +34,34 @@ export default function Modal({ estOuvert, fermeture, children, taille, empecher
                 }
             }}
         >
-            <div className="modalContenu" onClick={(e) => e.stopPropagation()} style={{ width: taille ?? undefined }}>
-                {!empecherFermeture && <X className="boutonFermer" width={30} height={30} onClick={fermeture} />}
+            <div className="modalConteneur coinsHud" onClick={(e) => e.stopPropagation()} style={{ width: taille ?? undefined }}>
+                <div className="modalEntete">
+                    {retourArriere && (
+                        <span className="boutonRetourArriere">
+                            <ChevronLeft size={30} />
+                        </span>
+                    )}
+                    <span className="modalTitre">{titre}</span>
+                    <span className="boutonFermer" onClick={fermeture}>
+                        <X size={30} />
+                    </span>
+                </div>
+                <div className="modalCorps">{children}</div>
+                {(boutonAnnuler || boutonValider) && (
+                    <div className="modalPied">
+                        {boutonAnnuler && (
+                            <button className="boutonDiscret" onClick={boutonAnnuler}>
+                                Annuler
+                            </button>
+                        )}
 
-                <div className="modalDetail">{children}</div>
+                        {boutonValider && (
+                            <button className="boutonAction" onClick={boutonValider}>
+                                Valider
+                            </button>
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     );
