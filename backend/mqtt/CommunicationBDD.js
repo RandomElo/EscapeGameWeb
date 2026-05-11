@@ -86,7 +86,6 @@ class CommunicationBDD {
     }
 
     async getAudioMorse(message) {
-
         try {
             const audio = await bdd.MorseAudios.findOne({ where: { reponse: message }, raw: true });
 
@@ -95,9 +94,9 @@ class CommunicationBDD {
 
                 return await generateMorseAudio(message);
             } else {
+                
                 return { morse: audio.reponse, nomFichier: audio.nomFichier };
             }
-
         } catch (err) {
             logger.error(`Erreur getAudioMorse : ${err.message}`);
             return null;
@@ -110,20 +109,19 @@ class CommunicationBDD {
 
             if (!devinette) {
                 logger.info(`Devinette inexistante :  ${reponse}`);
-                return false
+                return false;
             } else {
                 try {
                     await access(path.resolve(__dirname, "../../audios/devinette", devinette.nomFichier), constants.F_OK);
 
                     return true;
                 } catch {
-                    console.log("je doit générer la DEVINETTTE")
-                    const cheminDossier = path.resolve(__dirname, "../../audios/devinette")
-                    await generationTTS(cheminDossier, devinette.nomFichier, devinette.devinette)
+                    console.log("je doit générer la DEVINETTTE");
+                    const cheminDossier = path.resolve(__dirname, "../../audios/devinette");
+                    await generationTTS(cheminDossier, devinette.nomFichier, devinette.devinette);
                 }
                 return { reponse: devinette.reponse, nomFichier: devinette.devinette };
             }
-
         } catch (err) {
             logger.error(`Erreur getDevinette : ${err.message}`);
             return null;
@@ -136,18 +134,17 @@ class CommunicationBDD {
 
             if (!diaporama) {
                 logger.info(`Diaporama inexistant :  ${nom}`);
-                return false
+                return false;
             } else {
                 const images = await bdd.Images.findAll({
                     where: { diapoId: diaporama.id },
                     order: [["ordre", "ASC"]],
                     attributes: ["ordre", "nom"],
-                    raw: true
-                })
+                    raw: true,
+                });
 
-                return images
+                return images;
             }
-
         } catch (err) {
             logger.error(`Erreur getDiaporama : ${err.message}`);
             return null;
@@ -155,75 +152,81 @@ class CommunicationBDD {
     }
 
     async recupererQuestions(type, nombre) {
-        const partieId = (await bdd.Parties.findOne({ where: { statut: "enCours" } })).id
+        const partieId = (await bdd.Parties.findOne({ where: { statut: "enCours" } })).id;
 
-        const questionsPosees = await bdd.QuestionPoseesPartie.findAll({ where: { partieId }, attributes: ["questionId"], raw: true })
+        const questionsPosees = await bdd.QuestionPoseesPartie.findAll({ where: { partieId }, attributes: ["questionId"], raw: true });
 
         const idsQuestionsPosees = questionsPosees.map((q) => q.questionId);
 
         const questions = await bdd.QuizQuestions.findAll({
-            where: { difficulte: type, id: { [Op.notIn]: idsQuestionsPosees, }, },
+            where: { difficulte: type, id: { [Op.notIn]: idsQuestionsPosees } },
             attributes: ["id", "nomFichier", "type", "reponse"],
             order: bdd.sequelize.random(),
             limit: nombre,
-            raw: true
-        })
+            raw: true,
+        });
 
         await bdd.QuestionPoseesPartie.bulkCreate(
-            questions.map(q => ({
+            questions.map((q) => ({
                 partieId,
                 questionId: q.id,
-            }))
+            })),
         );
 
         return questions;
-
     }
     async getBoiteAQuizInitialisation() {
         try {
-            const questionFacile = this.recupererQuestions("facile", 21)
-            const questionDur = this.recupererQuestions("difficile", 3)
+            const questionFacile = this.recupererQuestions("facile", 21);
+            const questionDur = this.recupererQuestions("difficile", 3);
 
-            const comboFlop = (await bdd.QuizAudios.findAll({
-                where: { type: "serieErreurs" },
-                attributes: ["nomFichier"],
-                order: bdd.sequelize.random(),
-                limit: 3,
-                raw: true
-            })).map((q) => q.nomFichier);
+            const comboFlop = (
+                await bdd.QuizAudios.findAll({
+                    where: { type: "serieErreurs" },
+                    attributes: ["nomFichier"],
+                    order: bdd.sequelize.random(),
+                    limit: 3,
+                    raw: true,
+                })
+            ).map((q) => q.nomFichier);
 
-            const comboTop = (await bdd.QuizAudios.findAll({
-                where: { type: "finQuiz" },
-                attributes: ["nomFichier"],
-                order: bdd.sequelize.random(),
-                limit: 1,
-                raw: true
-            })).map((q) => q.nomFichier);[0]
+            const comboTop = (
+                await bdd.QuizAudios.findAll({
+                    where: { type: "finQuiz" },
+                    attributes: ["nomFichier"],
+                    order: bdd.sequelize.random(),
+                    limit: 1,
+                    raw: true,
+                })
+            ).map((q) => q.nomFichier);
+            [0];
 
-            const bonneReponse = (await bdd.QuizAudios.findAll({
-                where: { type: "bonneReponse" },
-                attributes: ["nomFichier"],
-                order: bdd.sequelize.random(),
-                limit: 10,
-                raw: true
-            })).map((q) => q.nomFichier);
+            const bonneReponse = (
+                await bdd.QuizAudios.findAll({
+                    where: { type: "bonneReponse" },
+                    attributes: ["nomFichier"],
+                    order: bdd.sequelize.random(),
+                    limit: 10,
+                    raw: true,
+                })
+            ).map((q) => q.nomFichier);
 
-            const mauvaiseReponse = (await bdd.QuizAudios.findAll({
-                where: { type: "mauvaiseReponse" },
-                attributes: ["nomFichier"],
-                order: bdd.sequelize.random(),
-                limit: 10,
-                raw: true
-            })).map((q) => q.nomFichier);
+            const mauvaiseReponse = (
+                await bdd.QuizAudios.findAll({
+                    where: { type: "mauvaiseReponse" },
+                    attributes: ["nomFichier"],
+                    order: bdd.sequelize.random(),
+                    limit: 10,
+                    raw: true,
+                })
+            ).map((q) => q.nomFichier);
 
-            return { questionFacile, questionDur, comboFlop, comboTop, bonneReponse, mauvaiseReponse }
-
+            return { questionFacile, questionDur, comboFlop, comboTop, bonneReponse, mauvaiseReponse };
         } catch (err) {
             logger.error(`Erreur getBoiteAQuiz : ${err.message}`);
             return null;
         }
     }
-
 }
 
 export default new CommunicationBDD();
