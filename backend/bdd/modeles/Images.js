@@ -10,10 +10,6 @@ export default function (bdd) {
                 autoIncrement: true,
                 primaryKey: true,
             },
-            nom: {
-                type: DataTypes.STRING(255),
-                defaultValue: randomUUID()
-            },
             image: {
                 type: DataTypes.BLOB("long"),
                 allowNull: false,

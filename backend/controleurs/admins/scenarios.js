@@ -2,95 +2,75 @@ import { Sequelize } from "sequelize";
 import gestionErreur from "../../middlewares/gestionErreur.js";
 
 export async function ConfigurationInterfaceAdmin(req) {
-    // Missions
-    const missionsListe = await req.Missions.findAll({
-        raw: true,
-        attributes: ["id", "nom", "description", "topicMQTT"],
-    });
+    // Requêtes DB lancées en parallèle
+    const [
+        missionsListe,
+        derouleScenario,
+        scenariosListe,
+        messagesAudio,
+        aideAudios,
+        quizAudio,
+        devinettes,
+    ] = await Promise.all([
+        req.Missions.findAll({
+            raw: true,
+            attributes: ["id", "nom", "description", "topicMQTT"],
+        }),
+        req.DerouleScenario.findAll({
+            raw: true,
+            attributes: ["scenarioId", "missionId", "audioId", "ordre", "configuration", "type"],
+            order: [["scenarioId", "ASC"], ["ordre", "ASC"]],
+        }),
+        req.Scenarios.findAll({ raw: true }),
+        req.MessagesAudio.findAll({
+            raw: true,
+            attributes: ["id", "detail", "nomFichier"],
+        }),
+        req.AideAudios.findAll({
+            raw: true,
+            attributes: ["missionId", "scenarioId", "audioId"],
+        }),
+        req.QuizQuestions.findAll({
+            raw: true,
+            attributes: ["question", "type", "reponse", "difficulte", "nomFichier"],
+        }),
+        req.Devinettes.findAll({
+            raw: true,
+            attributes: ["devinette", "reponse", "nomFichier"],
+        }),
+    ]);
 
-    // Deroulé
-    const derouleScenario = await req.DerouleScenario.findAll({
-        raw: true,
-        attributes: ["scenarioId", "missionId", "audioId", "ordre", "configuration", "type"],
-        order: [
-            ["scenarioId", "ASC"],
-            ["ordre", "ASC"],
-        ],
-    });
-
-    const mapMissionScenarios = {};
-
-    derouleScenario.forEach((rel) => {
-        if (rel.type != "mission") return;
-
-        if (!mapMissionScenarios[rel.missionId]) {
-            mapMissionScenarios[rel.missionId] = [];
-        }
-
-        mapMissionScenarios[rel.missionId].push({
-            scenarioId: rel.scenarioId,
-            ordre: rel.ordre,
-            configuration: rel.configuration,
-        });
-    });
-
-    // ajout du tableau scenarios dans chaque mission
-    const missions = missionsListe.map((mission) => ({
-        ...mission,
-        scenarios: mapMissionScenarios[mission.id] || [],
-    }));
-
-    // Scénarios
-    const scenariosListe = await req.Scenarios.findAll({ raw: true });
-
-    // Audios
-    const messagesAudio = await req.MessagesAudio.findAll({
-        raw: true,
-        attributes: ["id", "detail", "nomFichier"],
-    });
-
-    // Audios d'aide
-    const aideAudios = await req.AideAudios.findAll({
-        raw: true,
-        attributes: ["missionId", "scenarioId", "audioId"],
-    });
-
-    // Audios du quizz
-    const quizAudio = await req.QuizQuestions.findAll({ raw: true, attributes: ["question", "type", "reponse", "difficulte", "nomFichier"] })
-
-    // Devinette
-    const devinettes = await req.Devinettes.findAll({ raw: true, attributes: ["devinette", "reponse", "nomFichier"] })
-
-    // Permet de les parcourirs plus rapidement
+    // Maps de lookup
     const mapMissions = Object.fromEntries(missionsListe.map((m) => [m.id, m]));
     const mapAudios = Object.fromEntries(messagesAudio.map((a) => [a.id, a]));
 
+    // Map des audios d'aide : "scenarioId_missionId" → [{nomFichier, detail}]
     const mapAideAudios = {};
-
     for (const aide of aideAudios) {
-        const key = `${aide.scenarioId}_${aide.missionId}`;
-
-        if (!mapAideAudios[key]) {
-            mapAideAudios[key] = [];
-        }
-
         const audio = mapAudios[aide.audioId];
-
-        if (audio) {
-            mapAideAudios[key].push({
-                nomFichier: audio.nomFichier,
-                detail: audio.detail,
-            });
-        }
+        if (!audio) continue;
+        const key = `${aide.scenarioId}_${aide.missionId}`;
+        (mapAideAudios[key] ??= []).push({
+            nomFichier: audio.nomFichier,
+            detail: audio.detail,
+        });
     }
 
+    // Parcours unique de derouleScenario
+    const mapMissionScenarios = {};
     const mapScenarioDeroule = {};
 
     for (const etape of derouleScenario) {
-        if (!mapScenarioDeroule[etape.scenarioId]) {
-            mapScenarioDeroule[etape.scenarioId] = [];
+        // — Alimentation de mapMissionScenarios (ex-premier forEach)
+        if (etape.type === "mission") {
+            (mapMissionScenarios[etape.missionId] ??= []).push({
+                scenarioId: etape.scenarioId,
+                ordre: etape.ordre,
+                configuration: etape.configuration,
+            });
         }
 
+        // — Construction du déroulé enrichi
         const derouleEnrichi = {
             ordre: etape.ordre,
             type: etape.type,
@@ -98,31 +78,29 @@ export async function ConfigurationInterfaceAdmin(req) {
         };
 
         if (etape.type === "mission") {
-            derouleEnrichi.mission = mapMissions[etape.missionId] || null;
-            const key = `${etape.scenarioId}_${etape.missionId}`;
-            derouleEnrichi.audiosAide = mapAideAudios[key] || [];
+            derouleEnrichi.mission = mapMissions[etape.missionId] ?? null;
+            derouleEnrichi.audiosAide = mapAideAudios[`${etape.scenarioId}_${etape.missionId}`] ?? [];
+        } else if (etape.type === "audio") {
+            const audio = mapAudios[etape.audioId];
+            derouleEnrichi.fichierId = audio?.id ?? null;
+            derouleEnrichi.fichierDetail = audio?.detail ?? null;
+            derouleEnrichi.fichierNom = audio?.nomFichier ?? null;
         }
 
-        if (etape.type === "audio") {
-            derouleEnrichi.fichierId = mapAudios[etape.audioId]?.id || null;
-            derouleEnrichi.fichierDetail = mapAudios[etape.audioId]?.detail || null;
-            derouleEnrichi.fichierNom = mapAudios[etape.audioId]?.nomFichier || null;
-        }
-        mapScenarioDeroule[etape.scenarioId].push(derouleEnrichi);
+        (mapScenarioDeroule[etape.scenarioId] ??= []).push(derouleEnrichi);
     }
+
+    const missions = missionsListe.map((mission) => ({
+        ...mission,
+        scenarios: mapMissionScenarios[mission.id] ?? [],
+    }));
 
     const scenarios = scenariosListe.map((scenario) => ({
         ...scenario,
-        deroule: mapScenarioDeroule[scenario.id] || [],
+        deroule: mapScenarioDeroule[scenario.id] ?? [],
     }));
 
-    return {
-        missions,
-        scenarios,
-        messagesAudio,
-        quizAudio,
-        devinettes
-    };
+    return { missions, scenarios, messagesAudio, quizAudio, devinettes };
 }
 
 export const configurationComplete = gestionErreur(

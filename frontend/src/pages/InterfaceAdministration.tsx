@@ -101,7 +101,6 @@ export default function InterfaceAdministration() {
     const [quizAudio, setQuizAudio] = useState<QuizAudio[]>();
     const [devinettes, setDevinettes] = useState<Devinette[]>();
     const audioRef = useRef<HTMLAudioElement | null>(null);
-
     async function recuperationDonnees(reponse: RecuperationDonnees) {
         console.log(reponse);
         setScenarios(reponse.scenarios);
@@ -116,7 +115,6 @@ export default function InterfaceAdministration() {
             navigation("/connexion");
         } else {
             function appelFonction() {
-                console.log(donneesLoader);
                 recuperationDonnees(donneesLoader);
             }
             appelFonction();

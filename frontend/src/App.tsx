@@ -62,10 +62,6 @@ const router = createBrowserRouter([
                 element: <Identification mode="connexion" />,
             },
             {
-                path: "/connexion",
-                element: <Identification mode="connexion" />,
-            },
-            {
                 path: "/equipe",
                 element: <Equipe />,
                 loader: async () => {

@@ -126,7 +126,7 @@ async function playCurrentStep() {
                 const configuration = await CommunicationBDD.getDevinette(step.configuration.devinette)
                 step.configuration = configuration;
             } else if (step.configuration.diaporama) {
-                const configuration = await CommunicationBDD.getDiaporama(step.configuration.diaporama)
+                const configuration = await CommunicationBDD.getDiaporama(step.configuration.diaporama, step.configuration.combinaisonSecrete)
                 step.configuration = configuration;
             } else if (step.configuration.boitequiz) {
                 const configuration = await CommunicationBDD.getBoiteAQuizInitialisation()

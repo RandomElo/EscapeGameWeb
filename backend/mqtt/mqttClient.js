@@ -4,7 +4,6 @@ import logger from "./logger.js";
 import CommunicationBDD from "./CommunicationBDD.js";
 import { startGame, stopGame, NextMission, setAudioFinished } from "./gameManager.js";
 import verifierMorseConfig from "../fonctions/verifierMorseConfig.js";
-// Téléchargement : http://172.18.201.101:8100/admins/audios/recuperation-morse?nomFichier=morse_1773393734861.wav
 
 const configLocks = new Set();
 const client = mqtt.connect(config.mqtt.host, {
@@ -25,17 +24,8 @@ client.on("message", async (topic, messageBuffer) => {
 
     try {
         // =====================================================
-        // GAME CONTROL (START / STOP / SKIP)
+        // GAME CONTROL (STOP / SKIP)
         // =====================================================
-        if (topic === "escape/game/start") {
-            const scenarioId = parseInt(msg);
-
-            logger.info(`Start game scenario ${scenarioId}`);
-
-            startGame(scenarioId);
-            return;
-        }
-
         if (topic === "escape/game/stop") {
             logger.warn("Stop game");
             stopGame();
@@ -47,47 +37,6 @@ client.on("message", async (topic, messageBuffer) => {
             NextMission();
             return;
         }
-
-        // ================= Web → config brute =================
-        /**      const webConfigMatch = topic.match(/^escape\/mission\/(\d+)\/config\/web$/);
-      
-              if (webConfigMatch) {
-      
-                  const missionId = webConfigMatch[1];
-                  const missionConfig = JSON.parse(msg);
-      
-                  logger.info(`Config brute reçue du WEB pour mission ${missionId}`);
-      
-                  const morseAudios = await verifierMorseConfig(missionConfig);
-      
-                  if (!morseAudios) {
-                      logger.warn(`Pas de morse valide`);
-                      return;
-                  }
-      
-                  const finalConfig = {
-                      ...missionConfig,
-                      morse: morseAudios
-                  };
-      
-                  console.log(finalConfig)
-                  
-                  await CommunicationBDD.updateMissionConfig(missionId, finalConfig);
-      
-                  client.publish(
-                      `escape/mission/${missionId}/config`,
-                      JSON.stringify(finalConfig)
-                  );
-      
-                  client.publish(
-                      `escape/mission/${missionId}/state`,
-                      JSON.stringify("start")
-                  );
-      
-                  logger.info(`Mission ${missionId} lancée`);
-      
-                  return;
-              } */
 
         // ================= Lest will =================
         const statusMatch = topic.match(/^escape\/mission\/(\d+)\/status$/);
@@ -111,7 +60,6 @@ client.on("message", async (topic, messageBuffer) => {
 
         const stateMatch = topic.match(/^escape\/mission\/(\d+)\/state$/);
         if (stateMatch) {
-
             const missionId = stateMatch[1];
 
             try {

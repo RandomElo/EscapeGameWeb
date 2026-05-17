@@ -94,7 +94,7 @@ class CommunicationBDD {
 
                 return await generateMorseAudio(message);
             } else {
-                
+
                 return { morse: audio.reponse, nomFichier: audio.nomFichier };
             }
         } catch (err) {
@@ -128,7 +128,7 @@ class CommunicationBDD {
         }
     }
 
-    async getDiaporama(nom) {
+    async getDiaporama(nom, combinaisonSecrete) {
         try {
             const diaporama = await bdd.Diapos.findOne({ where: { nom }, raw: true });
 
@@ -139,11 +139,11 @@ class CommunicationBDD {
                 const images = await bdd.Images.findAll({
                     where: { diapoId: diaporama.id },
                     order: [["ordre", "ASC"]],
-                    attributes: ["ordre", "nom"],
+                    attributes: ["ordre", "id"],
                     raw: true,
                 });
 
-                return images;
+                return { images, combinaisonSecrete };
             }
         } catch (err) {
             logger.error(`Erreur getDiaporama : ${err.message}`);

@@ -11,7 +11,7 @@ import sqlite3
 import uvicorn
 import json
 import threading
-
+import time
 # ============================
 # CONFIGURATION
 # ============================
@@ -67,8 +67,7 @@ def start_camera():
     while True:
         ret, frame = cap.read()
         if not ret:
-            print("[WARN] Perte du flux, tentative de reconnexion...")
-            import time
+            print("[WARN] Perte du flux")
             time.sleep(2)
             continue
 
@@ -128,32 +127,17 @@ def startup_event():
 # ============================
 @app.websocket("/ws/stream")
 async def stream(ws: WebSocket):
-    token = ws.query_params.get("token")
-    print("[INFO] Token reçu :", token)
-
-    tokenBDD(token)
-
     await ws.accept()
-    print("[INFO] WebSocket accepté pour le token", token)
+    while True:
+        _, buffer = cv2.imencode(
+            ".jpg",
+            latest_frame,
+            [int(cv2.IMWRITE_JPEG_QUALITY), 30]
+        )
+        await ws.send_bytes(buffer.tobytes())
+        await asyncio.sleep(0.08)
 
-    try:
-        while True:
-            if latest_frame is None:
-                await asyncio.sleep(0.01)
-                continue
 
-            _, buffer = cv2.imencode(
-                ".jpg",
-                latest_frame,
-                [int(cv2.IMWRITE_JPEG_QUALITY), 30]
-            )
-
-            await ws.send_bytes(buffer.tobytes())
-
-            await asyncio.sleep(0.08)
-
-    except Exception as e:
-        print("[INFO] Client déconnecté :", e)
 
 # ============================
 # LANCEMENT DU SERVEUR
