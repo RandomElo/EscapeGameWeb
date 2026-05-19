@@ -43,7 +43,9 @@ app.use("/camera", e.static("public/camera"));
 
 app.use("/utilisateurs", routeurUtilisateurs);
 app.use("/equipes", routeurEquipes);
+
 app.use("/classements", routeurClassements);
+
 app.use("/admins", routeurAdmins);
 
 app.listen(PORT_EXPRESS, () => console.log("Serveur démarré => port " + PORT_EXPRESS));

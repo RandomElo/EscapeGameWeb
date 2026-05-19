@@ -265,29 +265,47 @@ export const enregistrementDiapo = gestionErreur(
     "Erreur lors de l'enregistrement du diapo",
 );
 
-export const recupererDiapositive = gestionErreur(async (req, res) => {
-    const { nom } = req.params;
+export const telechargerDiaporama = gestionErreur(
+    async (req, res) => {
+        const { id } = req.body;
 
-    if (!nom) {
-        return res.status(400).json({
-            etat: false,
-            detail: "Requête incorrecte",
+        const diaporama = await req.Diapos.findByPk(id, { raw: true })
+        if (!diaporama) {
+            return res.status(401).json({
+                etat: false,
+                detail: "Requête incorrecte",
+            });
+        }
+
+        const images = await req.Images.findAll({
+            where: { diapoId: diaporama.id },
+            attributes: ["image", "ordre"],
+            order: [["ordre", "ASC"]],
+            raw: true,
         });
-    }
 
-    const image = await req.Images.findOne({ where: { nom }, raw: true })
-    if (!image) {
-        return res.status(404).json({
-            etat: false,
-            detail: "Ressource inexistante",
+        if (!images.length) {
+            return res.status(404).json({
+                etat: false,
+                detail: "Aucune image trouvée"
+            });
+        }
+
+        const zip = new AdmZip();
+
+        images.forEach((img, index) => {
+            const nom = `${String(img.ordre)}.png`;
+            zip.addFile(nom, img.image);
         });
-    }
 
-    res.setHeader(
-        "Content-Type",
-        "image/png"
-    );
+        const buffer = zip.toBuffer();
 
-    res.send(image.image);
+        res.setHeader("Content-Type", "application/zip");
+        res.setHeader("Content-Length", buffer.length);
+        res.setHeader("Content-Disposition", `attachment; filename="${diaporama.nom}.zip"`);
 
-}, "controleurRecueprerDiapositive", "Erreur lors de la récupération de la diapositive")
+        return res.send(buffer);
+    },
+    "controleurTelechargerDiaporama",
+    "Erreur lors du téléchargement du diaporama",
+);

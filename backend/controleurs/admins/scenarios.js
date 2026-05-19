@@ -353,7 +353,9 @@ export const suppression = gestionErreur(
                 detail: "Ressource introuvable",
             });
         }
+        
         await req.Scenarios.destroy({ where: { id } });
+        
         return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
     },
     "controleurSuppressionScenario",

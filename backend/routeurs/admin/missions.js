@@ -1,5 +1,5 @@
 import e from "express";
-import { creation, liste, modificationNom, suppression, modificationDescription, modificationConfiguration, enregistrementDiapo, recupererDiapositive } from "../../controleurs/admins/missions.js";
+import { creation, liste, modificationNom, suppression, modificationDescription, modificationConfiguration, enregistrementDiapo, telechargerDiaporama } from "../../controleurs/admins/missions.js";
 import multer from "multer";
 import { accesAdmin } from "../../middlewares/accesAdmin.js";
 
@@ -16,6 +16,6 @@ routeurMissions.patch("/:id/modification-configuration", accesAdmin, modificatio
 
 routeurMissions.post("/enregistrement-diapo", accesAdmin, upload.single("zip"), enregistrementDiapo)
 
-routeurMissions.get("/:nom/recuperer-diapositive", recupererDiapositive)
+routeurMissions.get("/telecharger-diaporama", telechargerDiaporama)
 
 export default routeurMissions;

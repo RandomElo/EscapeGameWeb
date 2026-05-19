@@ -341,7 +341,9 @@ export default function InterfaceAdministration() {
                                 </button>
                             </div>
                         </div>
+
                         <table className="tableau">
+                            {/* En-tête */}
                             <thead>
                                 <tr>
                                     <th>Nom</th>
@@ -350,12 +352,14 @@ export default function InterfaceAdministration() {
                                     <th></th>
                                 </tr>
                             </thead>
+                            {/* Corps */}
                             <tbody>
                                 {missions?.map((mission, key) => (
                                     <tr key={key}>
                                         <td className="tdNom">{mission.nom}</td>
                                         <td className="tdDescription">{mission.description}</td>
                                         <td className="tdTopic">escape/mission/{mission.topicMQTT}</td>
+                                        {/* Menu de configuration */}
                                         <td
                                             className="tdAction"
                                             onClick={() => {

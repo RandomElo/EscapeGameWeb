@@ -13,61 +13,6 @@ const __dirname = path.dirname(__filename);
 
 const cheminDossierAudios = path.resolve(__dirname, "../../audios");
 class CommunicationBDD {
-    // =====================================================
-    // UPDATE MISSION CONFIG
-    // =====================================================
-
-    async updateMissionConfig(missionId, config) {
-        try {
-            const mission = await bdd.Missions.findByPk(missionId);
-
-            if (!mission) {
-                logger.error(`Mission ${missionId} introuvable`);
-                return false;
-            }
-
-            // On stocke en JSON dans configuration
-            mission.configuration = JSON.stringify(config);
-
-            await mission.save();
-
-            logger.info(`Config mission ${missionId} sauvegardée en BDD`);
-            return true;
-        } catch (err) {
-            logger.error(`Erreur updateMissionConfig : ${err.message}`);
-            return false;
-        }
-    }
-
-    // =====================================================
-    // GET MISSION CONFIG
-    // =====================================================
-
-    async getMissionConfig(missionId) {
-        try {
-            const mission = await bdd.Missions.findByPk(missionId);
-
-            if (!mission) {
-                logger.warn(`Mission ${missionId} introuvable`);
-                return null;
-            }
-
-            if (!mission.configuration) {
-                logger.warn(`Mission ${missionId} sans configuration`);
-                return null;
-            }
-
-            try {
-                return JSON.parse(mission.configuration);
-            } catch (parseError) {
-                logger.error(`Config mission ${missionId} invalide en BDD`);
-                return null;
-            }
-        } catch (err) {
-            logger.error(`Erreur getMissionConfig : ${err.message}`);
-            return null;
-        }
-    }
 
     async getTopicMqtt(missionId) {
         try {
@@ -136,14 +81,7 @@ class CommunicationBDD {
                 logger.info(`Diaporama inexistant :  ${nom}`);
                 return false;
             } else {
-                const images = await bdd.Images.findAll({
-                    where: { diapoId: diaporama.id },
-                    order: [["ordre", "ASC"]],
-                    attributes: ["ordre", "id"],
-                    raw: true,
-                });
-
-                return { images, combinaisonSecrete };
+                return { diaporama: diaporama.id, combinaisonSecrete };
             }
         } catch (err) {
             logger.error(`Erreur getDiaporama : ${err.message}`);

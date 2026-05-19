@@ -21,4 +21,5 @@ routeurUtilisateurs.put("/validation-modifier-mdp", autorisationAcces, validatio
 routeurUtilisateurs.post("/qr-code-2fa", autorisationAcces, genererQRCode)
 routeurUtilisateurs.post("/initialisation-code-2fa", autorisationAcces, initialisationCode2FA)
 routeurUtilisateurs.delete("/desactiver-2fa", autorisationAcces, desactiver2FA)
+
 export default routeurUtilisateurs;
