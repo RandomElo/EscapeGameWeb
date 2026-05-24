@@ -113,7 +113,6 @@ export const inscription = gestionErreur(
 
 export const connexion = gestionErreur(
     async (req, res) => {
-        console.log("je suis iciz");
         const utilisateur = await req.Utilisateurs.findOne({
             where: { mail: req.body.mail },
         });
@@ -170,8 +169,7 @@ export const generer2FAControleur = gestionErreur(
                 detail: "Requête incorrecte",
             });
         }
-
-        idUtilisateur
+        const tokenEnClair = jwt.verify(token, process.env.CHAINE_JWT_CONFIG_2FA);
         if (tokenEnClair.scope !== "2fa_config") {
             return res.sendStatus(403);
         }
@@ -434,3 +432,14 @@ export const monCompte = gestionErreur(
     "controleurMonCompte",
     "Erreur lors de la récupération des informations de votre compte",
 );
+export const suppressionCompte = gestionErreur(async (req, res) => {
+    await req.Utilisateurs.destroy({ where: { id: req.idUtilisateur } })
+
+    res.clearCookie("utilisateur", {
+        httpOnly: true,
+        sameSite: "Strict",
+        secure: process.env.MODE == "production",
+    });
+
+    return res.json({ etat: true, detail: "ok" });
+}, "controleurSuppressionCompte", "Erreur lors de la suppression du compte")

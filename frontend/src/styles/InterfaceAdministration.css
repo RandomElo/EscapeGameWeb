@@ -7,7 +7,6 @@
         sans-serif;
     font-size: 0.875rem;
     padding: var(--space-xl);
-    min-height: 100vh;
 
     /* EN-TÊTE */
     .entetePage {
@@ -94,28 +93,6 @@
                 letter-spacing: 0.06em;
             }
         }
-    }
-    /* BOUTON ACTION */
-    .boutonAction {
-        background: var(--amber-dim);
-        border: 1px solid rgba(245, 158, 11, 0.3);
-        color: var(--amber);
-        padding: 0.4rem 0.9rem;
-        font-size: 0.72rem;
-        font-family: inherit;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        transition: all 0.2s ease;
-        white-space: nowrap;
-    }
-    .boutonAction:hover {
-        background: rgba(245, 158, 11, 0.2);
-        color: var(--gold);
-        box-shadow: var(--glow-sm);
     }
 
     .tdNom {
@@ -405,19 +382,35 @@
 }
 #divModalListeMissionScenario {
     text-align: center;
-    table tr {
-        height: 52px;
+    table {
+        width: 100%;
+        tr {
+            height: 52px;
+        }
+        .tdOrdre {
+            width: 50px;
+        }
+        .tdDetails {
+            width: 300px;
+        }
+        .thSupprimer,
+        .tdSupprimer {
+            width: 100px;
+        }
+        .tdSupprimer {
+            cursor: pointer;
+        }
+        .tdSupprimer:hover svg {
+            stroke: var(--red);
+        }
+        #inputConfiguration {
+            text-align: center;
+        }
     }
     #divAjouterElement {
         display: flex;
         justify-content: space-between;
         margin-top: 10px;
-    }
-    .tdSupprimer {
-        cursor: pointer;
-    }
-    .tdSupprimer:hover svg {
-        stroke: red;
     }
 }
 
@@ -480,7 +473,10 @@
     #pDetail {
     }
 }
-#divModalGestionAudios, #divModalGestionQuizAudios, #divModalGestionDevinette {
+#divModalGestionAudios,
+#divModalGestionQuizAudios,
+#divModalGestionDevinette,
+#divModalAjouterDiaporama {
     .tableau {
         .thActions {
             text-align: center;
@@ -504,10 +500,74 @@
         }
     }
 }
-#divModalGestionQuizAudios, #divModalGestionDevinette {
+#divModalGestionQuizAudios,
+#divModalGestionDevinette {
     .tableau {
         .tdReponse {
             text-align: center;
         }
     }
+}
+#divModalGestionDevinette {
+    .tdReponse {
+        width: 130px;
+    }
+}
+#divBoutonAjouterAudios,
+#divBoutonAjouterDevinettes,
+#divBoutonAjouterDiaporamas {
+    position: sticky;
+    bottom: 0;
+    width: 100%;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--bg-card), var(--bg-elevated));
+}
+#divModalAjouterDiaporama .tdAfficherDiapo:hover svg {
+    color: var(--amber);
+}
+#divModalDiapositives {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    #divDiaporama {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        img {
+            height: 300px;
+        }
+        .divConteneurIcone.activer {
+            cursor: pointer;
+        }
+        .divConteneurIcone.desactiver {
+            cursor: no-drop;
+        }
+        .divConteneurIcone.activer:hover svg {
+            color: var(--amber);
+        }
+        .iconeGauche {
+            position: absolute;
+            left: 15px;
+        }
+        .iconeDroite {
+            position: absolute;
+            right: 15px;
+        }
+    }
+    #pCompteur {
+        margin-top: var(--space-md);
+    }
+}
+.tableauAjouterAudioScenario,
+.tableauAjouterMissionScenario {
+    .tdAjouter {
+        width: 75px;
+    }
+}
+#pGenerationAudioQuiz {
+    font-size: 0.95rem;
+    margin-bottom: var(--space-md);
 }

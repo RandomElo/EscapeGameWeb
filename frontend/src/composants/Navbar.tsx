@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { BellDot, Menu, X, Shield, Trophy, Users, UserCircle2, MonitorPlay, House } from "lucide-react";
+import { BellDot, Menu, X, Shield, Trophy, Users, UserCircle2, MonitorPlay, House, Scale, UserRound, UserRoundPlus } from "lucide-react";
 import type { Role } from "../contexts/AuthContext";
 import type { DemandeAdhesion } from "./Generale";
 import "../styles/composants/Navbar.css";
@@ -90,6 +90,12 @@ export default function Navbar({ estAuth, role, demandesAdhesion, setAfficherMod
                             </NavLink>
                         </li>
                     )}
+                    <li>
+                        <NavLink className={({ isActive }) => `nav-item${isActive ? " active" : ""}`} to="/informations-legales">
+                            <Scale size={16} />
+                            Informations légales
+                        </NavLink>
+                    </li>
                 </ul>
 
                 {/* FOOTER — connexion ou profil */}
@@ -119,14 +125,17 @@ export default function Navbar({ estAuth, role, demandesAdhesion, setAfficherMod
                             )}
                         </>
                     ) : (
-                        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-sm)" }}>
-                            <NavLink className="btn-ghost btn--full" to="/connexion">
+                        <>
+                            <NavLink className={({ isActive }) => `nav-item${isActive ? " active" : ""}`} to="/connexion" onClick={() => fermerMenu()}>
+                                <UserRound size={18} />
                                 Connexion
                             </NavLink>
-                            <NavLink className="btn-tactical btn--full" to="/inscription">
+
+                            <NavLink className={({ isActive }) => `nav-item${isActive ? " active" : ""}`} to="/inscription" onClick={() => fermerMenu()}>
+                                <UserRoundPlus size={18} />
                                 Inscription
                             </NavLink>
-                        </div>
+                        </>
                     )}
                 </div>
             </aside>

@@ -111,6 +111,7 @@ async function recuperationDetailsPartie(partie, req) {
         detailsPartie: {
             equipeNom: equipe?.nom || null,
             nbrMembres: membres,
+            nbrMissions: missions.length,
             scenarioNom: scenario?.nom || null,
             nbrEtapes: derouleScenarioEnrichi.length,
             dateDebut: partie.dateDebut,
@@ -122,7 +123,6 @@ export const partieEnCours = gestionErreur(
     async (req, res) => {
         const partie = await req.Parties.findOne({ where: { statut: "enCours" } });
         if (partie) {
-            console.log("il y a partie");
             return res.json({ etat: true, detail: { partieEnCours: true, details: await recuperationDetailsPartie(partie, req) } });
         } else {
             const equipes = await req.Equipes.findAll();

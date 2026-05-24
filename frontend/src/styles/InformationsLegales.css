@@ -1,0 +1,142 @@
+.InformationsLegales {
+    background: var(--bg-base);
+    color: var(--text-secondary);
+    font-family:
+        system-ui,
+        -apple-system,
+        sans-serif;
+    font-size: 0.875rem;
+    padding: var(--space-xl);
+    width: 760px;
+    line-height: 1.6;
+
+    /* EN-TÊTE */
+    .entetePage {
+        margin-bottom: var(--space-xl);
+        padding-bottom: var(--space-lg);
+        border-bottom: 1px solid var(--border);
+    }
+    .titrePage {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: 0.02em;
+        margin-bottom: 0.25rem;
+    }
+    .sousTitrePage {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+    }
+
+    /* ONGLETS */
+    .onglets {
+        display: flex;
+        gap: 2px;
+        margin-bottom: var(--space-xl);
+        border-bottom: 1px solid var(--border);
+    }
+    .onglet {
+        padding: 0.5rem 1.2rem;
+        font-size: 0.72rem;
+        font-family: inherit;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        color: var(--text-muted);
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+        transition: all 0.2s ease;
+    }
+    .onglet:hover {
+        color: var(--text-secondary);
+    }
+    .onglet.actif {
+        color: var(--amber);
+        border-bottom-color: var(--amber);
+    }
+
+    /* SECTION */
+    .sectionLegale {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-lg);
+    }
+
+    /* BLOC */
+    .blocLegal {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-sm);
+    }
+
+    .titreBlocLegal {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: var(--amber);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+    }
+    .titreBlocLegal::before {
+        content: "";
+        width: 5px;
+        height: 5px;
+        background: var(--amber);
+        flex-shrink: 0;
+        display: inline-block;
+    }
+
+    .corpsBlocLegal {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        padding-left: var(--space-md);
+        border-left: 1px solid var(--border);
+        a {
+            color: var(--amber);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(245, 158, 11, 0.3);
+            transition:
+                color 0.2s,
+                border-color 0.2s;
+        }
+        a:hover {
+            color: #fbbf24;
+            border-color: #fbbf24;
+        }
+        .pMail {
+           margin-top: 0.4rem; color: rgba(203, 213, 225, 0.5); font-size: 0.8rem 
+        }
+    }
+
+    .listeLegale {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+    .listeLegale li {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--space-sm);
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+    }
+    .listeLegale li::before {
+        content: "—";
+        color: var(--amber);
+        opacity: 0.5;
+        flex-shrink: 0;
+    }
+
+    .separateurSection {
+        border: none;
+        border-top: 1px solid var(--border);
+    }
+}

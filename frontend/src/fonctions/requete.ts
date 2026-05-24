@@ -7,15 +7,14 @@ interface RequeteParametres {
     corps?: object;
     enTete?: Record<string, string>;
     formData?: boolean;
+    blob?: boolean;
 }
 
 export function useRequete() {
     const { setErreur } = useErreur();
     const { estAuth, deconnexion } = useAuth();
 
-    return async function requete({ url, methode = "GET", corps, enTete = {}, formData = false }: RequeteParametres): Promise<any> {
-        console.log(url);
-        console.log("Form DATA : " + formData);
+    return async function requete({ url, methode = "GET", corps, enTete = {}, formData = false, blob = false }: RequeteParametres): Promise<any> {
         try {
             const req = await fetch(`${url}`, {
                 method: methode,
@@ -28,9 +27,11 @@ export function useRequete() {
                 credentials: "include",
                 body: formData ? (corps as FormData) : corps ? JSON.stringify(corps) : undefined,
             });
-
             if (!req.ok) {
                 throw new Error(`Code ${req.status} | Erreur lors de l'envoi de la requête`);
+            }
+            if (blob) {
+                return await req.blob();
             }
             const reponse = await req.json();
             if (!reponse.etat) {

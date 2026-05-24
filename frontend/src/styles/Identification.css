@@ -1,110 +1,196 @@
 .Identification {
-    width: 269px;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 19px;
-    border: 1px solid black;
-    border-radius: 20px;
+    /* CARTE IDENTIFICATION */
+    padding-top: 2.5rem;
 
-    #titre {
-        font-size: 24px;
-        text-align: center;
+    .carteIdentification {
+        background: linear-gradient(135deg, var(--bg-card), var(--bg-elevated));
+        border: 1px solid var(--border-hover);
+        padding: var(--space-xl);
+        box-shadow: var(--glow-md);
+        position: relative;
+        width: 400px;
     }
-    .ligneSeparation {
+
+    /* Coins HUD */
+    .carteIdentification::before,
+    .carteIdentification::after {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border-color: var(--amber);
+        pointer-events: none;
+    }
+    .carteIdentification::before {
+        top: 0;
+        left: 0;
+        border-top: 2px solid;
+        border-left: 2px solid;
+    }
+    .carteIdentification::after {
+        bottom: 0;
+        right: 0;
+        border-bottom: 2px solid;
+        border-right: 2px solid;
+    }
+
+    /* EN-TÊTE */
+    .enteteIdentification {
+        text-align: center;
+        margin-bottom: var(--space-xl);
+        padding-bottom: var(--space-lg);
+        border-bottom: 1px solid var(--border);
+    }
+
+    .titreIdentification {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: 0.04em;
+        margin-bottom: 0.25rem;
+    }
+
+    /* FORMULAIRE */
+    .formulaireIdentification {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-md);
+    }
+
+    /* CHECKBOX 2FA */
+    .ligne2FA {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        padding: var(--space-sm) 0;
+    }
+
+    .ligne2FA input[type="checkbox"] {
+        appearance: none;
+        width: 14px;
+        height: 14px;
+        border: 1px solid var(--border-hover);
+        background: var(--bg-deep);
+        cursor: pointer;
+        flex-shrink: 0;
+        position: relative;
+        transition: all 0.15s ease;
+    }
+    .ligne2FA input[type="checkbox"]:checked {
+        background: var(--amber);
+        border-color: var(--amber);
+    }
+    .ligne2FA input[type="checkbox"]:checked::after {
+        content: "";
+        position: absolute;
+        left: 3px;
+        top: 1px;
+        width: 5px;
+        height: 8px;
+        border: 1.5px solid var(--bg-deep);
+        border-top: none;
+        border-left: none;
+        transform: rotate(45deg);
+    }
+
+    .ligne2FA label {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        cursor: pointer;
+    }
+
+    /* ERREUR */
+    .blocErreur {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        padding: var(--space-sm) var(--space-md);
+        background: rgba(239, 68, 68, 0.08);
+        border: 1px solid rgba(239, 68, 68, 0.25);
+        color: var(--red);
+        font-size: 0.8rem;
+    }
+
+    .blocErreur svg {
+        flex-shrink: 0;
+        width: 15px;
+        height: 15px;
+    }
+
+    /* BOUTON SOUMETTRE */
+    .boutonSoumettre {
+        background: var(--amber-dim);
+        border: 1px solid rgba(245, 158, 11, 0.3);
+        color: var(--amber);
+        padding: 0.65rem 1.2rem;
+        font-size: 0.8rem;
+        font-family: inherit;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        cursor: pointer;
         width: 100%;
-        height: 2px;
-        background-color: #f2f2f2;
-        margin-top: 20px;
-    }
-    form {
         display: flex;
-        flex-direction: column;
         align-items: center;
-        margin-top: 20px;
-
-        input::placeholder {
-            /* Semi bold */
-            font-weight: bold;
-            color: #a6a6a6;
-        }
-
-        #divChamps {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-        .inputMailDefini {
-            cursor: not-allowed;
-        }
-
-        .inputMailDefini {
-            color: black;
-            font-style: italic;
-        }
-
-        #divActiver2FA {
-            width: 247px;
-            margin-top: 14px;
-            label {
-                margin-left: 5px;
-                font-weight: bold;
-            }
-        }
-        #divErreurFormulaire {
-            margin-top: 20px;
-        }
-
-        .bouton {
-            width: 100%;
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-        }
+        justify-content: center;
+        gap: var(--space-sm);
+        font-weight: 600;
+        transition: all 0.2s ease;
+        margin-top: var(--space-xs);
     }
-    #divChangementModeAuthentification {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        p {
-            margin-top: 20px;
-            margin-bottom: 6px;
-            color: #999999;
-            /* semi bold */
-            font-weight: bold;
-        }
-        a {
-            color: #0085ff;
-            /* semi bold */
-            font-weight: bold;
-        }
+    .boutonSoumettre:hover {
+        background: rgba(245, 158, 11, 0.2);
+        color: var(--gold);
+        box-shadow: var(--glow-sm);
     }
-}
-.darkMode .Identification {
-    border-color: var(--text-color);
-}
-.Modal {
-    .configuration2FA,
-    .connexion2FA {
+    .boutonSoumettre:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+    .boutonSoumettre:disabled:hover {
+        background: var(--amber-dim);
+        color: var(--amber);
+        box-shadow: none;
+    }
+
+    /* CHANGEMENT DE MODE */
+    .changementMode {
+        margin-top: var(--space-lg);
+        padding-top: var(--space-lg);
+        border-top: 1px solid var(--border);
         text-align: center;
-        .ChampDonneesForm {
-            margin-left: auto;
-            margin-right: auto;
-        }
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-sm);
     }
-    .configuration2FA {
-        #pEtape1 {
-            margin-top: 10px;
-        }
-        #pEtape2 {
-            margin-bottom: 8px;
-        }
-        .bouton {
-            width: 100px;
-        }
+
+    .changementMode p {
+        font-size: 0.75rem;
+        color: var(--text-muted);
     }
-    .connexion2FA {
-        .bouton {
-            width: 80px;
-        }
+
+    .lienChangementMode {
+        font-size: 0.75rem;
+        color: var(--amber);
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        border-bottom: 1px solid rgba(245, 158, 11, 0.3);
+        transition:
+            color 0.2s,
+            border-color 0.2s;
+        align-self: center;
     }
+    .lienChangementMode:hover {
+        color: var(--gold);
+        border-color: var(--gold);
+    }
+}
+.modalConfiguration2FA {
+    img {
+        margin: 10px 0;
+    }
+    #pEtape2 {
+        margin-bottom: 10px;
+    }
+    
 }

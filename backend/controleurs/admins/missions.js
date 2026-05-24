@@ -253,12 +253,8 @@ export const enregistrementDiapo = gestionErreur(
             });
         }
 
-        res.json({
-            etat: true,
-            detail: {
-                cree: true,
-            },
-        });
+        return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
+
     },
 
     "controleurEnregistrementDiapo",
@@ -309,3 +305,103 @@ export const telechargerDiaporama = gestionErreur(
     "controleurTelechargerDiaporama",
     "Erreur lors du téléchargement du diaporama",
 );
+export const recupererDiapositive = gestionErreur(async (req, res) => {
+    const { idDiapositive } = req.params
+
+    const image = await req.Images.findByPk(idDiapositive, { raw: true })
+
+    res.setHeader('Content-Type', 'image/png');
+    res.send(image.image);
+
+}, "controleurRecupererDiapositive", "Erreur lors de la récupération de la diapositive")
+
+export const suppressionDiaporama = gestionErreur(async (req, res) => {
+    const { nomFichier } = req.body;
+
+    if (!nomFichier) {
+        return res.status(401).json({
+            etat: false,
+            detail: "Requête incorrecte",
+        });
+    }
+
+    const diapo = await req.Diapos.findOne({ where: { nom: nomFichier }, raw: true });
+    if (!diapo) {
+        return res.status(404).json({
+            etat: false,
+            detail: "Ressource inexistante",
+        });
+    }
+
+    await req.Images.destroy({ where: { diapoId: diapo.id } })
+    await req.Diapos.destroy({ where: { id: diapo.id } })
+
+    return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
+
+}, "controleurSuppressionDiaporama", "Erreur lors de la suppression du diaporama")
+export const suppressionAudioQuiz = gestionErreur(async (req, res) => {
+    const { nomFichier } = req.body;
+
+    if (!nomFichier) {
+        return res.status(401).json({
+            etat: false,
+            detail: "Requête incorrecte",
+        });
+    }
+
+    const fichier = await req.QuizQuestions.findOne({ where: { nomFichier } });
+    if (!fichier) {
+        return res.status(404).json({
+            etat: false,
+            detail: "Ressource inexistante",
+        });
+    }
+    const cheminDossierAudio = path.join(process.cwd(), "audios", "quiz", "questions");
+    const cheminFichier = path.join(cheminDossierAudio, nomFichier);
+
+    try {
+        await fs.unlink(cheminFichier);
+    } catch (err) {
+        if (err.code !== "ENOENT") {
+            console.error("Erreur suppression fichier :", err);
+            return res.status(500).json({ etat: false, erreur: "Erreur suppression fichier" });
+        }
+    }
+
+    await req.QuizQuestions.destroy({ where: { id: fichier.id } });
+    return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
+
+}, "controleurSuppressionAudioQuiz", "Erreur lors de la suppression de l'audio du quiz")
+export const suppressionDevinette = gestionErreur(async (req, res) => {
+    const { nomFichier } = req.body;
+
+    if (!nomFichier) {
+        return res.status(401).json({
+            etat: false,
+            detail: "Requête incorrecte",
+        });
+    }
+
+    const fichier = await req.Devinettes.findOne({ where: { nomFichier } });
+    if (!fichier) {
+        return res.status(404).json({
+            etat: false,
+            detail: "Ressource inexistante",
+        });
+    }
+    const cheminDossierAudio = path.join(process.cwd(), "audios", "devinette");
+    const cheminFichier = path.join(cheminDossierAudio, nomFichier);
+
+    try {
+        await fs.unlink(cheminFichier);
+    } catch (err) {
+        if (err.code !== "ENOENT") {
+            console.error("Erreur suppression fichier :", err);
+            return res.status(500).json({ etat: false, erreur: "Erreur suppression fichier" });
+        }
+    }
+
+    await req.Devinettes.destroy({ where: { id: fichier.id } });
+    return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
+
+}, "controleurSuppressionDevinette", "Erreur lors de la suppression de la devinette")

@@ -99,7 +99,12 @@ async function playCurrentStep() {
     const step = steps[currentStepIndex];
 
     logger.info(`Lecture étape ${currentStepIndex + 1}`);
-
+    client.publish(
+        "escape/web/step",
+        JSON.stringify({
+            etape: currentStepIndex + 1
+        }),
+    );
     // ==========================
     // MISSION
     // ==========================

@@ -52,9 +52,9 @@ export function generationTTS(cheminDossier, nomFichier, texte) {
 
 export const generation = gestionErreur(
     async (req, res) => {
-        const { texte, missionId, scenarioId } = req.body;
+        const { texte } = req.body;
 
-        if (!texte || !missionId || !scenarioId) {
+        if (!texte) {
             return res.status(400).json({
                 etat: false,
                 detail: "Requête incorrecte",

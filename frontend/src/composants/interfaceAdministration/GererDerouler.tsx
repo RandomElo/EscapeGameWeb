@@ -1,10 +1,10 @@
 import { useState } from "react";
-import RetourArriere from "../RetourArriere";
 import type { ContenuModal, DerouleItem, RecuperationDonnees } from "../../pages/InterfaceAdministration";
 import ChampDonneesForm from "../ChampDonneesForm";
 import Chargement from "../Chargement";
 import { useRequete } from "../../fonctions/requete";
 import { Trash2 } from "lucide-react";
+import Select from "../Select";
 
 type Scenario = {
     id: number;
@@ -22,20 +22,7 @@ type Props = {
 
 export default function GererDeroulerMissions({ scenario, setContenuModal, setDetails2Modal, setAfficherModal, recuperationDonnees }: Props) {
     const requete = useRequete();
-    const safeParse = (valeur: any) => {
-        try {
-            const parsed = JSON.parse(valeur);
 
-            // si c’est encore une string → reparse
-            if (typeof parsed === "string") {
-                return JSON.parse(parsed);
-            }
-
-            return parsed;
-        } catch {
-            return {};
-        }
-    };
     const [deroule, setDeroule] = useState<DerouleItem[]>(
         scenario.deroule.map((el) => ({
             ...el,
@@ -87,37 +74,33 @@ export default function GererDeroulerMissions({ scenario, setContenuModal, setDe
 
     return (
         <div id="divModalListeMissionScenario">
-            <RetourArriere clique={() => setContenuModal("menuScenario")} />
-
-            <h1>Dérouler du scénario</h1>
-
             <div id="divListeMission">
                 <table>
                     <thead>
                         <tr>
-                            <th>Ordre</th>
+                            <th className="tdOrdre">Ordre</th>
                             <th>Nom</th>
-                            <th>Détails</th>
-                            <th>Supprimer</th>
+                            <th className="tdDetails">Détails</th>
+                            <th className="thSupprimer">Supprimer</th>
                         </tr>
                     </thead>
 
                     <tbody>
                         {deroule.map((el, index) => (
                             <tr key={index}>
-                                <td>
-                                    <select value={el.ordre} onChange={(e) => changerOrdre(index, Number(e.target.value))}>
+                                <td className="tdOrdre">
+                                    <Select classe="selectOrdre" onChange={(e) => changerOrdre(index, Number(e.target.value))} value={el.ordre}>
                                         {deroule.map((_, i) => (
                                             <option key={i} value={i}>
                                                 {i + 1}
                                             </option>
                                         ))}
-                                    </select>
+                                    </Select>
                                 </td>
 
                                 <td>{el.type === "mission" ? el.mission?.nom : "Audio"}</td>
 
-                                <td>{el.type == "mission" ? <ChampDonneesForm typeInput="texteOnChange" id="inputConfiguration" value={el.configurationTexte} onChange={(valeur) => modifierConfiguration(index, valeur)} /> : el.fichierDetail}</td>
+                                <td className="tdDetails">{el.type == "mission" ? <ChampDonneesForm typeInput="texteOnChange" id="inputConfiguration" value={el.configurationTexte} onChange={(valeur) => modifierConfiguration(index, valeur)} /> : el.fichierDetail}</td>
 
                                 <td className="tdSupprimer">
                                     <Trash2 />
@@ -159,7 +142,7 @@ export default function GererDeroulerMissions({ scenario, setContenuModal, setDe
 
             <div id="divAjouterElement">
                 <button
-                    className="bouton"
+                    className="boutonAction"
                     onClick={() => {
                         setDetails2Modal([]);
                         setContenuModal("ajouterMissionScenario");
@@ -169,7 +152,7 @@ export default function GererDeroulerMissions({ scenario, setContenuModal, setDe
                 </button>
 
                 <button
-                    className="bouton"
+                    className="boutonAction"
                     onClick={() => {
                         setDetails2Modal([]);
                         setContenuModal("ajouterAudioScenario");

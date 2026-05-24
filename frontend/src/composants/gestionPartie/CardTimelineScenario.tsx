@@ -1,4 +1,4 @@
-import { Megaphone, Volume2 } from "lucide-react";
+import { Megaphone, Tag, Volume2 } from "lucide-react";
 import GestionTags from "./GestionTags";
 import type { Deroule } from "../../pages/SuiviPartie";
 
@@ -21,7 +21,14 @@ export default function CardTimelineScenario({ deroule, setContenuModal, setDeta
                             <div className={"card missionCard mission" + etape.etat}>
                                 <div className="missionHeader">
                                     <h3>{etape.nom}</h3>
-                                    <GestionTags tags={etape.tags} etat={etape.etat} />
+                                    {etape.etat == "EnCours" && etape.tag && (
+                                        <div className="divBadges">
+                                            <span className="badge">
+                                                <Tag size={14} />
+                                                {etape.tag}
+                                            </span>
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="missionSecondeLigne">
                                     <p>{etape.description}</p>

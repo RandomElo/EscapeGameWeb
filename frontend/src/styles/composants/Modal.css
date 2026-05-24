@@ -101,25 +101,9 @@
         border-top: 1px solid var(--border);
 
         /* Boutons */
-        .boutonAction {
-            background: var(--amber-dim);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            color: var(--amber);
-            padding: 0.5rem 1.2rem;
-            font-size: 0.78rem;
-            font-family: inherit;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: var(--space-sm);
-            transition: all 0.2s ease;
-        }
-        .boutonAction:hover {
-            background: rgba(245, 158, 11, 0.2);
-            color: var(--gold);
-            box-shadow: var(--glow-sm);
+
+        .boutonAction.solo {
+            margin: auto;
         }
 
         .boutonDiscret {

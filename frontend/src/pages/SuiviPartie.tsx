@@ -13,7 +13,7 @@ export type Deroule = {
     nom: string;
     description?: string;
     topicMQTT?: string;
-    tags?: string[];
+    tag?: string;
     etat: "EnCours" | "EnAttente" | "Terminée";
     audiosAide: { nomFichier: string; detail: string }[];
 }[];

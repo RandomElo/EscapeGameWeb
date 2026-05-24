@@ -35,7 +35,7 @@
             margin-bottom: 16px;
         }
     }
-    /*
+
     .gestionPartie {
         display: grid;
         grid-template-columns: 280px 1fr 320px;
@@ -303,24 +303,10 @@
  
 
         .badge {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-
-            background: #e0f2fe;
-            color: #0369a1;
-            border: 1px solid #0ea5e9;
-
-            padding: 4px 8px;
-            border-radius: 6px;
-
-            font-size: 12px;
-            font-weight: 500;
-        }
-        .badge.enCours {
-            color: #f59e0b;
-            background-color: #fef3c7;
-            border-color: #f59e0b;
+            background-color: var(--amber-dim);
+            border: 1px solid rgba(245,158,11,0.3);
+            color: var(--amber);
+            text-transform: uppercase;
         }
     }
 

@@ -14,8 +14,7 @@ import { ResponsiveProvider } from "./contexts/ResponsiveContext";
 import { redirect } from "react-router-dom";
 import Compte from "./pages/Compte";
 import ChangementMail from "./pages/ChangementMail";
-import MentionsLegales from "./pages/MentionsLegales";
-import Cgu from "./pages/Cgu";
+import InformationsLegales from "./pages/InformationsLegales";
 
 async function verifUtilisateur() {
     const requeteVerification = await fetch("/utilisateurs/verification", {
@@ -225,12 +224,8 @@ const router = createBrowserRouter([
                 element: <ChangementMail />,
             },
             {
-                path: "/mentions-legales",
-                element: <MentionsLegales />,
-            },
-            {
-                path: "/cgu",
-                element: <Cgu />,
+                path: "/informations-legales",
+                element: <InformationsLegales />,
             },
             {
                 path: "*",

@@ -1,272 +1,266 @@
 .Accueil {
-    display: flex;
-    justify-content: center;
-    .accueilConteneur {
-        background: var(--bg-base);
+    background: var(--bg-base);
+    color: var(--text-secondary);
+    font-family:
+        system-ui,
+        -apple-system,
+        sans-serif;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    padding: var(--space-xl);
+    max-width: 860px;
+
+    /* EN-TÊTE DE PAGE */
+    .entetePage {
+        margin-bottom: var(--space-xl);
+        padding-bottom: var(--space-lg);
+        border-bottom: 1px solid var(--border);
+    }
+
+    .titrePage {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: 0.02em;
+        margin-bottom: 0.25rem;
+    }
+
+    .sousTitrePage {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+    }
+
+    /* GRILLE STATISTIQUES */
+    .grilleStatistiques {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: var(--space-md);
+        margin-bottom: var(--space-xl);
+    }
+
+    .carteStatistique {
+        background: linear-gradient(135deg, var(--bg-card), var(--bg-elevated));
+        border: 1px solid var(--border);
+        padding: var(--space-md);
+        position: relative;
+        transition:
+            border-color 0.3s ease,
+            box-shadow 0.3s ease;
+    }
+
+    .carteStatistique:hover {
+        border-color: var(--border-hover);
+        box-shadow: var(--glow-sm);
+    }
+
+    .etiquetteStat {
+        font-size: 0.65rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: var(--space-xs);
+    }
+
+    .valeurStat {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--amber);
+    }
+
+    /* SECTIONS */
+    .listeSections {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-lg);
+    }
+
+    /* CARTE INTERFACE */
+    .carteInterface {
+        background: linear-gradient(135deg, var(--bg-card), var(--bg-elevated));
+        border: 1px solid var(--border);
+        padding: var(--space-lg);
+        transition:
+            border-color 0.3s ease,
+            box-shadow 0.3s ease;
+    }
+
+    .carteInterface:hover {
+        border-color: var(--border-hover);
+        box-shadow: var(--glow-sm);
+    }
+
+    .titreCarte {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--amber);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: var(--space-md);
+        padding-bottom: var(--space-sm);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+    }
+
+    .titreCarte::before {
+        content: "";
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        background: var(--amber);
+        flex-shrink: 0;
+    }
+
+    .corpsCarte p {
         color: var(--text-secondary);
-        font-family:
-            system-ui,
-            -apple-system,
-            sans-serif;
+        margin-bottom: var(--space-sm);
+    }
+
+    .corpsCarte p:last-child {
+        margin-bottom: 0;
+    }
+
+    /* SOUS-SECTIONS */
+    .sousSectionTitre {
+        font-size: 0.65rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        margin-bottom: var(--space-sm);
+    }
+
+    /* LISTE PUCES */
+    .listePuces {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        margin-top: var(--space-sm);
+        margin-bottom: var(--space-sm);
+    }
+
+    .listePuces li {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--space-sm);
+        color: var(--text-secondary);
         font-size: 0.875rem;
-        line-height: 1.6;
-        padding: var(--space-xl);
-        max-width: 860px;
+    }
 
-        /* EN-TÊTE DE PAGE */
-        .entetePage {
-            margin-bottom: var(--space-xl);
-            padding-bottom: var(--space-lg);
-            border-bottom: 1px solid var(--border);
-        }
+    .listePuces li::before {
+        content: "—";
+        color: var(--amber);
+        opacity: 0.6;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
 
-        .titrePage {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            letter-spacing: 0.02em;
-            margin-bottom: 0.25rem;
-        }
+    /* TABLEAU ÉQUIPE */
+    .tableauEquipe {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
 
-        .sousTitrePage {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
+    .ligneEquipe {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--space-md);
+        padding: 0.5rem var(--space-sm);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        font-size: 0.875rem;
+    }
 
-        /* GRILLE STATISTIQUES */
-        .grilleStatistiques {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: var(--space-md);
-            margin-bottom: var(--space-xl);
-        }
+    .ligneEquipe:last-child {
+        border-bottom: none;
+    }
 
-        .carteStatistique {
-            background: linear-gradient(135deg, var(--bg-card), var(--bg-elevated));
-            border: 1px solid var(--border);
-            padding: var(--space-md);
-            position: relative;
-            transition:
-                border-color 0.3s ease,
-                box-shadow 0.3s ease;
-        }
+    .nomMembre {
+        font-weight: 600;
+        color: var(--text-primary);
+        min-width: 80px;
+        font-size: 0.8rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
 
-        .carteStatistique:hover {
-            border-color: var(--border-hover);
-            box-shadow: var(--glow-sm);
-        }
+    .roleMembre {
+        color: var(--text-secondary);
+    }
 
+    /* GRILLE STACK */
+    .grilleStack {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: var(--space-sm);
+    }
 
+    .elementStack {
+        background: var(--bg-deep);
+        border: 1px solid var(--border);
+        padding: var(--space-sm) var(--space-md);
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
 
-        .etiquetteStat {
-            font-size: 0.65rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: var(--space-xs);
-        }
+    .etiquetteStack {
+        font-size: 0.65rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+    }
 
-        .valeurStat {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--amber);
-        }
+    .valeurStack {
+        font-size: 0.875rem;
+        color: var(--text-primary);
+        font-weight: 500;
+    }
 
-        /* SECTIONS */
-        .listeSections {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-lg);
-        }
+    /* LIENS */
+    .lienExterne {
+        color: var(--amber);
+        text-decoration: none;
+        font-size: 0.8rem;
+        letter-spacing: 0.04em;
+        border-bottom: 1px solid rgba(245, 158, 11, 0.3);
+        transition:
+            color 0.2s,
+            border-color 0.2s;
+    }
 
-        /* CARTE INTERFACE */
-        .carteInterface {
-            background: linear-gradient(135deg, var(--bg-card), var(--bg-elevated));
-            border: 1px solid var(--border);
-            padding: var(--space-lg);
-            transition:
-                border-color 0.3s ease,
-                box-shadow 0.3s ease;
-        }
+    .lienExterne:hover {
+        color: var(--gold);
+        border-color: var(--gold);
+    }
 
-        .carteInterface:hover {
-            border-color: var(--border-hover);
-            box-shadow: var(--glow-sm);
-        }
+    .rangLiens {
+        display: flex;
+        gap: var(--space-lg);
+        margin-top: var(--space-md);
+        flex-wrap: wrap;
+    }
 
-        .titreCarte {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--amber);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: var(--space-md);
-            padding-bottom: var(--space-sm);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-        }
+    .blocLien {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
 
-        .titreCarte::before {
-            content: "";
-            display: inline-block;
-            width: 6px;
-            height: 6px;
-            background: var(--amber);
-            flex-shrink: 0;
-        }
-
-        .corpsCarte p {
-            color: var(--text-secondary);
-            margin-bottom: var(--space-sm);
-        }
-
-        .corpsCarte p:last-child {
-            margin-bottom: 0;
-        }
-
-        /* SOUS-SECTIONS */
-        .sousSectionTitre {
-            font-size: 0.65rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-            margin-bottom: var(--space-sm);
-        }
-
-        /* LISTE PUCES */
-        .listePuces {
-            list-style: none;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
-            margin-top: var(--space-sm);
-            margin-bottom: var(--space-sm);
-        }
-
-        .listePuces li {
-            display: flex;
-            align-items: flex-start;
-            gap: var(--space-sm);
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-        }
-
-        .listePuces li::before {
-            content: "—";
-            color: var(--amber);
-            opacity: 0.6;
-            flex-shrink: 0;
-            margin-top: 1px;
-        }
-
-        /* TABLEAU ÉQUIPE */
-        .tableauEquipe {
-            display: flex;
-            flex-direction: column;
-            gap: 0;
-        }
-
-        .ligneEquipe {
-            display: flex;
-            align-items: flex-start;
-            gap: var(--space-md);
-            padding: 0.5rem var(--space-sm);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-            font-size: 0.875rem;
-        }
-
-        .ligneEquipe:last-child {
-            border-bottom: none;
-        }
-
-        .nomMembre {
-            font-weight: 600;
-            color: var(--text-primary);
-            min-width: 80px;
-            font-size: 0.8rem;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-        }
-
-        .roleMembre {
-            color: var(--text-secondary);
-        }
-
-        /* GRILLE STACK */
-        .grilleStack {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: var(--space-sm);
-        }
-
-        .elementStack {
-            background: var(--bg-deep);
-            border: 1px solid var(--border);
-            padding: var(--space-sm) var(--space-md);
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .etiquetteStack {
-            font-size: 0.65rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
-        .valeurStack {
-            font-size: 0.875rem;
-            color: var(--text-primary);
-            font-weight: 500;
-        }
-
-        /* LIENS */
-        .lienExterne {
-            color: var(--amber);
-            text-decoration: none;
-            font-size: 0.8rem;
-            letter-spacing: 0.04em;
-            border-bottom: 1px solid rgba(245, 158, 11, 0.3);
-            transition:
-                color 0.2s,
-                border-color 0.2s;
-        }
-
-        .lienExterne:hover {
-            color: var(--gold);
-            border-color: var(--gold);
-        }
-
-        .rangLiens {
-            display: flex;
-            gap: var(--space-lg);
-            margin-top: var(--space-md);
-            flex-wrap: wrap;
-        }
-
-        .blocLien {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .etiquetteLien {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--text-muted);
-        }
-        .conteneur {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: var(--space-lg);
-        }
+    .etiquetteLien {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-muted);
+    }
+    .conteneur {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: var(--space-lg);
     }
 }

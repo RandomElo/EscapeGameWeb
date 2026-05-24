@@ -16,7 +16,8 @@ import ChampDonneesForm from "./ChampDonneesForm";
 
 import "../styles/composants/GestionPartie.css";
 
-export type DetailsPartie = { equipeNom: string; nbrMembres: number; scenarioNom: string; nbrMissions: number; dateDebut: string } | undefined;
+export type DetailsPartie = { equipeNom: string; nbrMembres: number; scenarioNom: string; nbrMissions: number; dateDebut: string; nbrEtapes: number } | undefined;
+
 type Props = {
     deroule: Deroule;
 
@@ -38,7 +39,7 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
     const [now, setNow] = useState<number>(() => Date.now());
     const [messages, setMessages] = useState([]);
     const [status, setStatus] = useState("Déconnecté");
-    const [missionEnCours, setMissionEnCours] = useState<number>();
+    const [etapeEnCours, setEtapeEnCours] = useState<number>(1);
     const [missionSuivante, setMissionSuivante] = useState<number>();
     const [afficherModal, setAfficherModal] = useState<boolean>(false);
     const [contenuModal, setContenuModal] = useState<"audioAide" | "lancementAudioVolee">();
@@ -68,19 +69,16 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
 
     useEffect(() => {
         function calculMissions() {
-            const ordreMissionEnCours = deroule.filter((etape) => etape.etat == "EnCours")[0].ordre;
-            if (deroule.filter((etape) => etape.ordre > ordreMissionEnCours && etape.type == "mission")[0]) {
-                const missionSuivante = deroule.filter((etape) => etape.ordre > ordreMissionEnCours && etape.type == "mission")[0].ordre;
+            if (deroule.filter((etape) => etape.ordre > etapeEnCours && etape.type == "mission")[0]) {
+                const missionSuivante = deroule.filter((etape) => etape.ordre > etapeEnCours && etape.type == "mission")[0].ordre;
                 setMissionSuivante(missionSuivante);
             } else {
                 setMissionSuivante(undefined);
             }
-
-            setMissionEnCours(ordreMissionEnCours);
         }
 
         calculMissions();
-    }, [deroule]);
+    }, [etapeEnCours]);
 
     useEffect(() => {
         if (type !== "reel") return;
@@ -149,6 +147,11 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
 
                 return;
             }
+
+            if (topic == "escape/web/step") {
+                const donnees = JSON.parse(payload.toString());
+                setEtapeEnCours(Number(donnees.etape));
+            }
         });
 
         client.on("error", (err) => {
@@ -189,10 +192,10 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
 
     return (
         <>
-            <div className="gestionPartie">
+            <div className="GestionPartie">
                 {estMobile ? (
                     <>
-                        <CardDetailsPartie detailsPartie={detailsPartie} setPartiesEnCours={setPartiesEnCours} now={now} />
+                        <CardDetailsPartie detailsPartie={detailsPartie} setPartiesEnCours={setPartiesEnCours} now={now} etapeEnCours={etapeEnCours} />
                         <CardAvertissements missionsDeconnectee={missionsDeconnectee} />
                         <CardTimelineScenario deroule={deroule} setContenuModal={setContenuModal} setDetailModal={setDetailModal} setAfficherModal={setAfficherModal} missionSuivante={missionSuivante} />
                         <CardCamera />
@@ -216,55 +219,53 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
                     </>
                 )}
             </div>
-            <Modal estOuvert={afficherModal} fermeture={() => setAfficherModal(false)}>
-                {contenuModal == "audioAide" && (
-                    <div id="divModalAudioAide">
-                        <h1>Lancer des audios d'aide</h1>
-                        <table>
-                            <tbody>
-                                {deroule
-                                    .filter((etape) => etape.ordre == Number(detailModal))[0]
-                                    .audiosAide.map((audio, key) => (
-                                        <tr key={key}>
-                                            <td className="tdDetailFichier">{audio.detail}</td>
-                                            <td className="tdAction">
-                                                <button className="bouton">Lancer</button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                            </tbody>
-                        </table>
+            {contenuModal == "audioAide" && (
+                <Modal estOuvert={afficherModal} fermeture={() => setAfficherModal(false)} titre="Lancer des audios d'aide">
+                    <table className="tableau">
+                        <tbody>
+                            {deroule
+                                .filter((etape) => etape.ordre == Number(detailModal))[0]
+                                .audiosAide.map((audio, key) => (
+                                    <tr key={key}>
+                                        <td className="tdDetailFichier">{audio.detail}</td>
+                                        <td className="tdAction">
+                                            <button className="boutonAction">Lancer</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                        </tbody>
+                    </table>
+                </Modal>
+            )}
+            {contenuModal == "lancementAudioVolee" && (
+                <Modal
+                    estOuvert={afficherModal}
+                    fermeture={() => setAfficherModal(false)}
+                    titre="Génération et lancemen d'audio"
+                    onSubmit={async (e) => {
+                        e.preventDefault();
+                        setChargementRequete(true);
+                        const texte = document.querySelector<HTMLInputElement>("#inputTexte")!.value;
+
+                        const reponse = await requete({ url: "/admins/audio/generer-et-lancer", methode: "POST", corps: { texte } });
+                        setTimeout(() => {
+                            setChargementRequete(false);
+                            setDetailModal("✅ Audio lancer avec succès");
+                            setTimeout(() => {
+                                setAfficherModal(false);
+                            }, 2000);
+                        }, 1000);
+                    }}
+                >
+                    <ChampDonneesForm id="inputTexte" typeInput="text" placeholder="Pour avancer vous devez ..." label="Texte à envoyer :" />
+
+                    <div className="modalPied">
+                        <button type="submit" className="boutonAction solo" disabled={chargementRequete}>
+                            {chargementRequete ? <Chargement variant="button" /> : "Générer et lancer"}
+                        </button>
                     </div>
-                )}
-                {contenuModal == "lancementAudioVolee" && (
-                    <div id="divModalLancementAudioVolee">
-                        <h1>Lancement audio</h1>
-
-                        <form
-                            onSubmit={async (e) => {
-                                e.preventDefault();
-                                setChargementRequete(true);
-                                const texte = document.querySelector<HTMLInputElement>("#inputTexte")!.value;
-
-                                const reponse = await requete({ url: "/admins/audio/generer-et-lancer", methode: "POST", corps: { texte } });
-                                setTimeout(() => {
-                                    setChargementRequete(false);
-                                    setDetailModal("✅ Audio lancer avec succès");
-                                    setTimeout(() => {
-                                        setAfficherModal(false);
-                                    }, 2000);
-                                }, 1000);
-                            }}
-                        >
-                            <ChampDonneesForm id="inputTexte" typeInput="text" placeholder="Pour avancer vous devez ..." label="Texte à envoyer :" />
-
-                            <button type="submit" className="bouton" disabled={chargementRequete}>
-                                {chargementRequete ? <Chargement variant="button" /> : "Générer et lancer"}
-                            </button>
-                        </form>
-                    </div>
-                )}
-            </Modal>
+                </Modal>
+            )}
         </>
     );
 }

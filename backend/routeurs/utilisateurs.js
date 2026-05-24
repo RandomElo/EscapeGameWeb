@@ -1,6 +1,7 @@
 import e from "express";
-import { connexion, deconnexion, desactiver2FA, detailsToken, generer2FAControleur, genererQRCode, initialisationCode2FA, inscription, modifierMail, modifierMdp, monCompte, validationTokenModifierMdp, verification, verificationTokenChangementMail, verifier2FA } from "../controleurs/utilisateurs.js";
+import { connexion, deconnexion, desactiver2FA, detailsToken, generer2FAControleur, genererQRCode, initialisationCode2FA, inscription, modifierMail, modifierMdp, monCompte, suppressionCompte, validationTokenModifierMdp, verification, verificationTokenChangementMail, verifier2FA } from "../controleurs/utilisateurs.js";
 import { autorisationAcces } from "../middlewares/autorisationAcces.js";
+import { suppression } from "../controleurs/admins/scenarios.js";
 
 const routeurUtilisateurs = e.Router();
 
@@ -22,4 +23,5 @@ routeurUtilisateurs.post("/qr-code-2fa", autorisationAcces, genererQRCode)
 routeurUtilisateurs.post("/initialisation-code-2fa", autorisationAcces, initialisationCode2FA)
 routeurUtilisateurs.delete("/desactiver-2fa", autorisationAcces, desactiver2FA)
 
+routeurUtilisateurs.delete("/suppression", autorisationAcces, suppressionCompte)
 export default routeurUtilisateurs;

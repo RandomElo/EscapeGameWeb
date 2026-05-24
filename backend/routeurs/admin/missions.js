@@ -1,5 +1,5 @@
 import e from "express";
-import { creation, liste, modificationNom, suppression, modificationDescription, modificationConfiguration, enregistrementDiapo, telechargerDiaporama } from "../../controleurs/admins/missions.js";
+import { creation, liste, modificationNom, suppression, modificationDescription, modificationConfiguration, enregistrementDiapo, telechargerDiaporama, recupererDiapositive, suppressionAudioQuiz, suppressionDiaporama, suppressionDevinette } from "../../controleurs/admins/missions.js";
 import multer from "multer";
 import { accesAdmin } from "../../middlewares/accesAdmin.js";
 
@@ -15,7 +15,11 @@ routeurMissions.patch("/:id/modification-description", accesAdmin, modificationD
 routeurMissions.patch("/:id/modification-configuration", accesAdmin, modificationConfiguration);
 
 routeurMissions.post("/enregistrement-diapo", accesAdmin, upload.single("zip"), enregistrementDiapo)
-
+routeurMissions.get("/:idDiapositive/recuperer-diapositive", accesAdmin, recupererDiapositive)
 routeurMissions.get("/telecharger-diaporama", telechargerDiaporama)
+
+routeurMissions.delete("/suppression-diaporama", accesAdmin, suppressionDiaporama)
+routeurMissions.delete("/suppression-quiz", accesAdmin, suppressionAudioQuiz)
+routeurMissions.delete("/suppression-devinette", accesAdmin, suppressionDevinette)
 
 export default routeurMissions;

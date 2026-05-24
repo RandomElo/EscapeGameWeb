@@ -1,4 +1,4 @@
-.Equipe {
+.EquipeAncien {
     #divListeEquipes {
         table {
             width: 400px;
@@ -45,6 +45,191 @@
         }
     }
 }
+.Equipe {
+    max-width: 520px;
+    flex: 1;
+    min-width: 260px;
+    padding: 2.5rem 0;
+    .entetePage {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--space-xl);
+        padding-bottom: var(--space-lg);
+        border-bottom: 1px solid var(--border);
+    }
+    .titrePage {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    /* BOUTONS */
+    .boutonAction {
+        background: var(--amber-dim);
+        border: 1px solid rgba(245, 158, 11, 0.3);
+        color: var(--amber);
+        padding: 0.45rem 1rem;
+        font-size: 0.75rem;
+        font-family: inherit;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-sm);
+        transition: all 0.2s ease;
+    }
+
+    .boutonCritique {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.35);
+        color: var(--red);
+        padding: 0.45rem 1rem;
+        font-size: 0.75rem;
+        font-family: inherit;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-sm);
+        transition: all 0.2s ease;
+    }
+    .boutonCritique:hover {
+        background: rgba(239, 68, 68, 0.2);
+        box-shadow: var(--glow-red);
+    }
+
+    .boutonDiscret {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        padding: 0.45rem 1rem;
+        font-size: 0.75rem;
+        font-family: inherit;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .boutonDiscret:hover {
+        border-color: var(--border-hover);
+        color: var(--text-primary);
+    }
+    .carteInterface {
+        background: linear-gradient(135deg, var(--bg-card), var(--bg-elevated));
+        border: 1px solid var(--border);
+        padding: var(--space-lg);
+        margin-bottom: var(--space-md);
+        transition: border-color 0.3s;
+    }
+    .carteInterface:hover {
+        border-color: var(--border-hover);
+        box-shadow: var(--glow-sm);
+    }
+
+    .enteteCarte {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--space-md);
+        padding-bottom: var(--space-sm);
+        border-bottom: 1px solid var(--border);
+    }
+    .titreCarte {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--amber);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+    }
+    .titreCarte::before {
+        content: "";
+        width: 5px;
+        height: 5px;
+        background: var(--amber);
+        display: inline-block;
+        flex-shrink: 0;
+    }
+    .nbrEquipesCarte {
+        font-size: 0.65rem;
+        color: var(--text-muted);
+    }
+    .tableauDonnees {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .tableauDonnees td {
+        padding: 0.55rem var(--space-sm);
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        vertical-align: middle;
+    }
+    .tableauDonnees tr:last-child td {
+        border-bottom: none;
+    }
+    .tableauDonnees tr:hover td {
+        background: rgba(245, 158, 11, 0.03);
+    }
+
+    .tdCouronne {
+        width: 32px;
+        color: var(--amber);
+        position: relative;
+    }
+    .tdNomEquipe {
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+    .tdAction {
+        width: 32px;
+        text-align: center;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+    .tdAction:hover {
+        color: var(--amber);
+    }
+
+    /* BADGE CHEF */
+    .badgeChef {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.6rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--amber);
+        background: var(--amber-dim);
+        border: 1px solid rgba(245, 158, 11, 0.25);
+        padding: 1px 6px;
+    }
+
+    /* BAS DE PAGE */
+    .piedPage {
+        margin-top: var(--space-md);
+        display: flex;
+        justify-content: flex-end;
+    }
+}
+.divModalOptionsEquipe {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-md);
+    a {
+        justify-content: center;
+        width: 200px;
+    }
+}
+
 #modalCreationEquipe {
     text-align: center;
     form {
@@ -200,4 +385,29 @@
             margin: -10px 0 10px;
         }
     }
+}
+.listeMembresEquipe {
+    .tdPoubelle {
+        width: 30px;
+        text-align: center;
+        cursor: pointer;
+    }
+    .tdPoubelle.interdit {
+        cursor: not-allowed;
+    }
+
+    .tdPoubelle svg {
+        transition: color 0.2s ease;
+    }
+
+    .tdPoubelle:hover svg {
+        color: var(--red);
+    }
+    .tdPoubelle.interdit:hover svg {
+        color: white;
+    }
+}
+.Checkbox.envoyerNotificationMail .listeSelection{
+    background: none;
+    border: none;
 }

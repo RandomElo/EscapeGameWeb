@@ -103,28 +103,39 @@ main {
     border-radius: 5px;
 } */
 
-.bouton {
-    height: 31px;
-
-    padding: 3px 7px;
-
-    display: flex;
-    align-items: center;
-
-    color: #fff;
-    background-color: #0085ff;
-
-    font-size: 1em;
-    font-weight: bold;
-
-    border: none;
-    border-radius: 5px;
+/* BOUTON ACTION */
+.boutonAction {
+    background: var(--amber-dim);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    color: var(--amber);
     cursor: pointer;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.72rem;
+    font-family: inherit;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
 }
-.bouton:disabled {
+
+.boutonAction:hover:not(:disabled) {
+    background: rgba(245, 158, 11, 0.2);
+    color: var(--gold);
+    box-shadow: var(--glow-sm);
+}
+
+.boutonAction:disabled {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: var(--tc-border);
+    color: var(--text-muted);
     cursor: not-allowed;
-    background-color: #808793;
+    box-shadow: none;
+    opacity: 0.5;
 }
+
 /* Coins HUD */
 .coinsHud::before,
 .coinsHud::after {
@@ -175,7 +186,107 @@ h3 {
     text-align: center;
 }
 /* FIN DE LA GESTION DES TITRES */
+input[type="checkbox"] {
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border: 1px solid var(--border-hover);
+    background: var(--bg-deep);
+    cursor: pointer;
+    flex-shrink: 0;
+    position: relative;
+    transition: all 0.15s ease;
+}
 
+input[type="checkbox"]:checked {
+    background: var(--amber);
+    border-color: var(--amber);
+}
+
+input[type="checkbox"]:checked::after {
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: 1px;
+    width: 5px;
+    height: 8px;
+    border: 1.5px solid var(--bg-deep);
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
+}
+/* COMPOSANTS */
+.labelComposants {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+}
+.Select,
+.Checkbox {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-md);
+}
+.Select {
+    .selecteur {
+        background: var(--bg-deep);
+        border: 1px solid var(--border);
+        color: var(--text-primary);
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+        font-family: inherit;
+        width: 100%;
+        outline: none;
+        cursor: pointer;
+        transition: border-color 0.2s ease;
+        text-align: center;
+    }
+    .selecteur:focus {
+        border-color: var(--border-focus);
+    }
+    .selecteur option {
+        background: var(--bg-card);
+    }
+}
+
+.Checkbox {
+    .listeSelection {
+        border: 1px solid var(--border);
+        background: var(--bg-deep);
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--border) transparent;
+
+        .elementSelection {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: 0.5rem var(--space-md);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            cursor: pointer;
+            transition: background 0.15s ease;
+
+            label {
+                font-size: 0.8rem;
+                color: var(--text-secondary);
+                cursor: pointer;
+                line-height: 1.4;
+                height: 100%;
+                width: 100%;
+            }
+        }
+        .elementSelection:last-child {
+            border-bottom: none;
+        }
+        .elementSelection:hover {
+            background: rgba(245, 158, 11, 0.15);
+        }
+    }
+}
+/* FIN COMPOSANTS */
 /* TABLEAU */
 .tableau {
     width: 100%;

@@ -1,41 +1,326 @@
+
 .Compte {
-    .divActions {
+    background: #070b14;
+    padding: 2.5rem 2rem;
+    font-family:
+        system-ui,
+        -apple-system,
+        sans-serif;
+    min-height: 640px;
+    position: relative;
+
+    .inner {
+        position: relative;
+        z-index: 1;
+        min-width: 750px;
+        margin: 0 auto;
+    }
+
+    .profil-hero {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 1.5rem;
+        align-items: center;
+        background: #0c1220;
+        border: 1px solid rgba(245, 158, 11, 0.14);
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        position: relative;
+    }
+    .profil-hero::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 14px;
+        height: 14px;
+        border-top: 2px solid #f59e0b;
+        border-left: 2px solid #f59e0b;
+    }
+    .profil-hero::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 14px;
+        height: 14px;
+        border-bottom: 2px solid #f59e0b;
+        border-right: 2px solid #f59e0b;
+    }
+
+    .avatar {
+        width: 54px;
+        height: 54px;
+        background: rgba(245, 158, 11, 0.1);
+        border: 1px solid rgba(245, 158, 11, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #f59e0b;
+        letter-spacing: 0.08em;
+        font-family: "Courier New", monospace;
+    }
+
+    .profil-nom {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #f1f5f9;
+        letter-spacing: 0.02em;
+        margin-bottom: 0.2rem;
+    }
+    .profil-mail {
+        font-size: 0.8rem;
+        color: rgba(203, 213, 225, 0.6);
+        letter-spacing: 0.03em;
+    }
+    .etatConnexion {
         display: flex;
         flex-direction: column;
+        align-items: flex-end;
+        gap: 0.5rem;
+    }
+    .badge-ok {
+        display: inline-flex;
         align-items: center;
-        row-gap: 15px;
-        .bouton.rouge {
-            background-color: #ef4444;
+        gap: 5px;
+        padding: 3px 10px;
+        font-size: 0.6rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-weight: 700;
+        background: rgba(34, 197, 94, 0.1);
+        color: #22c55e;
+        border: 1px solid rgba(34, 197, 94, 0.25);
+        .ti-shield-check {
+            font-size: 11px;
         }
+    }
+    .badge-off {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 3px 10px;
+        font-size: 0.6rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-weight: 700;
+        background: rgba(203, 213, 225, 0.06);
+        color: rgba(203, 213, 225, 0.4);
+        border: 1px solid rgba(203, 213, 225, 0.1);
+    }
+    .doubleAuthentification {
+        height: 12px;
+    }
+    .dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: currentColor;
+        animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+        0%,
+        100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.3;
+        }
+    }
 
-        .bouton.rouge:hover {
-            background: #b91c1c;
+    .stats-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1px;
+        background: rgba(245, 158, 11, 0.1);
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+    .stat-cell {
+        background: #070b14;
+        padding: 1rem 1.25rem;
+    }
+    .victoirePartie {
+        color: #22c55e;
+    }
+    .pourcentatgePartie {
+        margin: 0 -8px;
+        font-size: 0.9rem;
+    }
+    .stat-num {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #f59e0b;
+        font-family: "Courier New", monospace;
+        line-height: 1;
+        margin-bottom: 0.25rem;
+    }
+    .stat-lbl {
+        font-size: 0.6rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: rgba(203, 213, 225, 0.4);
+    }
+
+    .section-head {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--amber);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+
+        margin-bottom: var(--space-md);
+    }
+    .titreCarte {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--amber);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+    }
+    .section-head::before {
+        content: "";
+        width: 2px;
+        height: 10px;
+        background: #f59e0b;
+    }
+
+    .actions-list {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        margin-bottom: 1rem;
+    }
+    .action-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.85rem 1rem;
+        background: #0c1220;
+        border: 1px solid rgba(245, 158, 11, 0.08);
+        cursor: pointer;
+        transition:
+            border-color 0.2s,
+            background 0.2s;
+    }
+    .action-row:hover {
+        border-color: rgba(245, 158, 11, 0.28);
+        background: #111827;
+    }
+    .action-icon {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(245, 158, 11, 0.08);
+        color: #f59e0b;
+        font-size: 15px;
+        flex-shrink: 0;
+    }
+    .action-icon.doubleAuthentification {
+        background: rgba(34, 197, 94, 0.08);
+        color: #22c55e;
+    }
+
+    .action-text {
+        flex: 1;
+    }
+    .action-title {
+        font-size: 0.82rem;
+        color: #f1f5f9;
+        font-weight: 500;
+        margin-bottom: 1px;
+    }
+    .action-desc {
+        font-size: 0.68rem;
+        color: rgba(203, 213, 225, 0.4);
+        letter-spacing: 0.02em;
+    }
+    .action-arrow {
+        color: rgba(245, 158, 11, 0.3);
+        font-size: 14px;
+        transition: color 0.2s;
+    }
+    .action-row:hover .action-arrow {
+        color: #f59e0b;
+    }
+
+    .danger-zone {
+        margin-top: 1.5rem;
+    }
+    .danger-head {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--amber);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        margin-bottom: var(--space-md);
+    }
+
+    .danger-head::before {
+        content: "";
+        width: 2px;
+        height: 10px;
+        background: #f59e0b;
+    }
+    .danger-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 150px;
+    }
+    .btn-danger {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.85rem 1rem;
+        background: rgba(239, 68, 68, 0.06);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        color: rgba(239, 68, 68, 0.7);
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all 0.2s;
+        .ti-logout,
+        .ti-trash {
+            font-size: 15px;
         }
     }
-}
-#divModalModifierMail {
-    text-align: center;
-    .ChampDonneesForm {
-        text-align: left;
-        margin-bottom: 5px;
+    .btn-danger.supprimerCompte {
+        opacity: 0.6;
     }
-    .bouton {
-        margin-top: 10px;
+    .btn-danger:hover {
+        background: rgba(239, 68, 68, 0.14);
+        border-color: rgba(239, 68, 68, 0.4);
+        color: #ef4444;
     }
 }
-#divModalNouveauMdp {
-    form {
-        #divDetailsModal {
-            margin-bottom: 10px;
-            #lienDeconnexion {
-                color: #0085ff;
-                text-decoration: underline;
-                cursor: pointer;
-                font-weight: bold;
-            }
-            #pConnecterMauvaisUtilisateur {
-                width: 100%;
-            }
-        }
-    }
+.Compte::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(rgba(245, 158, 11, 0.018) 1px, transparent 1px), linear-gradient(90deg, rgba(245, 158, 11, 0.018) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+}
+.CompteAncien {
+    display: none;
+}
+.image2FA {
+    width: 200px;
 }

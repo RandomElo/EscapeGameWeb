@@ -11,6 +11,8 @@ export async function ConfigurationInterfaceAdmin(req) {
         aideAudios,
         quizAudio,
         devinettes,
+        diaporamas,
+        images,
     ] = await Promise.all([
         req.Missions.findAll({
             raw: true,
@@ -38,6 +40,16 @@ export async function ConfigurationInterfaceAdmin(req) {
             raw: true,
             attributes: ["devinette", "reponse", "nomFichier"],
         }),
+        req.Diapos.findAll({
+            raw: true,
+            attributes: ["id", "nom"],
+        }),
+        req.Images.findAll({
+            raw: true,
+            attributes: ["id", "ordre", "diapoId"],
+            order: [["diapoId", "ASC"], ["ordre", "ASC"]],
+        })
+
     ]);
 
     // Maps de lookup
@@ -100,7 +112,14 @@ export async function ConfigurationInterfaceAdmin(req) {
         deroule: mapScenarioDeroule[scenario.id] ?? [],
     }));
 
-    return { missions, scenarios, messagesAudio, quizAudio, devinettes };
+    const diapos = diaporamas.map((diapo) => ({
+        ...diapo,
+        images: images
+            .filter((img) => img.diapoId === diapo.id)
+            .map((img) => img.id)
+    }));
+
+    return { missions, scenarios, messagesAudio, quizAudio, devinettes, diaporamas: diapos };
 }
 
 export const configurationComplete = gestionErreur(
@@ -338,6 +357,7 @@ export const generationAudiosAide = gestionErreur((req, res) => { }, "controleur
 
 export const suppression = gestionErreur(
     async (req, res) => {
+        console.log("je suis laaa")
         const { id } = req.params;
         if (!req.params.id) {
             return res.status(400).json({
@@ -353,9 +373,9 @@ export const suppression = gestionErreur(
                 detail: "Ressource introuvable",
             });
         }
-        
+
         await req.Scenarios.destroy({ where: { id } });
-        
+
         return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
     },
     "controleurSuppressionScenario",

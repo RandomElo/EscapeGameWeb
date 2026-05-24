@@ -20,7 +20,7 @@ export default function GestionTags({ tags, etat }: Props) {
                     {etat === "EnCours" ? <CircleAlert size={14} /> : <Tag size={14} />}
                     {tag}
                 </span>
-            ))}
+            ))}a
         </div>
     );
 }

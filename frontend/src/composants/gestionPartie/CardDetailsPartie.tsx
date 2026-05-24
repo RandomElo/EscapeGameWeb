@@ -7,9 +7,10 @@ type Props = {
     detailsPartie: DetailsPartie;
     setPartiesEnCours: React.Dispatch<React.SetStateAction<boolean>>;
     now: number;
+    etapeEnCours: number;
 };
 
-export default function CardDetailsPartie({ detailsPartie, setPartiesEnCours, now }: Props) {
+export default function CardDetailsPartie({ detailsPartie, setPartiesEnCours, now, etapeEnCours }: Props) {
     const requete = useRequete();
     const { revalidate } = useRevalidator();
     function formatDureeDepuis(dateDebut: string, now: number): string {
@@ -33,7 +34,7 @@ export default function CardDetailsPartie({ detailsPartie, setPartiesEnCours, no
                 <h3>Détails</h3>
                 <span className="badge badge-info">
                     <CircleAlert size={14} />
-                    Étape 1 / 5
+                    Étape {etapeEnCours ? etapeEnCours : "?"} / {detailsPartie?.nbrEtapes}
                 </span>
             </div>
             {detailsPartie && (
