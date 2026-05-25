@@ -15,6 +15,7 @@ import CardTimelineScenario from "./gestionPartie/CardTimelineScenario";
 import ChampDonneesForm from "./ChampDonneesForm";
 
 import "../styles/composants/GestionPartie.css";
+import CardTerminalMqtt from "./gestionPartie/CardTerminalMqtt";
 
 export type DetailsPartie = { equipeNom: string; nbrMembres: number; scenarioNom: string; nbrMissions: number; dateDebut: string; nbrEtapes: number } | undefined;
 
@@ -34,11 +35,18 @@ type Props = {
     setPartiesEnCours: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
+export type MessageMQTT = {
+    topic: string;
+    payload: string;
+    horodatage: string;
+    type?: "ok" | "erreur" | "info" | "";
+};
+
 export default function GestionPartie({ deroule, detailsPartie, setListeNotifications, setPartiesEnCours }: Props) {
     const type = import.meta.env.VITE_TYPE_ENV;
     const [now, setNow] = useState<number>(() => Date.now());
-    const [messages, setMessages] = useState([]);
-    const [status, setStatus] = useState("Déconnecté");
+    const [messages, setMessages] = useState<MessageMQTT[]>([]);
+    const [status, setStatus] = useState<"Connecté" | "Déconnecté">("Déconnecté");
     const [etapeEnCours, setEtapeEnCours] = useState<number>(1);
     const [missionSuivante, setMissionSuivante] = useState<number>();
     const [afficherModal, setAfficherModal] = useState<boolean>(false);
@@ -105,7 +113,7 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
             let msg = payload.toString().trim();
             console.log("Message reçu :", topic, msg);
 
-            setMessages((prev) => [...prev, { topic, msg }]);
+            setMessages((prev) => [...prev, { topic, payload: msg, horodatage: new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) }]);
 
             // Gestion des messagesconst match = topic.match(/^escape\/mission\/(\d+)\/status$/);
             const regexConnected = topic.match(/^escape\/mission\/(\d+)\/status$/);
@@ -156,13 +164,16 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
 
         client.on("error", (err) => {
             console.error("MQTT error:", err);
-            setStatus("Erreur");
+
+            setListeNotifications((prev) => [...prev, { niveau: "erreur", titre: "MQTT", description: "MQTT error:" + err.name }]);
+
+            // setStatus("Erreur");
         });
 
         client.on("reconnect", () => {
             setListeNotifications((prev) => [...prev, { niveau: "warn", titre: "MQTT", description: "Reconnexion en cours" }]);
 
-            setStatus("Reconnexion...");
+            // setStatus("Reconnexion...");
         });
 
         client.on("close", () => {
@@ -198,14 +209,16 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
                         <CardDetailsPartie detailsPartie={detailsPartie} setPartiesEnCours={setPartiesEnCours} now={now} etapeEnCours={etapeEnCours} />
                         <CardAvertissements missionsDeconnectee={missionsDeconnectee} />
                         <CardTimelineScenario deroule={deroule} setContenuModal={setContenuModal} setDetailModal={setDetailModal} setAfficherModal={setAfficherModal} missionSuivante={missionSuivante} />
-                        <CardCamera />
                         <CardLancementAudioVolee setContenuModal={setContenuModal} setAfficherModal={setAfficherModal} />
+                        <CardCamera />
+                        <CardTerminalMqtt messages={messages} estConnecte={status == "Connecté"} vider={() => setMessages([])} />
                     </>
                 ) : (
                     <>
                         {/* LEFT PANEL */}
                         <div className="scenarioLeft">
                             <CardCamera />
+                            <CardTerminalMqtt messages={messages} estConnecte={status == "Connecté"} vider={() => setMessages([])} />
                             <CardAvertissements missionsDeconnectee={missionsDeconnectee} />
                         </div>
 
@@ -213,7 +226,7 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
                         <CardTimelineScenario deroule={deroule} setContenuModal={setContenuModal} setDetailModal={setDetailModal} setAfficherModal={setAfficherModal} missionSuivante={missionSuivante} />
                         {/* RIGHT PANEL */}
                         <div className="scenarioRight">
-                            <CardDetailsPartie detailsPartie={detailsPartie} setPartiesEnCours={setPartiesEnCours} now={now} />
+                            <CardDetailsPartie detailsPartie={detailsPartie} setPartiesEnCours={setPartiesEnCours} now={now} etapeEnCours={etapeEnCours} />
                             <CardLancementAudioVolee setContenuModal={setContenuModal} setAfficherModal={setAfficherModal} />
                         </div>
                     </>
