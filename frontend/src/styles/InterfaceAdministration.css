@@ -571,3 +571,6 @@
     font-size: 0.95rem;
     margin-bottom: var(--space-md);
 }
+.pEtatGeneration {
+    text-align: center;
+}

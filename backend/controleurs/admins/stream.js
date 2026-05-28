@@ -11,14 +11,26 @@ const __dirname = path.dirname(__filename);
 export const stream = gestionErreur(async (req, res) => {
     const { type, nomFichier } = req.params;
     let cheminFichier = "";
-
-    if (type == "morse") {
-        cheminFichier = path.join(__dirname, "../../audios/morse", nomFichier);
-    } else if (type == "message") {
-        cheminFichier = path.join(__dirname, "../../audios/messages", nomFichier);
-    } else{
-        console.log("DEHORSSSSSSSSSS")
+    
+    switch (type) {
+        case "morse":
+            cheminFichier = path.join(__dirname, "../../audios/morse", nomFichier);
+            break;
+        case "message":
+            cheminFichier = path.join(__dirname, "../../audios/messages", nomFichier);
+            break
+        case "bonneReponse":
+        case "finQuiz":
+        case "mauvaiseReponse":
+        case "questions":
+        case "serieErreurs":
+        case "morse":
+            cheminFichier = path.join(__dirname, "../../audios/", type, nomFichier);
+            break
+        default:
+            break;
     }
+
     logger.info(cheminFichier);
 
     if (!fs.existsSync(cheminFichier)) {

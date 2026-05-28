@@ -518,6 +518,7 @@ export default function InterfaceAdministration() {
                             <button
                                 className="boutonAction"
                                 onClick={() => {
+                                    setDetailsModal("");
                                     setContenuModal("genererAudioQuiz");
                                 }}
                             >
@@ -989,7 +990,7 @@ export default function InterfaceAdministration() {
                 <Modal
                     estOuvert={afficherModal}
                     fermeture={() => setAfficherModal(false)}
-                    titre="Générarion d'audios pour la boîte a quiz"
+                    titre="Génération d'audios pour la boîte a quiz"
                     retourArriere={() => setContenuModal("gestionQuizAudios")}
                     onSubmit={async (e) => {
                         e?.preventDefault();
@@ -998,7 +999,23 @@ export default function InterfaceAdministration() {
                         const valeur = document.querySelector<HTMLInputElement>("#inputTexte")!.value;
                         const type = document.querySelector<HTMLInputElement>("#selectType")!.value;
                         console.log({ valeur, type });
-                        await requete({ url: "/admins/audios/generation-quiz", methode: "POST", corps: { valeur, type } });
+                        const jobId = await requete({ url: "/admins/audios/generation-quiz", methode: "POST", corps: { valeur, type } });
+                        console.log("# J'ai réponse");
+                        // GESTION SSE
+                        const eventSource = new EventSource(`/admins/audios/sse/${jobId}`);
+
+                        eventSource.onmessage = (event) => {
+                            const data = JSON.parse(event.data);
+                            if (data.type === "progress") {
+                                setDetailsModal(data.done + " sur " + data.total + " fichiers");
+                            } else if (data.type === "finished") {
+                                setDetailsModal("Génération terminée");
+                                eventSource.close();
+                                // mettre a jour avec une requete
+                                setChargementRequete(false);
+                            }
+                        };
+
                         setTimeout(() => {
                             document.querySelector<HTMLInputElement>("#inputTexte")!.value = "";
                             document.querySelector<HTMLInputElement>("#selectType")!.value = "";
@@ -1018,7 +1035,7 @@ export default function InterfaceAdministration() {
                         <option value="finQuiz">Quiz réussi</option>
                         <option value="questionsJSON">Questions JSON</option>
                     </Select>
-
+                    {detailsModal && <p className="pEtatGeneration">Génération audios : {detailsModal}</p>}
                     <div className="modalPied">
                         <button className="boutonAction solo">{chargementRequete ? <Chargement variant="button" /> : "Générer"}</button>
                     </div>
@@ -1026,40 +1043,46 @@ export default function InterfaceAdministration() {
             )}
             {contenuModal == "generationDevinettes" && (
                 <Modal estOuvert={afficherModal} fermeture={() => setAfficherModal(false)} titre="Génération devinettes" retourArriere={() => setContenuModal("gestionDevinettes")}>
-                    {detailsModal ? (
-                        <p id="pResultatsGeneration">Résultats génération : {detailsModal}</p>
-                    ) : (
-                        <>
-                            <p id="pFormat">Le format doit être : Devinette;Réponse</p>
+                    <>
+                        <p id="pFormat">Le format doit être : Devinette;Réponse</p>
 
-                            <form
-                                onSubmit={async (e) => {
-                                    e.preventDefault();
-                                    setChargementRequete(true);
+                        <form
+                            onSubmit={async (e) => {
+                                e.preventDefault();
+                                setChargementRequete(true);
+                                setDetailsModal("");
+                                const devinettes = document.querySelector<HTMLInputElement>("#inputDevinettes")!.value;
+                                const jobId = await requete({ url: "/admins/audios/generation-devinette", methode: "POST", corps: { devinettes } });
 
-                                    const devinettes = document.querySelector<HTMLInputElement>("#inputDevinettes")!.value;
-                                    const reponse = await requete({ url: "/admins/audios/generation-devinette", methode: "POST", corps: { devinettes } });
+                                // GESTION SSE
+                                const eventSource = new EventSource(`/admins/audios/sse/${jobId}`);
 
-                                    setTimeout(() => {
-                                        setDetailsModal(`${reponse.succes} succès et ${reponse.erreurs.length} erreurs`);
+                                eventSource.onmessage = (event) => {
+                                    const data = JSON.parse(event.data);
+                                    if (data.type === "finished") {
+                                        setDetailsModal("Génération terminée");
+                                        eventSource.close();
+                                        // Mettre a jour les données avc une quete
                                         setChargementRequete(false);
+                                    }
+                                };
+                                setTimeout(() => {
+                                    setTimeout(() => {
+                                        setContenuModal("gestionDevinettes");
+                                    }, 2000);
+                                }, 1000);
+                            }}
+                        >
+                            <ChampDonneesForm id="inputDevinettes" typeInput="textearea" label="Devinettes à générer :" />
+                            {detailsModal && <p className="pEtatGeneration">{detailsModal}</p>}
 
-                                        setTimeout(() => {
-                                            setAfficherModal(false);
-                                        }, 2000);
-                                    }, 1000);
-                                }}
-                            >
-                                <ChampDonneesForm id="inputDevinettes" typeInput="textearea" label="Devinettes à générer :" />
-
-                                <div className="modalPied">
-                                    <button type="submit" className="boutonAction solo" disabled={chargementRequete}>
-                                        {chargementRequete ? <Chargement variant="button" /> : "Générer"}
-                                    </button>
-                                </div>
-                            </form>
-                        </>
-                    )}
+                            <div className="modalPied">
+                                <button type="submit" className="boutonAction solo" disabled={chargementRequete}>
+                                    {chargementRequete ? <Chargement variant="button" /> : "Générer"}
+                                </button>
+                            </div>
+                        </form>
+                    </>
                 </Modal>
             )}
             {contenuModal == "ajoutDiapo" && (

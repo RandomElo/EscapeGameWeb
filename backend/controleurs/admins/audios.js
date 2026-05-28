@@ -11,6 +11,7 @@ import { ConfigurationInterfaceAdmin } from "./scenarios.js";
 import jwt from "jsonwebtoken";
 import pLimit from "p-limit";
 import { lancerAudioVolee } from "../../mqtt/gameManager.js";
+import logger from "../../mqtt/logger.js";
 
 const limit = pLimit(2); // max 3 TTS en parallèle
 
@@ -18,11 +19,58 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const cheminDossierAudios = path.resolve(__dirname, "../../audios");
+logger.info(cheminDossierAudios)
 // Chemin modele TTS
 const cheminTTS = path.resolve(__dirname, "../../tts");
 const cheminPiper = path.join(cheminTTS, "piper", "piper");
 // const cheminModeleVoix = path.join(cheminTTS, "voices", "fr_FR-tom-medium", "fr_FR-tom-medium.onnx");
 const cheminModeleVoix = path.join(cheminTTS, "voices", "fr_FR-siwis-medium", "fr_FR-siwis-medium.onnx");
+
+// GESTION DU SSE
+const jobs = new Map();
+const clients = new Map();
+
+export function creationJob(total) {
+    const id = randomUUID();
+
+    jobs.set(id, {
+        total,
+        done: 0,
+        status: "running",
+        createdAt: Date.now()
+    });
+
+    return id;
+}
+
+export function registerClient(jobId, res) {
+    clients.set(jobId, {
+        res,
+        createdAt: Date.now()
+    });
+}
+
+export function envoiProgresSSE(jobId, donnees) {
+    const client = clients.get(jobId);
+    if (!client) return;
+
+    client.res.write(`data: ${JSON.stringify(donnees)}\n\n`);
+}
+
+export function cleanupJob(jobId) {
+    const client = clients.get(jobId);
+
+    if (client) {
+        client.res.end();
+        clients.delete(jobId);
+    }
+
+    jobs.delete(jobId);
+}
+
+export function getJob(jobId) {
+    return jobs.get(jobId);
+}
 
 export function generationTTS(cheminDossier, nomFichier, texte) {
     return new Promise((resolve, reject) => {
@@ -218,7 +266,7 @@ export const recuperationMorse = gestionErreur(
 );
 
 // Permet la génération a partri d'un texte
-async function generationAudiosSimple(typeGeneration, entree, req, type) {
+async function generationAudiosSimple(typeGeneration, entree, req, res, type) {
     let cheminDossier;
     let valeurs = [];
     if (typeGeneration == "quiz") {
@@ -243,6 +291,8 @@ async function generationAudiosSimple(typeGeneration, entree, req, type) {
             });
 
     }
+    const jobId = creationJob(valeurs.length);
+    res.json({ etat: true, detail: jobId });
 
     const resultats = await Promise.allSettled(
         valeurs.map((element) =>
@@ -252,6 +302,14 @@ async function generationAudiosSimple(typeGeneration, entree, req, type) {
                 if (process.env.TYPE_ENV == "reel") {
                     await generationTTS(cheminDossier, nomFichier, typeGeneration == "quiz" ? element : element.devinette);
                 }
+
+                const job = getJob(jobId);
+                job.done++;
+                envoiProgresSSE(jobId, {
+                    type: "progress",
+                    done: job.done,
+                    total: job.total
+                })
 
                 if (typeGeneration == "quiz") {
                     return await req.QuizAudios.create({
@@ -271,12 +329,16 @@ async function generationAudiosSimple(typeGeneration, entree, req, type) {
             }),
         ),
     );
-
+    envoiProgresSSE(jobId, { type: "finished" })
+    const client = clients.get(jobId);
+    if (client) {
+        client.res.end();
+    }
     return resultats;
 }
 
 // Pemret la génération à partir d'un fichier JSON
-async function generationQuestion(entree, req) {
+async function generationQuestion(entree, req, res) {
     let entreeMiseEnForme;
 
     try {
@@ -284,6 +346,8 @@ async function generationQuestion(entree, req) {
     } catch {
         throw new Error("JSON invalide");
     }
+    const jobId = creationJob(entreeMiseEnForme.length);
+    res.json({ etat: true, detail: jobId });
 
     const cheminDossier = path.join(cheminDossierAudios, "quiz", "questions");
 
@@ -299,18 +363,31 @@ async function generationQuestion(entree, req) {
                     await generationTTS(cheminDossier, nomFichier, element.question);
                 }
 
-                return await req.QuizQuestions.create({
+                await req.QuizQuestions.create({
                     question: element.question,
                     type: element.type,
                     reponse: element.reponse,
                     difficulte: element.difficulte,
-                    // nomFichier: path.join("audios/quiz/questions", nomFichier),
                     nomFichier,
                 });
+                const job = getJob(jobId);
+                job.done++;
+                envoiProgresSSE(jobId, {
+                    type: "progress",
+                    done: job.done,
+                    total: job.total
+                })
+
+
             }),
         ),
     );
 
+    envoiProgresSSE(jobId, { type: "finished" })
+    const client = clients.get(jobId);
+    if (client) {
+        client.res.end();
+    }
     return resultats;
 }
 
@@ -331,30 +408,21 @@ export const generationQuiz = gestionErreur(
             });
         }
         let resultats;
+        logger.info(type)
         if (type == "questionsJSON") {
             try {
-                resultats = await generationQuestion(valeur, req);
+                resultats = await generationQuestion(valeur, req, res);
             } catch (err) {
-                return res.status(400).json({
-                    etat: false,
-                    detail: err.message,
-                });
+                logger.info(err)
+                logger.info("Erreur lors de la généartion des audios")
             }
         } else {
-            resultats = await generationAudiosSimple("quiz", valeur, req, type);
+            resultats = await generationAudiosSimple("quiz", valeur, req, res, type);
         }
         const succes = resultats.filter((r) => r.status === "fulfilled").map((r) => r.value);
         const erreurs = resultats.filter((r) => r.status === "rejected").map((r) => r.reason?.message);
 
         console.log(erreurs);
-
-        return res.json({
-            etat: true,
-            detail: {
-                succes: succes.length,
-                erreurs,
-            },
-        });
     },
     "controleurGenerationQuiz",
     "Erreur lors de la génération de l'audio pour le quiz",
@@ -369,16 +437,10 @@ export const generationDevinette = gestionErreur(
                 detail: "Requête incorrecte",
             });
         }
-        const resultats = await generationAudiosSimple("devinette", devinettes, req);
+        const resultats = await generationAudiosSimple("devinette", devinettes, req, res);
         const succes = resultats.filter((r) => r.status === "fulfilled").map((r) => r.value);
         const erreurs = resultats.filter((r) => r.status === "rejected").map((r) => r.reason?.message);
-        return res.json({
-            etat: true,
-            detail: {
-                succes: succes.length,
-                erreurs,
-            },
-        });
+
 
     },
     "controleurGenerationDevinette",
@@ -409,3 +471,25 @@ export const genererEtLancer = gestionErreur(async (req, res) => {
     return res.json({ etat: true, detail: "ok" })
 
 }, "controleurGenererEtLancer", "Erreur lors de la génération de l'audio")
+
+export const sseConnexion = (req, res) => {
+    const { jobId } = req.params;
+
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.setHeader("X-Accel-Buffering", "no");
+
+    res.flushHeaders?.();
+
+    registerClient(jobId, res);
+
+    res.write(`data: ${JSON.stringify({
+        type: "connected",
+        jobId
+    })}\n\n`);
+
+    req.on("close", () => {
+        res.end();
+    });
+};
