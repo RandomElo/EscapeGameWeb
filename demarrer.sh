@@ -24,11 +24,11 @@ echo "Démarrage backend..."
   nodemon 2>&1 | log "BACKEND" | tee -a "$LOG_FILE"
 ) &
 
-echo "Démarrage serveur caméra..."
-(
-  cd streamCamera || exit 1
-  source venv/bin/activate
-  python3 serveur.py 2>&1 | log "CAMERA" | tee -a "$LOG_FILE"
-) &
+# echo "Démarrage serveur caméra..."
+# (
+#   cd streamCamera || exit 1
+#   source venv/bin/activate
+#   python3 serveur.py 2>&1 | log "CAMERA" | tee -a "$LOG_FILE"
+# ) &
 
 wait

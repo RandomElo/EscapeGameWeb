@@ -300,7 +300,7 @@ export const modificationDeroule = gestionErreur(
     async (req, res) => {
         const { id } = req.params;
         const { donnees } = req.body;
-
+        console.log(donnees)
         if (!donnees || !id) {
             return res.status(400).json({
                 etat: false,

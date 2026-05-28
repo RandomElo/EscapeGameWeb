@@ -16,7 +16,7 @@ routeurMissions.patch("/:id/modification-configuration", accesAdmin, modificatio
 
 routeurMissions.post("/enregistrement-diapo", accesAdmin, upload.single("zip"), enregistrementDiapo)
 routeurMissions.get("/:idDiapositive/recuperer-diapositive", accesAdmin, recupererDiapositive)
-routeurMissions.get("/telecharger-diaporama", telechargerDiaporama)
+routeurMissions.get("/:nom/telecharger-diaporama", telechargerDiaporama)
 
 routeurMissions.delete("/suppression-diaporama", accesAdmin, suppressionDiaporama)
 routeurMissions.delete("/suppression-quiz", accesAdmin, suppressionAudioQuiz)

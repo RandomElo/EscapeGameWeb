@@ -13,7 +13,6 @@ const __dirname = path.dirname(__filename);
 
 const cheminDossierAudios = path.resolve(__dirname, "../../audios");
 class CommunicationBDD {
-
     async getTopicMqtt(missionId) {
         try {
             const mission = await bdd.Missions.findByPk(missionId);
@@ -39,7 +38,6 @@ class CommunicationBDD {
 
                 return await generateMorseAudio(message);
             } else {
-
                 return { morse: audio.reponse, nomFichier: audio.nomFichier };
             }
         } catch (err) {
@@ -73,15 +71,16 @@ class CommunicationBDD {
         }
     }
 
-    async getDiaporama(nom, combinaisonSecrete) {
+    async getDiaporama(nom, combinaisonSecrete, badges) {
         try {
             const diaporama = await bdd.Diapos.findOne({ where: { nom }, raw: true });
 
             if (!diaporama) {
                 logger.info(`Diaporama inexistant :  ${nom}`);
+                diaporama;
                 return false;
             } else {
-                return { diaporama: diaporama.id, combinaisonSecrete };
+                return { diaporama: nom, combinaisonSecrete, badges };
             }
         } catch (err) {
             logger.error(`Erreur getDiaporama : ${err.message}`);
@@ -110,13 +109,13 @@ class CommunicationBDD {
                 questionId: q.id,
             })),
         );
-
+        logger.info("Longeur : " + questions.length);
         return questions;
     }
     async getBoiteAQuizInitialisation() {
         try {
-            const questionFacile = this.recupererQuestions("facile", 21);
-            const questionDur = this.recupererQuestions("difficile", 3);
+            const questionFacile = await this.recupererQuestions("facile", 21);
+            const questionDur = await this.recupererQuestions("difficile", 3);
 
             const comboFlop = (
                 await bdd.QuizAudios.findAll({
