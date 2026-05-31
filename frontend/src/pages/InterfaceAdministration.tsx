@@ -12,6 +12,7 @@ import GererDerouler from "../composants/interfaceAdministration/GererDerouler";
 import AfficherDiapositives from "../composants/interfaceAdministration/AfficherDiapositives";
 import Select from "../composants/Select";
 import Checkbox from "../composants/Checkbox";
+import BlocConfiguration from "../composants/interfaceAdministration/BlocConfiguration";
 
 type Mission = {
     id: number;
@@ -58,19 +59,24 @@ export type RecuperationDonnees = {
     missions: MissionComplete[];
     scenarios: Scenario[];
     messagesAudio: MessageAudio[];
-    quizAudio: QuizAudio[];
+    quiz: { questions: QuizQuestions[]; audios: QuizAudios[] };
+
     devinettes: Devinette[];
     diaporamas: Diaporama[];
 };
 
-type QuizAudio = {
+type QuizQuestions = {
     question: string;
     type: "clavier" | "bouton";
     reponse: string;
     difficulte: "facile" | "difficile";
     nomFichier: string;
 };
-
+type QuizAudios = {
+    type: "bonneReponse" | "mauvaiseReponse" | "serieErreurs" | "finQuiz" | "question";
+    texte: string;
+    nomFichier: string;
+};
 type Devinette = {
     devinette: string;
     reponse: string;
@@ -83,7 +89,7 @@ type Diaporama = {
     images: number[];
 };
 
-export type ContenuModal = "ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio" | "menuScenario" | "gererDeroulerScenario" | "modifierNomScenario" | "modifierDescriptionScenario" | "supprimerScenario" | "menuMission" | "supprimerMission" | "modifierNomMission" | "modifierDescriptionMission" | "ajouterMissionScenario" | "genererAudioQuiz" | "ajouterAudioScenario" | "ajouterAudiosAideScenario" | "audiosAideScenario" | "generationDevinettes" | "ajoutDiapo" | "gestionAudios" | "gestionQuizAudios" | "gestionDevinettes" | "gestionDiaporama" | "supprimerDiaporama" | "diaporama" | "supprimerQuiz" | "supprimerDevinette";
+export type ContenuModal = "ajouterMission" | "genererAudio" | "ajouterScenario" | "supprimerAudio" | "menuScenario" | "gererDeroulerScenario" | "modifierNomScenario" | "modifierDescriptionScenario" | "supprimerScenario" | "menuMission" | "supprimerMission" | "modifierNomMission" | "modifierDescriptionMission" | "ajouterMissionScenario" | "genererAudioQuiz" | "ajouterAudioScenario" | "ajouterAudiosAideScenario" | "audiosAideScenario" | "generationDevinettes" | "ajoutDiapo" | "gestionAudios" | "gestionQuizAudios" | "gestionDevinettes" | "gestionDiaporama" | "supprimerDiaporama" | "diaporama" | "supprimerQuiz" | "supprimerDevinette" | "aideConfiguration";
 
 export default function InterfaceAdministration() {
     const { estAuth, chargement } = useAuth();
@@ -108,7 +114,8 @@ export default function InterfaceAdministration() {
     const [chargementRequete, setChargementRequete] = useState<boolean>(false);
     const [fichier, setFichier] = useState<File>();
 
-    const [quizAudio, setQuizAudio] = useState<QuizAudio[]>();
+    const [quizQuestions, setQuizQuestion] = useState<QuizQuestions[]>();
+    const [quizAudio, setQuizAudio] = useState<QuizAudios[]>();
     const [devinettes, setDevinettes] = useState<Devinette[]>();
     const [diaporamas, setDiaporamas] = useState<Diaporama[]>();
     const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -117,7 +124,8 @@ export default function InterfaceAdministration() {
         setScenarios(reponse.scenarios);
         setMissions(reponse.missions);
         setMessagesAudio(reponse.messagesAudio);
-        setQuizAudio(reponse.quizAudio);
+        setQuizQuestion(reponse.quiz.questions);
+        setQuizAudio(reponse.quiz.audios);
         setDevinettes(reponse.devinettes);
         setDiaporamas(reponse.diaporamas);
     }
@@ -278,11 +286,12 @@ export default function InterfaceAdministration() {
                         <span className="descriptionOutil">Audios pour la boîte à quiz.</span>
                         <div className="piedCarte">
                             <span className="compteurOutil donneeDemoMuted">
-                                {quizAudio ? quizAudio?.length : "0"} fichier{quizAudio && quizAudio?.length > 1 && "s"}
+                                {quizAudio && quizQuestions ? quizAudio?.length + quizQuestions?.length : "0"} fichier{quizAudio && quizQuestions && quizAudio?.length + quizQuestions?.length > 1 && "s"}
                             </span>
                             <button
                                 className="boutonAction"
                                 onClick={() => {
+                                    setDetailsModal("");
                                     setContenuModal("gestionQuizAudios");
                                     setAfficherModal(true);
                                 }}
@@ -409,7 +418,6 @@ export default function InterfaceAdministration() {
                                                     audioRef.current.currentTime = 0;
                                                 }
 
-                                                setIdAudioEnCours(key);
                                                 const reponse = await requete({ url: "/admins/audios/recuperation-lien", methode: "POST", corps: { nomFichier: audio.nomFichier } });
 
                                                 const elementAudio = new Audio(reponse);
@@ -454,66 +462,124 @@ export default function InterfaceAdministration() {
             {contenuModal == "gestionQuizAudios" && (
                 <Modal estOuvert={afficherModal} fermeture={() => setAfficherModal(false)} titre="Les audios du quiz" taille={800}>
                     <div id="divModalGestionQuizAudios">
-                        <table className="tableau">
-                            <thead>
-                                <tr>
-                                    <th>Texte de l'audio</th>
-                                    <th>Type</th>
-                                    <th>Réponse</th>
-                                    <th colSpan={2} className="thActions">
-                                        Actions
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {quizAudio?.map((audio, key) => (
-                                    <tr key={key}>
-                                        <td className="tdTexte">{audio.question}</td>
-                                        <td>{audio.type.charAt(0).toUpperCase() + audio.type.slice(1)}</td>
-                                        <td className="tdReponse">{audio.reponse == "true" || audio.reponse == "false" ? (audio.reponse == "true" ? "Vrai" : "Faux") : audio.reponse}</td>
-                                        <td
-                                            className={`tdAction ${idAudioEnCours == key ? "tdStop" : "tdPlay"}`}
-                                            onClick={async () => {
-                                                if (idAudioEnCours == key && audioRef.current) {
-                                                    audioRef.current.pause();
-                                                    audioRef.current.currentTime = 0;
-                                                    setIdAudioEnCours(null);
-                                                    return;
-                                                }
-
-                                                if (audioRef.current) {
-                                                    audioRef.current.pause();
-                                                    audioRef.current.currentTime = 0;
-                                                }
-
-                                                setIdAudioEnCours(key);
-                                                const reponse = await requete({ url: "/admins/audios/recuperation-lien", methode: "POST", corps: { nomFichier: audio.nomFichier } });
-
-                                                const elementAudio = new Audio(reponse);
-                                                audioRef.current = elementAudio;
-                                                elementAudio.play();
-
-                                                elementAudio.addEventListener("ended", () => {
-                                                    setIdAudioEnCours(null);
-                                                });
-                                            }}
-                                        >
-                                            {idAudioEnCours == key ? <Square size={18} /> : <Play size={18} />}
-                                        </td>
-                                        <td
-                                            className="tdAction tdPoubelle"
-                                            onClick={() => {
-                                                setDetailsModal(audio.nomFichier);
-                                                setContenuModal("supprimerAudio");
-                                                setAfficherModal(true);
-                                            }}
-                                        >
-                                            <Trash2 size={18} />
-                                        </td>
+                        <div className="typeAffichage">
+                            <p>Type d'affichage : </p>
+                            <button className="boutonAction" onClick={() => setDetailsModal("questions")}>
+                                Questions
+                            </button>
+                            <button className="boutonAction" onClick={() => setDetailsModal("autres")}>
+                                Autres
+                            </button>
+                        </div>
+                        {(detailsModal == "questions" || detailsModal == "autres") && (
+                            <table className="tableau">
+                                <thead>
+                                    <tr>
+                                        <th>Texte de l'audio</th>
+                                        <th>Type</th>
+                                        {detailsModal == "questions" && <th>Réponse</th>}
+                                        <th colSpan={2} className="thActions">
+                                            Actions
+                                        </th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {detailsModal == "questions" &&
+                                        quizQuestions?.map((audio, key) => (
+                                            <tr key={key}>
+                                                <td className="tdTexte">{audio.question}</td>
+                                                <td>{audio.type.charAt(0).toUpperCase() + audio.type.slice(1)}</td>
+                                                <td className="tdReponse">{audio.reponse == "true" || audio.reponse == "false" ? (audio.reponse == "true" ? "Vrai" : "Faux") : audio.reponse}</td>
+                                                <td
+                                                    className={`tdAction ${idAudioEnCours == key ? "tdStop" : "tdPlay"}`}
+                                                    onClick={async () => {
+                                                        if (idAudioEnCours == key && audioRef.current) {
+                                                            audioRef.current.pause();
+                                                            audioRef.current.currentTime = 0;
+                                                            setIdAudioEnCours(null);
+                                                            return;
+                                                        }
+
+                                                        if (audioRef.current) {
+                                                            audioRef.current.pause();
+                                                            audioRef.current.currentTime = 0;
+                                                        }
+
+                                                        setIdAudioEnCours(key);
+                                                        const reponse = await requete({ url: "/admins/audios/recuperation-lien", methode: "POST", corps: { nomFichier: audio.nomFichier } });
+
+                                                        const elementAudio = new Audio(reponse);
+                                                        audioRef.current = elementAudio;
+                                                        elementAudio.play();
+
+                                                        elementAudio.addEventListener("ended", () => {
+                                                            setIdAudioEnCours(null);
+                                                        });
+                                                    }}
+                                                >
+                                                    {idAudioEnCours == key ? <Square size={18} /> : <Play size={18} />}
+                                                </td>
+                                                <td
+                                                    className="tdAction tdPoubelle"
+                                                    onClick={() => {
+                                                        setDetailsModal(audio.nomFichier);
+                                                        setContenuModal("supprimerQuiz");
+                                                        setAfficherModal(true);
+                                                    }}
+                                                >
+                                                    <Trash2 size={18} />
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    {detailsModal == "autres" &&
+                                        quizAudio?.map((element, key) => (
+                                            <tr key={key}>
+                                                <td>{element.texte}</td>
+                                                <td>{element.type}</td>
+                                                <td
+                                                    className={`tdAction ${idAudioEnCours == key ? "tdStop" : "tdPlay"}`}
+                                                    onClick={async () => {
+                                                        if (idAudioEnCours == key && audioRef.current) {
+                                                            audioRef.current.pause();
+                                                            audioRef.current.currentTime = 0;
+                                                            setIdAudioEnCours(null);
+                                                            return;
+                                                        }
+
+                                                        if (audioRef.current) {
+                                                            audioRef.current.pause();
+                                                            audioRef.current.currentTime = 0;
+                                                        }
+
+                                                        setIdAudioEnCours(key);
+                                                        const reponse = await requete({ url: "/admins/audios/recuperation-lien", methode: "POST", corps: { nomFichier: element.nomFichier } });
+
+                                                        const elementAudio = new Audio(reponse);
+                                                        audioRef.current = elementAudio;
+                                                        elementAudio.play();
+
+                                                        elementAudio.addEventListener("ended", () => {
+                                                            setIdAudioEnCours(null);
+                                                        });
+                                                    }}
+                                                >
+                                                    {idAudioEnCours == key ? <Square size={18} /> : <Play size={18} />}
+                                                </td>
+                                                <td
+                                                    className="tdAction tdPoubelle"
+                                                    onClick={() => {
+                                                        setDetailsModal(element.nomFichier);
+                                                        setContenuModal("supprimerQuiz");
+                                                        setAfficherModal(true);
+                                                    }}
+                                                >
+                                                    <Trash2 size={18} />
+                                                </td>
+                                            </tr>
+                                        ))}
+                                </tbody>
+                            </table>
+                        )}
                         <div id="divBoutonAjouterAudios">
                             <button
                                 className="boutonAction"
@@ -524,12 +590,31 @@ export default function InterfaceAdministration() {
                             >
                                 Générer des audios
                             </button>
+                            <button
+                                className={`boutonAction ${detailsModal == "validation" && "validerSuppression"}`}
+                                onClick={async () => {
+                                    if (detailsModal == "validation") {
+                                        setChargementRequete(true);
+                                        const reponse = await requete({ url: "/admins/audios/supprimer-tous-quiz", methode: "DELETE" });
+                                        setTimeout(() => {
+                                            recuperationDonnees(reponse);
+                                            setDetailsModal("");
+                                            setChargementRequete(false);
+                                            setContenuModal("genererAudioQuiz");
+                                        }, 500);
+                                    } else {
+                                        setDetailsModal("validation");
+                                    }
+                                }}
+                            >
+                                {detailsModal == "validation" ? chargementRequete ? <Chargement variant="button" /> : "Valider" : "Supprimer tous les audios"}
+                            </button>
                         </div>
                     </div>
                 </Modal>
             )}
             {contenuModal == "gestionDevinettes" && (
-                <Modal estOuvert={afficherModal} fermeture={() => setAfficherModal(false)} titre="Les devinettes" taille={700}>
+                <Modal estOuvert={afficherModal} fermeture={() => setAfficherModal(false)} titre="Les devinettes" taille={900}>
                     <div id="divModalGestionDevinette">
                         <table className="tableau">
                             <thead>
@@ -991,7 +1076,10 @@ export default function InterfaceAdministration() {
                     estOuvert={afficherModal}
                     fermeture={() => setAfficherModal(false)}
                     titre="Génération d'audios pour la boîte a quiz"
-                    retourArriere={() => setContenuModal("gestionQuizAudios")}
+                    retourArriere={() => {
+                        setDetailsModal("");
+                        setContenuModal("gestionQuizAudios");
+                    }}
                     onSubmit={async (e) => {
                         e?.preventDefault();
                         setChargementRequete(true);
@@ -1000,7 +1088,7 @@ export default function InterfaceAdministration() {
                         const type = document.querySelector<HTMLInputElement>("#selectType")!.value;
                         console.log({ valeur, type });
                         const jobId = await requete({ url: "/admins/audios/generation-quiz", methode: "POST", corps: { valeur, type } });
-                        console.log("# J'ai réponse");
+
                         // GESTION SSE
                         const eventSource = new EventSource(`/admins/audios/sse/${jobId}`);
 
@@ -1016,9 +1104,13 @@ export default function InterfaceAdministration() {
                             }
                         };
 
-                        setTimeout(() => {
+                        setTimeout(async () => {
+                            const reponse = await requete({ url: "/admins/scenarios/configuration-complete" });
+                            recuperationDonnees(reponse);
                             document.querySelector<HTMLInputElement>("#inputTexte")!.value = "";
                             document.querySelector<HTMLInputElement>("#selectType")!.value = "";
+                            document.querySelector<HTMLInputElement>("#pEtatGeneration")!.innerText = "";
+
                             setChargementRequete(false);
                         }, 1000);
                     }}
@@ -1067,7 +1159,11 @@ export default function InterfaceAdministration() {
                                     }
                                 };
                                 setTimeout(() => {
-                                    setTimeout(() => {
+                                    document.querySelector<HTMLInputElement>("#pEtatGeneration")!.innerText = "";
+
+                                    setTimeout(async () => {
+                                        const reponse = await requete({ url: "/admins/scenarios/configuration-complete" });
+                                        recuperationDonnees(reponse);
                                         setContenuModal("gestionDevinettes");
                                     }, 2000);
                                 }, 1000);
@@ -1117,8 +1213,8 @@ export default function InterfaceAdministration() {
                             required
                         />
                         <div className="modalPied">
-                            <button type="submit" className="boutonAction solo">
-                                Envoyer
+                            <button type="submit" className="boutonAction solo" disabled={chargementRequete}>
+                                {chargementRequete ? <Chargement variant="button" /> : "Envoyer"}
                             </button>
                         </div>
                     </form>
@@ -1370,6 +1466,22 @@ export default function InterfaceAdministration() {
                         <button type="submit" className="boutonAction" disabled={chargementRequete}>
                             {chargementRequete ? <Chargement variant="button" /> : "Valider"}
                         </button>
+                    </div>
+                </Modal>
+            )}
+            {contenuModal == "aideConfiguration" && (
+                <Modal estOuvert={afficherModal} fermeture={() => setAfficherModal(false)} titre="Aide à la configuration des missions" retourArriere={() => setContenuModal("gererDeroulerScenario")}>
+                    <div className="ModalAideConfiguration">
+                        <p className="label">Mission 1 :</p>
+                        <BlocConfiguration contenu={{ diaporama: "diapo_1", combinaisonSecrete: ["RIGHT", "UP", "LEFT", "UP", "DOWN", "RIGHT"], badges: { 0: "requinAbyssal", 1: "poissonLanterne", 2: "sardine" } }} />
+                        <p className="label">Mission 2 :</p>
+                        <BlocConfiguration contenu={{ morse: ["A1", "A2", "B3"] }} />
+                        <p className="label">Mission 3 :</p>
+                        <BlocConfiguration contenu={{ reader1: "Couronne", reader2: "Artefact", reader5: "Tour" }} />
+                        <p className="label">Mission 4 :</p>
+                        <BlocConfiguration contenu={{ mot: "EAU" }} />
+                        <p className="label">Mission 5 :</p>
+                        <BlocConfiguration contenu={{ boitequiz: "ok" }} />
                     </div>
                 </Modal>
             )}

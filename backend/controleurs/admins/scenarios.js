@@ -9,7 +9,8 @@ export async function ConfigurationInterfaceAdmin(req) {
         scenariosListe,
         messagesAudio,
         aideAudios,
-        quizAudio,
+        quizQuestions,
+        quizAudios,
         devinettes,
         diaporamas,
         images,
@@ -35,6 +36,10 @@ export async function ConfigurationInterfaceAdmin(req) {
         req.QuizQuestions.findAll({
             raw: true,
             attributes: ["question", "type", "reponse", "difficulte", "nomFichier"],
+        }),
+        req.QuizAudios.findAll({
+            raw: true,
+            attributes: ["type", "texte", "nomFichier"],
         }),
         req.Devinettes.findAll({
             raw: true,
@@ -119,7 +124,7 @@ export async function ConfigurationInterfaceAdmin(req) {
             .map((img) => img.id)
     }));
 
-    return { missions, scenarios, messagesAudio, quizAudio, devinettes, diaporamas: diapos };
+    return { missions, scenarios, messagesAudio, quiz: { questions: quizQuestions, audios: quizAudios }, devinettes, diaporamas: diapos };
 }
 
 export const configurationComplete = gestionErreur(

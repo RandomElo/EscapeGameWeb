@@ -351,14 +351,18 @@ export const suppressionAudioQuiz = gestionErreur(
             });
         }
 
-        const fichier = await req.QuizQuestions.findOne({ where: { nomFichier } });
+        let fichier = await req.QuizQuestions.findOne({ where: { nomFichier } });
         if (!fichier) {
-            return res.status(404).json({
-                etat: false,
-                detail: "Ressource inexistante",
-            });
+            fichier = await req.QuizAudios.findOne({ where: { nomFichier } });
+            if (!fichier) {
+                return res.status(404).json({
+                    etat: false,
+                    detail: "Ressource inexistante",
+                });
+            }
         }
-        const cheminDossierAudio = path.join(process.cwd(), "audios", "quiz", "questions");
+
+        const cheminDossierAudio = path.join(process.cwd(), "audios", "quiz", fichier.reponse ? "questions" : fichier.type);
         const cheminFichier = path.join(cheminDossierAudio, nomFichier);
 
         try {
@@ -370,7 +374,7 @@ export const suppressionAudioQuiz = gestionErreur(
             }
         }
 
-        await req.QuizQuestions.destroy({ where: { id: fichier.id } });
+        await req[fichier.reponse ? "QuizQuestions" : "QuizAudios"].destroy({ where: { id: fichier.id } });
         return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
     },
     "controleurSuppressionAudioQuiz",

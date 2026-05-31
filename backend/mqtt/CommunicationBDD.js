@@ -4,7 +4,7 @@ import generateMorseAudio from "../fonctions/genererMorse.js";
 import logger from "./logger.js";
 import path from "path";
 import { fileURLToPath } from "url";
-import { generationTTS } from "../controleurs/admins/audios.js";
+import { generationAudiosMission, generationTTS } from "../controleurs/admins/audios.js";
 import { Sequelize } from "sequelize";
 import { Op } from "sequelize";
 
@@ -163,6 +163,18 @@ class CommunicationBDD {
             logger.error(`Erreur getBoiteAQuiz : ${err.message}`);
             return null;
         }
+    }
+    async verificationAudiosNecessaire(donnees) {
+        for (const texte of donnees) {
+            const audio = await req.MissionAudios.findOne({ where: { texte }, raw: true })
+            const tableauAGenerer = []
+            if (!audio) tableauAGenerer.push(texte)
+        }
+        
+        logger.info("Audio à générer")
+        logger.info(tableauAGenerer)
+        await generationAudiosMission(tableauAGenerer)
+        logger.info("Audio mission générer")
     }
 }
 

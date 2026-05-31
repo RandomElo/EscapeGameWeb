@@ -40,14 +40,13 @@
         margin-bottom: var(--space-xl);
         padding-bottom: var(--space-lg);
         border-bottom: 1px solid var(--border);
-    }
-
-    .titreIdentification {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: var(--text-primary);
-        letter-spacing: 0.04em;
-        margin-bottom: 0.25rem;
+        .titreIdentification {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 0.04em;
+            margin-bottom: 0.25rem;
+        }
     }
 
     /* FORMULAIRE */
@@ -192,5 +191,4 @@
     #pEtape2 {
         margin-bottom: 10px;
     }
-    
 }

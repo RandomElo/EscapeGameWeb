@@ -57,17 +57,6 @@ export function envoiProgresSSE(jobId, donnees) {
     client.res.write(`data: ${JSON.stringify(donnees)}\n\n`);
 }
 
-export function cleanupJob(jobId) {
-    const client = clients.get(jobId);
-
-    if (client) {
-        client.res.end();
-        clients.delete(jobId);
-    }
-
-    jobs.delete(jobId);
-}
-
 export function getJob(jobId) {
     return jobs.get(jobId);
 }
@@ -96,6 +85,27 @@ export function generationTTS(cheminDossier, nomFichier, texte) {
 
         piper.on("error", reject);
     });
+}
+
+export async function generationAudiosMission(donnees) {
+    cheminDossier = path.join(cheminDossierAudios, "mission");
+    await Promise.allSettled(
+        donnees.map((element) =>
+            limit(async () => {
+                const nomFichier = `${randomUUID()}.wav`;
+
+                if (process.env.TYPE_ENV == "reel") {
+                    await generationTTS(cheminDossier, nomFichier, element);
+                }
+
+                return await req.MissionAudios.create({
+                    texte: element,
+                    nomFichier: nomFichier,
+                });
+
+            }),
+        ),
+    );
 }
 
 export const generation = gestionErreur(
@@ -177,6 +187,13 @@ export const recuperationLien = gestionErreur(
                 detail: "Requête incorrecte",
             });
         }
+
+        const modeles = [
+            { modele: req.MessagesAudio, dossier: "messages" },
+            { modele: req.QuizAudios, dossier: "quiz" },
+            { modele: req.QuizQuestions, dossier: "ambiances" },
+            { modele: req.Devinettes, dossier: "ambiances" },
+        ];
 
         const fichier = await req.MessagesAudio.findOne({ where: { nomFichier }, raw: true });
         if (!fichier) {
@@ -471,7 +488,51 @@ export const genererEtLancer = gestionErreur(async (req, res) => {
     return res.json({ etat: true, detail: "ok" })
 
 }, "controleurGenererEtLancer", "Erreur lors de la génération de l'audio")
+export const supprimerTousQuiz = gestionErreur(async (req, res) => {
+    const chemin = path.resolve(__dirname, "../../audios/quiz");
+    const [
+        questions,
+        autres,
+    ] = await Promise.all([
+        req.QuizQuestions.findAll({
+            raw: true,
+            attributes: ["id", "nomFichier"],
+        }),
+        req.QuizAudios.findAll({
+            raw: true,
+            attributes: ["id", "nomFichier", "type"],
+        }),
+    ]);
+    await Promise.allSettled(
+        questions.map(async (question) => {
+            const cheminFichier = path.join(
+                chemin,
+                "questions",
+                question.nomFichier
+            );
 
+            await fs.unlink(cheminFichier);
+        })
+    );
+
+    // AUTRES AUDIOS
+    await Promise.allSettled(
+        autres.map(async (audio) => {
+            const cheminFichier = path.join(
+                chemin,
+                audio.type,
+                audio.nomFichier
+            );
+
+            await fs.unlink(cheminFichier);
+        })
+    );
+    await req.QuizQuestions.destroy({ where: {} });
+    await req.QuizAudios.destroy({ where: {} });
+    return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
+
+
+}, "controleurSupprimerTousQuiz", "Erreur lors de la suppression des audios du quiz")
 export const sseConnexion = (req, res) => {
     const { jobId } = req.params;
 

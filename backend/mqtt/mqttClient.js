@@ -123,6 +123,22 @@ client.on("message", async (topic, messageBuffer) => {
             return;
         }
 
+        // ============================================
+        // RECUPERER AUDIOS UTILE MISSION
+        // ============================================
+
+        const recupererAudiosUtileMatch = topic.match(/^escape\/mission\/(\d+)\/audios-necessaire$/)
+        if (recupererAudiosUtileMatch) {
+            const missionId = recupererQuestionsMatch[1];
+            try {
+                const data = JSON.parse(msg);
+                logger.info(`Récupération audios pour mission ${missionId} : ${msg}`);
+                await CommunicationBDD.verificationAudiosNecessaire(data)
+            } catch (err) {
+                logger.error(`Erreur audios-necessaire mission ${missionId} : ${err.message}`);
+            }
+        }
+
     } catch (err) {
         logger.error("Erreur MQTT : " + err.message);
     }

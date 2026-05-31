@@ -3,7 +3,7 @@ import type { ContenuModal, DerouleItem, RecuperationDonnees } from "../../pages
 import ChampDonneesForm from "../ChampDonneesForm";
 import Chargement from "../Chargement";
 import { useRequete } from "../../fonctions/requete";
-import { Trash2 } from "lucide-react";
+import { MessageCircleQuestionMark, Trash2 } from "lucide-react";
 import Select from "../Select";
 
 type Scenario = {
@@ -80,7 +80,11 @@ export default function GererDeroulerMissions({ scenario, setContenuModal, setDe
                         <tr>
                             <th className="tdOrdre">Ordre</th>
                             <th>Nom</th>
-                            <th className="tdDetails">Détails</th>
+                            <th className="tdDetails thDetails">
+                                Détails <MessageCircleQuestionMark size={21}  onClick={() => {
+                                    setContenuModal("aideConfiguration")
+                                }}/>
+                            </th>
                             <th className="thSupprimer">Supprimer</th>
                         </tr>
                     </thead>
@@ -113,7 +117,7 @@ export default function GererDeroulerMissions({ scenario, setContenuModal, setDe
 
             {modification && (
                 <button
-                    className="bouton"
+                    className="boutonEnregistrerModification boutonAction"
                     onClick={async () => {
                         setChargementRequete(true);
                         console.log(deroule);

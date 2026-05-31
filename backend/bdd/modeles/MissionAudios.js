@@ -1,15 +1,15 @@
 import { DataTypes } from "sequelize";
 
 export default function (bdd) {
-    const MessagesAudio = bdd.define(
-        "MessagesAudio",
+    const MissionAudios = bdd.define(
+        "MissionAudios",
         {
             id: {
                 type: DataTypes.INTEGER,
                 autoIncrement: true,
                 primaryKey: true,
             },
-            detail: {
+            texte: {
                 type: DataTypes.STRING(255),
                 allowNull: false,
             },
@@ -19,8 +19,8 @@ export default function (bdd) {
             },
         },
         {
-            tableName: "MessagesAudio",
+            tableName: "MissionAudios",
         }
     );
-    return MessagesAudio;
+    return MissionAudios;
 }

@@ -1,9 +1,7 @@
-import { CircleAlert, Megaphone, Mic, Power, Tag, Volume2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import mqtt from "mqtt";
 import { useRequete } from "../fonctions/requete";
 import type { Deroule } from "../pages/SuiviPartie";
-import GestionTags from "./gestionPartie/GestionTags";
 import Modal from "./Modal";
 import Chargement from "./Chargement";
 import { useResponsive } from "../contexts/ResponsiveContext";
@@ -16,6 +14,7 @@ import ChampDonneesForm from "./ChampDonneesForm";
 
 import "../styles/composants/GestionPartie.css";
 import CardTerminalMqtt from "./gestionPartie/CardTerminalMqtt";
+import CardInfosMission from "./gestionPartie/CardInfosMission";
 
 export type DetailsPartie = { equipeNom: string; nbrMembres: number; scenarioNom: string; nbrMissions: number; dateDebut: string; nbrEtapes: number } | undefined;
 
@@ -208,10 +207,11 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
                     <>
                         <CardDetailsPartie detailsPartie={detailsPartie} setPartiesEnCours={setPartiesEnCours} now={now} etapeEnCours={etapeEnCours} />
                         <CardAvertissements missionsDeconnectee={missionsDeconnectee} />
-                        <CardTimelineScenario deroule={deroule} setContenuModal={setContenuModal} setDetailModal={setDetailModal} setAfficherModal={setAfficherModal} missionSuivante={missionSuivante} />
+                        <CardTimelineScenario deroule={deroule} missionSuivante={missionSuivante} />
                         <CardLancementAudioVolee setContenuModal={setContenuModal} setAfficherModal={setAfficherModal} />
                         <CardCamera />
                         <CardTerminalMqtt messages={messages} estConnecte={status == "Connecté"} vider={() => setMessages([])} />
+                        <CardInfosMission deroule={deroule} etapeEnCours={etapeEnCours} setContenuModal={setContenuModal} setAfficherModal={setAfficherModal} />
                     </>
                 ) : (
                     <>
@@ -223,12 +223,13 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
                         </div>
 
                         {/* CENTER PANEL */}
-                        <CardTimelineScenario deroule={deroule} setContenuModal={setContenuModal} setDetailModal={setDetailModal} setAfficherModal={setAfficherModal} missionSuivante={missionSuivante} />
+                        <CardTimelineScenario deroule={deroule} missionSuivante={missionSuivante} />
                         {/* RIGHT PANEL */}
                         <div className="scenarioRight">
                             <CardDetailsPartie detailsPartie={detailsPartie} setPartiesEnCours={setPartiesEnCours} now={now} etapeEnCours={etapeEnCours} />
                             <CardLancementAudioVolee setContenuModal={setContenuModal} setAfficherModal={setAfficherModal} />
                         </div>
+                        <CardInfosMission deroule={deroule} etapeEnCours={etapeEnCours} setContenuModal={setContenuModal} setAfficherModal={setAfficherModal} />
                     </>
                 )}
             </div>

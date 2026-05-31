@@ -1,5 +1,5 @@
 import e from "express";
-import { generation, generationDevinette, generationQuiz, genererEtLancer, lecture, recuperationLien, recuperationMorse, sseConnexion, suppression } from "../../controleurs/admins/audios.js";
+import { generation, generationDevinette, generationQuiz, genererEtLancer, lecture, recuperationLien, recuperationMorse, sseConnexion, suppression, supprimerTousQuiz } from "../../controleurs/admins/audios.js";
 import { accesAdmin } from "../../middlewares/accesAdmin.js";
 import { stream } from "../../controleurs/admins/stream.js";
 
@@ -17,4 +17,5 @@ routeurAudios.get("/stream/:type/:nomFichier", stream);
 routeurAudios.get("/recuperation-morse", recuperationMorse);
 routeurAudios.post("/generer-et-lancer", accesAdmin, genererEtLancer)
 routeurAudios.get("/sse/:jobId", sseConnexion);
+routeurAudios.delete("/supprimer-tous-quiz", accesAdmin, supprimerTousQuiz)
 export default routeurAudios;

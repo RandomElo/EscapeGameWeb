@@ -34,7 +34,9 @@ app.use(
     }),
 );
 
-app.use(e.json());
+app.use(e.json({ limit: "50mb" }));
+app.use(e.urlencoded({ extended: true, limit: "50mb" }));
+
 app.use(cookieParser());
 app.use(accessibiliteBdd(bdd));
 app.use(verificationCookie);

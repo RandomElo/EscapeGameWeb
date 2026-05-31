@@ -30,7 +30,7 @@ import Devinettes from "./modeles/Devinettes.js";
 import Diapos from "./modeles/Diapos.js";
 import Images from "./modeles/Images.js";
 import QuestionPoseesPartie from "./modeles/QuestionPoseesPartie.js";
-
+import MissionAudios from "./modeles/MissionAudios.js";
 const cheminBDD = "./bdd/bdd.sqlite";
 
 // Initialisation de l'ORM
@@ -68,6 +68,7 @@ const bdd = {
     Diapos: Diapos(sequelize),
     Images: Images(sequelize),
     QuestionPoseesPartie: QuestionPoseesPartie(sequelize),
+    MissionAudios: MissionAudios(sequelize),
 };
 
 // Initialisation de la bdd

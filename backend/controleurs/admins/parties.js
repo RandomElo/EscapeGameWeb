@@ -85,7 +85,7 @@ async function recuperationDetailsPartie(partie, req) {
                     nom: mission?.nom || null,
                     description: mission?.description || null,
                     configuration: step.configuration,
-                    tags: [],
+                    tag: ["test"],
                     etat: index == 0 || (index == 1 && derouleScenario[0].type == "audio") ? "EnCours" : "EnAttente",
                     audiosAide: mapAideAudios[key] || [],
                 };

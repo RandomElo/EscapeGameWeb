@@ -250,6 +250,12 @@ input[type="checkbox"]:checked::after {
     .selecteur option {
         background: var(--bg-card);
     }
+    .labelJsx {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin-left: 3px;
+    }
 }
 
 .Checkbox {

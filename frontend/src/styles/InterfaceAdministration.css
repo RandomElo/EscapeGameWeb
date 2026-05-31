@@ -203,91 +203,6 @@
     }
 }
 
-#modalAjouterMission {
-    text-align: center;
-    form {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: left;
-        margin-top: 10px;
-        #divinputNom,
-        #divinputDescription,
-        #divinputAdresseIp {
-            margin-bottom: 10px;
-        }
-
-        #divinputDescription,
-        #divinputReponse {
-            height: 100px;
-            textarea {
-                height: 81px;
-                resize: none;
-            }
-        }
-        button {
-            margin-top: 10px;
-        }
-    }
-}
-#divModalAjouterScenario {
-    text-align: center;
-    form {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: left;
-        margin-top: 10px;
-
-        #divinputDescription {
-            margin: 10px 0;
-            height: 100px;
-            textarea {
-                height: 81px;
-                resize: none;
-            }
-        }
-        button {
-            margin-top: 10px;
-        }
-    }
-}
-#divModalGenererAudio {
-    text-align: center;
-    form {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: left;
-        margin-top: 10px;
-
-        #divinputTexte {
-            margin-bottom: 10px;
-            height: 100px;
-            textarea {
-                height: 81px;
-                resize: none;
-            }
-        }
-        button {
-            margin-top: 10px;
-        }
-    }
-}
-#divModalSupprimerAudio {
-    text-align: center;
-    form {
-        #divBoutons {
-            width: 80%;
-            margin: 10px auto 0;
-            display: flex;
-            justify-content: space-between;
-            .supprimer {
-                background-color: red;
-            }
-        }
-    }
-}
 #divModalMenuScenario,
 #divModalMenuMission {
     text-align: center;
@@ -299,86 +214,15 @@
         row-gap: 20px;
     }
 }
-#divModalModifierNomScenario,
-#divModalModifierNomMission {
-    text-align: center;
-    form {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: left;
-    }
+#divModalMenuMission .boutonAction {
+    width: 160px;
+    display: flex;
+    justify-content: center;
 }
-
-#divModalModifierDescriptionScenario,
-#divModalModifierDescriptionMission {
-    text-align: center;
-    form {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: left;
-        margin-top: 10px;
-        #divinputDescription {
-            height: 100px;
-            margin-bottom: 10px;
-
-            textarea {
-                height: 81px;
-                resize: none;
-            }
-        }
-    }
-}
-
-#divModalmodifierConfigurationMission {
-    form > #divinputDescription {
-        margin-top: 0px;
-        height: 71px;
-    }
-}
-
-#divModalSupprimerScenario,
-#divModalSupprimerMission {
-    text-align: center;
-    form {
-        p {
-            margin: 10px 0 15px;
-        }
-        #divChoix {
-            width: 80%;
-            margin: 10px auto 0;
-            display: flex;
-            justify-content: space-between;
-            .boutonSupprimer {
-                background-color: red;
-            }
-        }
-    }
-}
-#divModalGenererAudioQuiz {
-    text-align: center;
-    form {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: left;
-        margin-top: 10px;
-
-        #divinputTexte {
-            margin-bottom: 20px;
-            width: 80%;
-            height: 150px;
-            textarea {
-                width: 100%;
-                height: 100%;
-                resize: none;
-            }
-        }
-        button {
-            margin-top: 15px;
-        }
-    }
+#divModalMenuScenario .boutonAction {
+    width: 190px;
+    display: flex;
+    justify-content: center;
 }
 #divModalListeMissionScenario {
     text-align: center;
@@ -389,6 +233,22 @@
         }
         .tdOrdre {
             width: 50px;
+        }
+        .thDetails {
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 52px;
+            gap: 10px;
+            svg {
+                cursor: pointer;
+                position: relative;
+                top: -9px;
+            }
+            svg:hover {
+                color: var(--amber);
+            }
         }
         .tdDetails {
             width: 300px;
@@ -407,6 +267,9 @@
             text-align: center;
         }
     }
+    .boutonEnregistrerModification {
+        margin: 5px 0 8px;
+    }
     #divAjouterElement {
         display: flex;
         justify-content: space-between;
@@ -414,65 +277,6 @@
     }
 }
 
-#divModalAjouterAudioScenario {
-    table {
-        margin-bottom: 10px;
-    }
-}
-#divModalAjouterAudiosAideScenario {
-    text-align: center;
-    form {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: left;
-
-        #selectMission {
-            margin-top: 10px;
-        }
-
-        button[type="submit"] {
-            margin-top: 10px;
-        }
-    }
-}
-#divModalAudiosAideScenario {
-    table {
-        margin: 0 auto;
-        width: 100%;
-        .tdNomMission {
-            text-decoration: underline;
-        }
-    }
-    #divBouton {
-        width: 209px;
-        margin: 10px auto 0 auto;
-    }
-}
-#divModalGenerationDevinettes {
-    #pFormat {
-        margin-bottom: 1rem;
-    }
-    #pResultatsGeneration {
-        text-align: center;
-    }
-    #divinputDevinettes {
-        width: 100%;
-        height: 160px;
-        textarea {
-            height: 100%;
-            resize: none;
-        }
-    }
-    button {
-        margin-top: 10px;
-    }
-}
-
-#divAjoutDiapo {
-    #pDetail {
-    }
-}
 #divModalGestionAudios,
 #divModalGestionQuizAudios,
 #divModalGestionDevinette,
@@ -508,9 +312,24 @@
         }
     }
 }
+#divModalGestionQuizAudios {
+    .typeAffichage {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+    #divBoutonAjouterAudios {
+        gap: 10px;
+    }
+}
+#divBoutonAjouterAudios .validerSuppression {
+    color: var(--red);
+}
 #divModalGestionDevinette {
     .tdReponse {
-        width: 130px;
+        width: 620px;
     }
 }
 #divBoutonAjouterAudios,
@@ -571,6 +390,84 @@
     font-size: 0.95rem;
     margin-bottom: var(--space-md);
 }
+
+/* Pour l'affichage du nombre de fichier générer */
 .pEtatGeneration {
     text-align: center;
+}
+.ModalAideConfiguration {
+    /* COMPOSANT BLOC CODE */
+    .blocCode {
+        background: var(--bg-deep);
+        border: 1px solid var(--border);
+        position: relative;
+        transition: border-color 0.2s;
+        /* BARRE DU BLOC */
+        .barreBlocCode {
+            display: flex;
+            align-items: center;
+            justify-content: end;
+            padding: 0.3rem var(--space-sm);
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .boutonCopier {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 2px 8px;
+            font-size: 0.7rem;
+            font-family: inherit;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .boutonCopier:hover {
+            border-color: var(--border-hover);
+            color: var(--amber);
+        }
+        .boutonCopier.copie {
+            border-color: rgba(34, 197, 94, 0.4);
+            color: var(--green);
+        }
+
+        /* CONTENU CODE */
+        .contenuBlocCode {
+            padding: var(--space-sm) var(--space-md);
+            font-family: "Courier New", Courier, monospace;
+            font-size: 0.75rem;
+            line-height: 1.7;
+            overflow-x: auto;
+            white-space: pre;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+        }
+    }
+    .blocCode:hover {
+        border-color: var(--border-hover);
+    }
+    .label {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        margin: 1rem 0 0.75rem;
+    }
+    .label::before {
+        content: "";
+        width: 4px;
+        height: 4px;
+        background: var(--amber);
+        display: inline-block;
+        flex-shrink: 0;
+    }
 }

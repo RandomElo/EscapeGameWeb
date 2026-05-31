@@ -1,16 +1,12 @@
 import { Megaphone, Tag, Volume2 } from "lucide-react";
-import GestionTags from "./GestionTags";
 import type { Deroule } from "../../pages/SuiviPartie";
 
 type Props = {
     deroule: Deroule;
-    setContenuModal: React.Dispatch<React.SetStateAction<"audioAide" | "lancementAudioVolee" | undefined>>;
-    setDetailModal: React.Dispatch<React.SetStateAction<string>>;
-    setAfficherModal: React.Dispatch<React.SetStateAction<boolean>>;
     missionSuivante: number | undefined;
 };
 
-export default function CardTimelineScenario({ deroule, setContenuModal, setDetailModal, setAfficherModal, missionSuivante }: Props) {
+export default function CardTimelineScenario({ deroule,  missionSuivante }: Props) {
     return (
         <div className="scenarioCenter">
             <div className="timeline">
@@ -21,29 +17,9 @@ export default function CardTimelineScenario({ deroule, setContenuModal, setDeta
                             <div className={"card missionCard mission" + etape.etat}>
                                 <div className="missionHeader">
                                     <h3>{etape.nom}</h3>
-                                    {etape.etat == "EnCours" && etape.tag && (
-                                        <div className="divBadges">
-                                            <span className="badge">
-                                                <Tag size={14} />
-                                                {etape.tag}
-                                            </span>
-                                        </div>
-                                    )}
                                 </div>
                                 <div className="missionSecondeLigne">
                                     <p>{etape.description}</p>
-                                    {etape.etat == "EnCours" && (
-                                        <span
-                                            className="aideAudio"
-                                            onClick={() => {
-                                                setContenuModal("audioAide");
-                                                setDetailModal(etape.ordre.toString());
-                                                setAfficherModal(true);
-                                            }}
-                                        >
-                                            <Megaphone size={18} className="primaryButton" />
-                                        </span>
-                                    )}
                                 </div>
                                 {etape.ordre == missionSuivante && (
                                     <div id="divSkipMission">

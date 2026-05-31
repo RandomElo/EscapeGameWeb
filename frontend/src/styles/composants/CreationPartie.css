@@ -1,0 +1,22 @@
+.aucunePartie {
+    margin-top: 2.5rem;
+    width: 600px;
+    height: 273px;
+    .header {
+        text-align: center;
+        padding-bottom: var(--space-md);
+        border-bottom: 1px solid var(--border);
+        h1 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 0.04em;
+        }
+    }
+    .description {
+        margin: var(--space-md);
+    }
+    .lancementPartie {
+        text-align: center;
+    }
+}
