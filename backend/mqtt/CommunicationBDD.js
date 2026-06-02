@@ -115,7 +115,7 @@ class CommunicationBDD {
     async getBoiteAQuizInitialisation() {
         try {
             const questionFacile = await this.recupererQuestions("facile", 21);
-            const questionDur = await this.recupererQuestions("difficile", 3);
+            const questionDur = await this.recupererQuestions("difficile", 6);
 
             const comboFlop = (
                 await bdd.QuizAudios.findAll({

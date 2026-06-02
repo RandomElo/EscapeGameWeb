@@ -25,7 +25,7 @@ export const stream = gestionErreur(async (req, res) => {
         case "questions":
         case "serieErreurs":
         case "morse":
-            cheminFichier = path.join(__dirname, "../../audios/", type, nomFichier);
+            cheminFichier = path.join(__dirname, "../../audios/quiz", type, nomFichier);
             break
         default:
             break;
