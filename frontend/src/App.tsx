@@ -13,8 +13,8 @@ import SuiviPartie from "./pages/SuiviPartie";
 import { ResponsiveProvider } from "./contexts/ResponsiveContext";
 import { redirect } from "react-router-dom";
 import Compte from "./pages/Compte";
-import ChangementMail from "./pages/ChangementMail";
 import InformationsLegales from "./pages/InformationsLegales";
+import Classements from "./pages/Classements";
 
 async function verifUtilisateur() {
     const requeteVerification = await fetch("/utilisateurs/verification", {
@@ -220,8 +220,46 @@ const router = createBrowserRouter([
                 },
             },
             {
-                path: "/changement-mail",
-                element: <ChangementMail />,
+                path: "/classement",
+                element: <Classements />,
+                loader: async () => {
+                    try {
+                        console.log(window.location.origin);
+                        const requeteDonnees = await fetch("/classements/recuperer-tout", {
+                            method: "GET",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            credentials: "include",
+                        });
+
+                        if (!requeteDonnees.ok) {
+                            throw new Response("Impossible de charger les classements", {
+                                status: 500,
+                            });
+                        }
+
+                        const reponseDonnees = await requeteDonnees.json();
+
+                        if (!reponseDonnees.etat) {
+                            throw new Response("Impossible de charger les classements", {
+                                status: 500,
+                            });
+                        }
+
+                        return reponseDonnees.detail;
+                    } catch (erreur) {
+                        if (erreur instanceof Response) {
+                            throw erreur;
+                        }
+
+                        console.error(erreur);
+
+                        throw new Response("Erreur serveur", {
+                            status: 500,
+                        });
+                    }
+                },
             },
             {
                 path: "/informations-legales",

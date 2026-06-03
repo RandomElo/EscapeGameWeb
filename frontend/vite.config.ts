@@ -9,11 +9,12 @@ export default defineConfig(({ mode }) => {
         server: {
             allowedHosts: ["escape-game.pizza"],
             port: parseInt(env.VITE_PORT_APPLICATION) || 5173,
+            historyApiFallback: true,
             proxy: {
                 "/admins": {
                     target: env.VITE_API_URL_BACKEND,
                     changeOrigin: true,
-                    secure: false,  
+                    secure: false,
                 },
                 "/utilisateurs": {
                     target: env.VITE_API_URL_BACKEND,

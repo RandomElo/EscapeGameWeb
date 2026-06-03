@@ -77,7 +77,7 @@ export default function Navbar({ estAuth, role, demandesAdhesion, setAfficherMod
                         </>
                     )}
                     <li>
-                        <NavLink className={({ isActive }) => `nav-item${isActive ? " active" : ""}`} to="/classements">
+                        <NavLink className={({ isActive }) => `nav-item${isActive ? " active" : ""}`} to="/classement">
                             <Trophy size={16} />
                             Classements
                         </NavLink>

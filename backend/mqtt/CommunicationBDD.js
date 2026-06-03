@@ -192,8 +192,15 @@ class CommunicationBDD {
 
     async terminerMission() {
         try {
-            console.log("je suis dans terminer mission")
-            await bdd.EtatsMissions.update({ dateFin: new Date(), etat: "finie" }, { where: { etat: "enCours" } });
+            const element = await bdd.EtatsMissions.findOne({ where: { etat: "enCours" }, raw: true })
+
+            const dateFin = new Date()
+            await bdd.EtatsMissions.update({ dateFin, etat: "finie" }, { where: { etat: "enCours" } });
+
+            const temps = (dateFin - element.dateDebut) / 1000
+            const score = Math.round(300 / (1 + temps / 60));
+            await bdd.Scores.create({ partieId: element.partieId, missionId: element.missionId, points: score, tempsSecondes: temps })
+
         } catch (err) {
             logger.error(`Erreur terminerMission : ${err.message}`);
             return null;
