@@ -1479,7 +1479,7 @@ export default function InterfaceAdministration() {
                         <p className="label">Mission 3 :</p>
                         <BlocConfiguration contenu={{ reader1: "Couronne", reader2: "Artefact", reader5: "Tour" }} />
                         <p className="label">Mission 4 :</p>
-                        <BlocConfiguration contenu={{ mot: "EAU" }} />
+                        <BlocConfiguration contenu={{ devinette: "EAU", code: 1234 }} />
                         <p className="label">Mission 5 :</p>
                         <BlocConfiguration contenu={{ boitequiz: "ok" }} />
                     </div>

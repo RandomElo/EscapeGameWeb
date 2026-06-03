@@ -754,6 +754,10 @@
             padding: 2px 7px;
             border: 1px solid;
             font-weight: 600;
+
+            max-width: 100%;
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
         .tagMission.amber {
             background: var(--amber-dim);

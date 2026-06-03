@@ -1,15 +1,17 @@
 import { ChevronDown, ChevronUp, Maximize2, Megaphone, Minimize2, Minus, Speaker } from "lucide-react";
 import { useState } from "react";
 import type { Deroule } from "../../pages/SuiviPartie";
+import ChampDonneesForm from "../ChampDonneesForm";
 
 type Props = {
     deroule: Deroule;
     setContenuModal: React.Dispatch<React.SetStateAction<"audioAide" | "lancementAudioVolee" | undefined>>;
     setAfficherModal: React.Dispatch<React.SetStateAction<boolean>>;
     etapeEnCours: number;
+    eventMission: string;
 };
 
-export default function CardInfosMission({ deroule, etapeEnCours, setContenuModal, setAfficherModal }: Props) {
+export default function CardInfosMission({ deroule, etapeEnCours, setContenuModal, setAfficherModal, eventMission }: Props) {
     const [agrandie, setAgrandie] = useState(false);
 
     const missionEnCours = deroule.find((e) => e.type === "mission" && e.ordre === etapeEnCours - 1);
@@ -35,9 +37,9 @@ export default function CardInfosMission({ deroule, etapeEnCours, setContenuModa
                         <div className="lignesInfosMission">
                             <div className="ligneInfo etat">
                                 <span className="etiquetteInfo">État</span>
-                                {missionEnCours.tag && (
+                                {eventMission && (
                                     <div className="ligneTagsMission">
-                                        <span className={`tagMission amber`}>{missionEnCours.tag}</span>
+                                        <span className="tagMission amber">{eventMission}</span>
                                     </div>
                                 )}
                             </div>

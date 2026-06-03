@@ -32,6 +32,7 @@ type Props = {
         >
     >;
     setPartiesEnCours: React.Dispatch<React.SetStateAction<boolean>>;
+    setDeroule: React.Dispatch<React.SetStateAction<Deroule>>;
 };
 
 export type MessageMQTT = {
@@ -40,8 +41,7 @@ export type MessageMQTT = {
     horodatage: string;
     type?: "ok" | "erreur" | "info" | "";
 };
-
-export default function GestionPartie({ deroule, detailsPartie, setListeNotifications, setPartiesEnCours }: Props) {
+export default function GestionPartie({ deroule, detailsPartie, setListeNotifications, setPartiesEnCours, setDeroule }: Props) {
     const type = import.meta.env.VITE_TYPE_ENV;
     const [now, setNow] = useState<number>(() => Date.now());
     const [messages, setMessages] = useState<MessageMQTT[]>([]);
@@ -50,7 +50,7 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
     const [missionSuivante, setMissionSuivante] = useState<number>();
     const [afficherModal, setAfficherModal] = useState<boolean>(false);
     const [contenuModal, setContenuModal] = useState<"audioAide" | "lancementAudioVolee">();
-
+    const [eventMission, setEventMission] = useState<string>("");
     const [detailModal, setDetailModal] = useState<string>("");
     const [missionsDeconnectee, setMissionsDeconnectee] = useState<string[]>([]);
     const [chargementRequete, setChargementRequete] = useState<boolean>(false);
@@ -111,17 +111,16 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
         client.on("message", (topic, payload) => {
             let msg = payload.toString().trim();
             console.log("Message reçu :", topic, msg);
+            if (msg !== '{"state": "success"}') {
+                setMessages((prev) => [...prev, { topic, payload: msg, horodatage: new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) }]);
+            }
 
-            setMessages((prev) => [...prev, { topic, payload: msg, horodatage: new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) }]);
-
-            // Gestion des messagesconst match = topic.match(/^escape\/mission\/(\d+)\/status$/);
+            // Gestion des messages
             const regexConnected = topic.match(/^escape\/mission\/(\d+)\/status$/);
             if (regexConnected) {
                 const missionId = regexConnected[1];
                 const mission = `Mission ${missionId}`;
-                if (msg === "online") {
-                    setListeNotifications((prev) => [...prev, { niveau: "succes", titre: mission, description: "Connecté" }]);
-                } else {
+                if (msg !== "online") {
                     setListeNotifications((prev) => [...prev, { niveau: "warn", titre: mission, description: "Déconnecté" }]);
                     if (!missionsDeconnectee.includes(mission)) {
                         setMissionsDeconnectee((prev) => [...prev, mission]);
@@ -150,7 +149,9 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
                             description: "Démarrée",
                         },
                     ]);
-                } else console.log("dehors");
+                } else {
+                    console.log("dehors");
+                }
 
                 return;
             }
@@ -158,6 +159,21 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
             if (topic == "escape/web/step") {
                 const donnees = JSON.parse(payload.toString());
                 setEtapeEnCours(Number(donnees.etape));
+            }
+
+            // Gestion des messages
+            const regexEvent = topic.match(/^escape\/mission\/(\d+)\/event$/);
+            if (regexEvent) {
+                const missionId = regexEvent[1];
+                const missionEnCours = deroule.find((e) => e.type === "mission" && e.ordre === etapeEnCours - 1);
+                console.log("===============================================");
+                console.log(payload.toString().trim());
+
+                console.log(payload.toString().trim() == '{"state": "success"}');
+
+                if (missionId == missionEnCours?.topicMQTT) {
+                    setEventMission(payload.toString().trim());
+                }
             }
         });
 
@@ -229,7 +245,7 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
                             <CardDetailsPartie detailsPartie={detailsPartie} setPartiesEnCours={setPartiesEnCours} now={now} etapeEnCours={etapeEnCours} />
                             <CardLancementAudioVolee setContenuModal={setContenuModal} setAfficherModal={setAfficherModal} />
                         </div>
-                        <CardInfosMission deroule={deroule} etapeEnCours={etapeEnCours} setContenuModal={setContenuModal} setAfficherModal={setAfficherModal} />
+                        <CardInfosMission deroule={deroule} etapeEnCours={etapeEnCours} setContenuModal={setContenuModal} setAfficherModal={setAfficherModal} eventMission={eventMission} />
                     </>
                 )}
             </div>

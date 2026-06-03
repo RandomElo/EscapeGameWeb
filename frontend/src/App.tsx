@@ -92,7 +92,7 @@ const router = createBrowserRouter([
                         throw new Response("Erreur serveur", {
                             status: 500,
                         });
-                    }ame
+                    }
                 },
             },
             {

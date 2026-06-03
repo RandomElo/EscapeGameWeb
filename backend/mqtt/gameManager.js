@@ -75,13 +75,12 @@ export async function NextMission() {
 
         return;
     }
-
+    await CommunicationBDD.terminerMission()
     await playCurrentStep();
 }
 
 //Passage mission suivante
 export function setAudioFinished() {
-
     if (!waitingForAudio) return;
 
     waitingForAudio = false;
@@ -102,7 +101,7 @@ async function playCurrentStep() {
     client.publish(
         "escape/web/step",
         JSON.stringify({
-            etape: currentStepIndex + 1
+            etape: currentStepIndex + 1,
         }),
     );
     // ==========================
@@ -114,31 +113,33 @@ async function playCurrentStep() {
         const topicMQTT = await CommunicationBDD.getTopicMqtt(missionId);
         logger.info(`Lancement mission ${missionId}`);
 
+        await CommunicationBDD.demarragePartie(missionId)
+
         // envoyer config spécifique si besoin
         if (step.configuration) {
             // Morse
             if (step.configuration.morse) {
-                const tableauConfiguration = []
+                const tableauConfiguration = [];
                 for (const messageMorse of step.configuration.morse) {
-                    const configuration = await CommunicationBDD.getAudioMorse(messageMorse)
+                    const configuration = await CommunicationBDD.getAudioMorse(messageMorse);
 
-                    tableauConfiguration.push(configuration)
+                    tableauConfiguration.push(configuration);
                 }
                 step.configuration = tableauConfiguration;
 
                 // Devinette
             } else if (step.configuration.devinette) {
-                const configuration = await CommunicationBDD.getDevinette(step.configuration.devinette)
+                const configuration = await CommunicationBDD.getDevinette(step.configuration.devinette, step.configuration.code);
                 step.configuration = configuration;
             } else if (step.configuration.diaporama) {
-                logger.info("diaporama")
-                const configuration = await CommunicationBDD.getDiaporama(step.configuration.diaporama, step.configuration.combinaisonSecrete, step.configuration.badges)
+                logger.info("diaporama");
+                const configuration = await CommunicationBDD.getDiaporama(step.configuration.diaporama, step.configuration.combinaisonSecrete, step.configuration.badges);
                 step.configuration = configuration;
             } else if (step.configuration.boitequiz) {
-                const configuration = await CommunicationBDD.getBoiteAQuizInitialisation()
+                const configuration = await CommunicationBDD.getBoiteAQuizInitialisation();
                 step.configuration = configuration;
             }
-            logger.info("Configuration : " + JSON.stringify(step.configuration))
+            logger.info("Configuration : " + JSON.stringify(step.configuration));
             client.publish(`escape/mission/${topicMQTT}/config`, JSON.stringify(step.configuration));
         }
 
@@ -166,7 +167,7 @@ async function playCurrentStep() {
             "escape/speaker/play",
             JSON.stringify({
                 nomFichier: audio.nomFichier,
-                type: "message"
+                type: "message",
             }),
         );
 
@@ -179,8 +180,8 @@ export async function lancerAudioVolee(fichier, type) {
         "escape/speaker/play",
         JSON.stringify({
             nomFichier: fichier,
-            type: type
+            type: type,
         }),
     );
-    return
+    return;
 }

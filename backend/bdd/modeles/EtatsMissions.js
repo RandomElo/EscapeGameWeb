@@ -32,14 +32,15 @@ export default function (bdd) {
             etat: {
                 type: DataTypes.STRING(20),
                 allowNull: false,
-                defaultValue: "nonCommencee",
+                defaultValue: "enCours",
                 validate: {
-                    isIn: [["nonCommencee", "enCours", "finie"]],
+                    isIn: [["enCours", "finie"]],
                 },
             },
             dateDebut: {
                 type: DataTypes.DATE,
                 allowNull: true,
+                defaultValue: DataTypes.NOW,
             },
             dateFin: {
                 type: DataTypes.DATE,
@@ -48,7 +49,7 @@ export default function (bdd) {
         },
         {
             tableName: "EtatsMissions",
-        }
+        },
     );
     return EtatsMissions;
 }
