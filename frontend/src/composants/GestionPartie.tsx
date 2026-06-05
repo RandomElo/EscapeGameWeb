@@ -115,21 +115,6 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
                 setMessages((prev) => [...prev, { topic, payload: msg, horodatage: new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) }]);
             }
 
-            // Gestion des messages
-            const regexConnected = topic.match(/^escape\/mission\/(\d+)\/status$/);
-            if (regexConnected) {
-                const missionId = regexConnected[1];
-                const mission = `Mission ${missionId}`;
-                if (msg !== "online") {
-                    setListeNotifications((prev) => [...prev, { niveau: "warn", titre: mission, description: "Déconnecté" }]);
-                    if (!missionsDeconnectee.includes(mission)) {
-                        setMissionsDeconnectee((prev) => [...prev, mission]);
-                    }
-                }
-
-                return; // important → éviter traitement global
-            }
-
             const regexChangementMission = topic.match(/^escape\/mission\/(\d+)\/state$/);
             if (regexChangementMission) {
                 msg = JSON.parse(payload.toString());
@@ -140,6 +125,17 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
                     console.log(`Mission ${missionId} démarrée`);
                     console.log(deroule.filter((mission) => mission.topicMQTT == missionId)[0].ordre);
                     setMissionSuivante(deroule.filter((mission) => mission.topicMQTT == missionId)[0].ordre + 1);
+                    setDeroule((prev) =>
+                        prev.map((item) => ({
+                            ...item,
+                            etat:
+                                item.topicMQTT === missionId
+                                    ? "EnCours"
+                                    : item.etat === "EnCours"
+                                    ? "Terminée"
+                                    : item.etat,
+                        }))
+                    );
                     // Exemple
                     setListeNotifications((prev) => [
                         ...prev,
@@ -222,12 +218,10 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
                 {estMobile ? (
                     <>
                         <CardDetailsPartie detailsPartie={detailsPartie} setPartiesEnCours={setPartiesEnCours} now={now} etapeEnCours={etapeEnCours} />
-                        <CardAvertissements missionsDeconnectee={missionsDeconnectee} />
                         <CardTimelineScenario deroule={deroule} missionSuivante={missionSuivante} />
                         <CardLancementAudioVolee setContenuModal={setContenuModal} setAfficherModal={setAfficherModal} />
                         <CardCamera />
                         <CardTerminalMqtt messages={messages} estConnecte={status == "Connecté"} vider={() => setMessages([])} />
-                        <CardInfosMission deroule={deroule} etapeEnCours={etapeEnCours} setContenuModal={setContenuModal} setAfficherModal={setAfficherModal} />
                     </>
                 ) : (
                     <>
@@ -235,7 +229,6 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
                         <div className="scenarioLeft">
                             <CardCamera />
                             <CardTerminalMqtt messages={messages} estConnecte={status == "Connecté"} vider={() => setMessages([])} />
-                            <CardAvertissements missionsDeconnectee={missionsDeconnectee} />
                         </div>
 
                         {/* CENTER PANEL */}
@@ -245,7 +238,6 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
                             <CardDetailsPartie detailsPartie={detailsPartie} setPartiesEnCours={setPartiesEnCours} now={now} etapeEnCours={etapeEnCours} />
                             <CardLancementAudioVolee setContenuModal={setContenuModal} setAfficherModal={setAfficherModal} />
                         </div>
-                        <CardInfosMission deroule={deroule} etapeEnCours={etapeEnCours} setContenuModal={setContenuModal} setAfficherModal={setAfficherModal} eventMission={eventMission} />
                     </>
                 )}
             </div>
@@ -271,15 +263,16 @@ export default function GestionPartie({ deroule, detailsPartie, setListeNotifica
                 <Modal
                     estOuvert={afficherModal}
                     fermeture={() => setAfficherModal(false)}
-                    titre="Génération et lancemen d'audio"
+                    titre="Génération et lancement d'audio"
                     onSubmit={async (e) => {
                         e.preventDefault();
                         setChargementRequete(true);
                         const texte = document.querySelector<HTMLInputElement>("#inputTexte")!.value;
 
-                        const reponse = await requete({ url: "/admins/audio/generer-et-lancer", methode: "POST", corps: { texte } });
+                        const reponse = await requete({ url: "/admins/audios/generer-et-lancer", methode: "POST", corps: { texte } });
                         setTimeout(() => {
                             setChargementRequete(false);
+                            document.querySelector<HTMLInputElement>("#inputTexte")!.value = ""
                             setDetailModal("✅ Audio lancer avec succès");
                             setTimeout(() => {
                                 setAfficherModal(false);

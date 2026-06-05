@@ -2,6 +2,7 @@ import gestionErreur from "../../middlewares/gestionErreur.js";
 import { ConfigurationInterfaceAdmin } from "./scenarios.js";
 import AdmZip from "adm-zip";
 import fs from "fs";
+import fsPromises from "fs/promises";
 import path from "path";
 import logger from "../../mqtt/logger.js";
 
@@ -366,7 +367,8 @@ export const suppressionAudioQuiz = gestionErreur(
         const cheminFichier = path.join(cheminDossierAudio, nomFichier);
 
         try {
-            await fs.unlink(cheminFichier);
+            console.log(cheminFichier)
+            await fsPromises.unlink(cheminFichier);
         } catch (err) {
             if (err.code !== "ENOENT") {
                 console.error("Erreur suppression fichier :", err);

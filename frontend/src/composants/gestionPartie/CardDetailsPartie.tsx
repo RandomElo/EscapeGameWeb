@@ -15,7 +15,7 @@ export default function CardDetailsPartie({ detailsPartie, setPartiesEnCours, no
     const { revalidate } = useRevalidator();
     function formatDureeDepuis(dateDebut: string, now: number): string {
         const debut = new Date(dateDebut).getTime();
-        const diffMs = now - debut;
+        const diffMs = Math.max(0, now - debut);
 
         const minutes = Math.floor(diffMs / 60000);
         const heures = Math.floor(minutes / 60);

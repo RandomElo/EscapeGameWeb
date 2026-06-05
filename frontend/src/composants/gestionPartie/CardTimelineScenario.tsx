@@ -21,11 +21,6 @@ export default function CardTimelineScenario({ deroule,  missionSuivante }: Prop
                                 <div className="missionSecondeLigne">
                                     <p>{etape.description}</p>
                                 </div>
-                                {etape.ordre == missionSuivante && (
-                                    <div id="divSkipMission">
-                                        <button className="primaryButton">Passer à cette mission</button>
-                                    </div>
-                                )}
                             </div>
                         )}
                         {etape.type == "audio" && (

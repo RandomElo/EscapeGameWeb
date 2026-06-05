@@ -90,8 +90,8 @@ export default function Classements() {
     useEffect(() => {
         function attributionsValeurs() {
             if (donneesLoader.classementGeneral.length > 0 && donneesLoader.classementsMissions.length > 0) {
-                setClassementGeneral(donneesLoader.classementGeneral);
-                setClassementsMissions(donneesLoader.classementsMissions);
+                // setClassementGeneral(donneesLoader.classementGeneral);
+                // setClassementsMissions(donneesLoader.classementsMissions);
             }
         }
         attributionsValeurs();

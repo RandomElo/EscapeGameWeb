@@ -179,7 +179,7 @@ class CommunicationBDD {
 
     async demarragePartie(missionId) {
         try {
-            console.log("Je suis dans démarrage partie")
+            console.log("Je suis dans démarrage partie");
             await bdd.EtatsMissions.update({ etat: "finie" }, { where: { etat: "enCours" } });
 
             const partie = await bdd.Parties.findOne({ where: { statut: "enCours" } });
@@ -192,16 +192,26 @@ class CommunicationBDD {
 
     async terminerMission() {
         try {
-            const element = await bdd.EtatsMissions.findOne({ where: { etat: "enCours" }, raw: true })
+            console.log("je doit terminer");
+            const element = await bdd.EtatsMissions.findOne({ where: { etat: "enCours" }, raw: true });
 
-            const dateFin = new Date()
+            const dateFin = new Date();
             await bdd.EtatsMissions.update({ dateFin, etat: "finie" }, { where: { etat: "enCours" } });
 
-            const temps = (dateFin - element.dateDebut) / 1000
-            const score = Math.round(300 / (1 + temps / 60));
-            await bdd.Scores.create({ partieId: element.partieId, missionId: element.missionId, points: score, tempsSecondes: temps })
+            const temps = Math.round((dateFin.getTime() - new Date(element.dateDebut).getTime()) / 1000);
 
+            const score = Math.round(300 / (1 + temps / 60));
+            console.log({
+                dateDebut: element.dateDebut,
+                dateFin,
+                temps,
+                score,
+            });
+            await bdd.Scores.create({ partieId: element.partieId, missionId: element.missionId, points: score, tempsSecondes: temps });
         } catch (err) {
+            logger.error(err);
+            console.log(err);
+            logger.error(err.message);
             logger.error(`Erreur terminerMission : ${err.message}`);
             return null;
         }

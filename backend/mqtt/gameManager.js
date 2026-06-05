@@ -67,6 +67,7 @@ export async function NextMission() {
     logger.warn("Next mission");
 
     currentStepIndex++;
+    await CommunicationBDD.terminerMission()
 
     if (currentStepIndex >= steps.length) {
         logger.info("Fin du scénario");
@@ -75,7 +76,6 @@ export async function NextMission() {
 
         return;
     }
-    await CommunicationBDD.terminerMission()
     await playCurrentStep();
 }
 

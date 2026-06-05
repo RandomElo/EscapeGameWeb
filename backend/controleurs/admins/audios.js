@@ -19,7 +19,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const cheminDossierAudios = path.resolve(__dirname, "../../audios");
-logger.info(cheminDossierAudios)
+logger.info(cheminDossierAudios);
 // Chemin modele TTS
 const cheminTTS = path.resolve(__dirname, "../../tts");
 const cheminPiper = path.join(cheminTTS, "piper", "piper");
@@ -37,7 +37,7 @@ export function creationJob(total) {
         total,
         done: 0,
         status: "running",
-        createdAt: Date.now()
+        createdAt: Date.now(),
     });
 
     return id;
@@ -46,7 +46,7 @@ export function creationJob(total) {
 export function registerClient(jobId, res) {
     clients.set(jobId, {
         res,
-        createdAt: Date.now()
+        createdAt: Date.now(),
     });
 }
 
@@ -102,7 +102,6 @@ export async function generationAudiosMission(donnees) {
                     texte: element,
                     nomFichier: nomFichier,
                 });
-
             }),
         ),
     );
@@ -134,7 +133,6 @@ export const generation = gestionErreur(
             etat: true,
             detail: await ConfigurationInterfaceAdmin(req),
         });
-
     },
     "controleurGenerationAudio",
     "Erreur lors de la génération de l'audio",
@@ -150,8 +148,35 @@ export const suppression = gestionErreur(
                 detail: "Requête incorrecte",
             });
         }
+        const modeles = [
+            { modele: req.MessagesAudio, dossier: "messages" },
+            { modele: req.QuizAudios, dossier: "quiz" },
+            { modele: req.QuizQuestions, dossier: "question" },
+            { modele: req.Devinettes, dossier: "devinette" },
+        ];
 
-        const fichier = await req.MessagesAudio.findOne({ where: { nomFichier } });
+        let fichier = null;
+        let modeleTrouve = null;
+        let dossierTrouve = null;
+
+        for (const { modele, dossier } of modeles) {
+            fichier = await modele.findOne({ where: { nomFichier }, raw: true });
+
+            if (fichier) {
+                logger.info(" c bon ");
+                modeleTrouve = modele;
+                if (dossier == "quiz") {
+                    console.log(fichier.type);
+                    dossierTrouve = path.join("quiz", fichier.type);
+                } else if (dossier == "question") {
+                    dossierTrouve = path.join("quiz", "questions");
+                } else {
+                    dossierTrouve = dossier;
+                }
+                break;
+            }
+        }
+
         if (!fichier) {
             return res.status(404).json({
                 etat: false,
@@ -159,20 +184,31 @@ export const suppression = gestionErreur(
             });
         }
 
-        const cheminDossierAudio = path.join(process.cwd(), "audios", "messages");
+        const cheminDossierAudio = path.join(process.cwd(), "audios", dossierTrouve);
+
         const cheminFichier = path.join(cheminDossierAudio, nomFichier);
 
         try {
+            logger.info(`Suppression : ${cheminFichier}`);
             await fs.unlink(cheminFichier);
         } catch (err) {
             if (err.code !== "ENOENT") {
                 console.error("Erreur suppression fichier :", err);
-                return res.status(500).json({ etat: false, erreur: "Erreur suppression fichier" });
+                return res.status(500).json({
+                    etat: false,
+                    erreur: "Erreur suppression fichier",
+                });
             }
         }
 
-        await req.MessagesAudio.destroy({ where: { id: fichier.id } });
-        return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
+        await modeleTrouve.destroy({
+            where: { id: fichier.id },
+        });
+
+        return res.json({
+            etat: true,
+            detail: await ConfigurationInterfaceAdmin(req),
+        });
     },
     "controleurSuppressionAudio",
     "Erreur lors de la suppression de l'audio",
@@ -191,24 +227,47 @@ export const recuperationLien = gestionErreur(
         const modeles = [
             { modele: req.MessagesAudio, dossier: "messages" },
             { modele: req.QuizAudios, dossier: "quiz" },
-            { modele: req.QuizQuestions, dossier: "ambiances" },
-            { modele: req.Devinettes, dossier: "ambiances" },
+            { modele: req.QuizQuestions, dossier: "question" },
+            { modele: req.Devinettes, dossier: "devinette" },
         ];
 
-        const fichier = await req.MessagesAudio.findOne({ where: { nomFichier }, raw: true });
+        let fichier = null;
+        let modeleTrouve = null;
+        let dossierTrouve = null;
+
+        for (const { modele, dossier } of modeles) {
+            fichier = await modele.findOne({ where: { nomFichier }, raw: true });
+
+            if (fichier) {
+                logger.info(" c bon ");
+                modeleTrouve = modele;
+                if (dossier == "quiz") {
+                    console.log(fichier.type);
+                    dossierTrouve = path.join("quiz", fichier.type);
+                } else if (dossier == "question") {
+                    dossierTrouve = path.join("quiz", "questions");
+                } else {
+                    dossierTrouve = dossier;
+                }
+                break;
+            }
+        }
+
         if (!fichier) {
             return res.status(404).json({
                 etat: false,
-                detail: "Ressource introuvable",
+                detail: "Ressource inexistante",
             });
         }
 
-        const cheminFichier = path.join(process.cwd(), "audios", "messages", nomFichier);
+        // avant
+
+        const cheminFichier = path.join(process.cwd(), "audios", dossierTrouve, nomFichier);
 
         if (!fsSync.existsSync(cheminFichier)) {
             return res.status(404).json({
                 etat: false,
-                detail: `Ressource introuvable 2 ${cheminFichier}`,
+                detail: `Ressource introuvable ${cheminFichier}`,
             });
         }
         const token = jwt.sign({ file: nomFichier }, process.env.SECRET_AUDIO, { expiresIn: "15s" });
@@ -234,7 +293,36 @@ export const lecture = gestionErreur(
                 detail: "Accès interdit",
             });
         }
-        const cheminFichier = path.join(process.cwd(), "audios", "messages", nomFichier);
+
+        const modeles = [
+            { modele: req.MessagesAudio, dossier: "messages" },
+            { modele: req.QuizAudios, dossier: "quiz" },
+            { modele: req.QuizQuestions, dossier: "question" },
+            { modele: req.Devinettes, dossier: "devinette" },
+        ];
+
+        let fichier = null;
+        let modeleTrouve = null;
+        let dossierTrouve = null;
+
+        for (const { modele, dossier } of modeles) {
+            fichier = await modele.findOne({ where: { nomFichier }, raw: true });
+
+            if (fichier) {
+                logger.info(" c bon ");
+                modeleTrouve = modele;
+                if (dossier == "quiz") {
+                    console.log(fichier.type);
+                    dossierTrouve = path.join("quiz", fichier.type);
+                } else if (dossier == "question") {
+                    dossierTrouve = path.join("quiz", "questions");
+                } else {
+                    dossierTrouve = dossier;
+                }
+                break;
+            }
+        }
+        const cheminFichier = path.join(process.cwd(), "audios", dossierTrouve, nomFichier);
 
         if (!fsSync.existsSync(cheminFichier)) {
             return res.status(404).json({ error: "Fichier audio introuvable" });
@@ -306,7 +394,6 @@ async function generationAudiosSimple(typeGeneration, entree, req, res, type) {
                     reponse: reponse?.trim(),
                 };
             });
-
     }
     const jobId = creationJob(valeurs.length);
     res.json({ etat: true, detail: jobId });
@@ -325,8 +412,8 @@ async function generationAudiosSimple(typeGeneration, entree, req, res, type) {
                 envoiProgresSSE(jobId, {
                     type: "progress",
                     done: job.done,
-                    total: job.total
-                })
+                    total: job.total,
+                });
 
                 if (typeGeneration == "quiz") {
                     return await req.QuizAudios.create({
@@ -338,15 +425,13 @@ async function generationAudiosSimple(typeGeneration, entree, req, res, type) {
                     return await req.Devinettes.create({
                         reponse: element.reponse,
                         devinette: element.devinette,
-                        nomFichier
+                        nomFichier,
                     });
                 }
-
-
             }),
         ),
     );
-    envoiProgresSSE(jobId, { type: "finished" })
+    envoiProgresSSE(jobId, { type: "finished" });
     const client = clients.get(jobId);
     if (client) {
         client.res.end();
@@ -392,15 +477,13 @@ async function generationQuestion(entree, req, res) {
                 envoiProgresSSE(jobId, {
                     type: "progress",
                     done: job.done,
-                    total: job.total
-                })
-
-
+                    total: job.total,
+                });
             }),
         ),
     );
 
-    envoiProgresSSE(jobId, { type: "finished" })
+    envoiProgresSSE(jobId, { type: "finished" });
     const client = clients.get(jobId);
     if (client) {
         client.res.end();
@@ -425,13 +508,13 @@ export const generationQuiz = gestionErreur(
             });
         }
         let resultats;
-        logger.info(type)
+        logger.info(type);
         if (type == "questionsJSON") {
             try {
                 resultats = await generationQuestion(valeur, req, res);
             } catch (err) {
-                logger.info(err)
-                logger.info("Erreur lors de la généartion des audios")
+                logger.info(err);
+                logger.info("Erreur lors de la généartion des audios");
             }
         } else {
             resultats = await generationAudiosSimple("quiz", valeur, req, res, type);
@@ -457,82 +540,74 @@ export const generationDevinette = gestionErreur(
         const resultats = await generationAudiosSimple("devinette", devinettes, req, res);
         const succes = resultats.filter((r) => r.status === "fulfilled").map((r) => r.value);
         const erreurs = resultats.filter((r) => r.status === "rejected").map((r) => r.reason?.message);
-
-
     },
     "controleurGenerationDevinette",
     "Erreur lors de la génération des devinettes",
 );
-export const genererEtLancer = gestionErreur(async (req, res) => {
-    const { texte } = req.body
-    if (!texte) {
-        return res.status(400).json({
-            etat: false,
-            detail: "Requête incorrecte",
+export const genererEtLancer = gestionErreur(
+    async (req, res) => {
+        const { texte } = req.body;
+        if (!texte) {
+            return res.status(400).json({
+                etat: false,
+                detail: "Requête incorrecte",
+            });
+        }
+
+        const cheminDossierAudio = path.join(process.cwd(), "audios", "messages");
+        const nomFichier = `${Date.now()}.wav`;
+        if (process.env.TYPE_ENV == "reel") {
+            await generationTTS(cheminDossierAudio, nomFichier, texte);
+        }
+
+        await req.MessagesAudio.create({
+            detail: texte,
+            nomFichier,
         });
-    }
 
-    const cheminDossierAudio = path.join(process.cwd(), "audios", "messages");
-    const nomFichier = `${Date.now()}.wav`;
-    if (process.env.TYPE_ENV == "reel") {
-        await generationTTS(cheminDossierAudio, nomFichier, texte);
-    }
+        await lancerAudioVolee(nomFichier, "message");
 
-    await req.MessagesAudio.create({
-        detail: texte,
-        nomFichier,
-    });
+        return res.json({ etat: true, detail: "ok" });
+    },
+    "controleurGenererEtLancer",
+    "Erreur lors de la génération de l'audio",
+);
+export const supprimerTousQuiz = gestionErreur(
+    async (req, res) => {
+        const chemin = path.resolve(__dirname, "../../audios/quiz");
+        const [questions, autres] = await Promise.all([
+            req.QuizQuestions.findAll({
+                raw: true,
+                attributes: ["id", "nomFichier"],
+            }),
+            req.QuizAudios.findAll({
+                raw: true,
+                attributes: ["id", "nomFichier", "type"],
+            }),
+        ]);
+        await Promise.allSettled(
+            questions.map(async (question) => {
+                const cheminFichier = path.join(chemin, "questions", question.nomFichier);
 
-    await lancerAudioVolee(nomFichier, "message")
+                await fs.unlink(cheminFichier);
+            }),
+        );
 
-    return res.json({ etat: true, detail: "ok" })
+        // AUTRES AUDIOS
+        await Promise.allSettled(
+            autres.map(async (audio) => {
+                const cheminFichier = path.join(chemin, audio.type, audio.nomFichier);
 
-}, "controleurGenererEtLancer", "Erreur lors de la génération de l'audio")
-export const supprimerTousQuiz = gestionErreur(async (req, res) => {
-    const chemin = path.resolve(__dirname, "../../audios/quiz");
-    const [
-        questions,
-        autres,
-    ] = await Promise.all([
-        req.QuizQuestions.findAll({
-            raw: true,
-            attributes: ["id", "nomFichier"],
-        }),
-        req.QuizAudios.findAll({
-            raw: true,
-            attributes: ["id", "nomFichier", "type"],
-        }),
-    ]);
-    await Promise.allSettled(
-        questions.map(async (question) => {
-            const cheminFichier = path.join(
-                chemin,
-                "questions",
-                question.nomFichier
-            );
-
-            await fs.unlink(cheminFichier);
-        })
-    );
-
-    // AUTRES AUDIOS
-    await Promise.allSettled(
-        autres.map(async (audio) => {
-            const cheminFichier = path.join(
-                chemin,
-                audio.type,
-                audio.nomFichier
-            );
-
-            await fs.unlink(cheminFichier);
-        })
-    );
-    await req.QuizQuestions.destroy({ where: {} });
-    await req.QuizAudios.destroy({ where: {} });
-    return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
-
-
-}, "controleurSupprimerTousQuiz", "Erreur lors de la suppression des audios du quiz")
+                await fs.unlink(cheminFichier);
+            }),
+        );
+        await req.QuizQuestions.destroy({ where: {} });
+        await req.QuizAudios.destroy({ where: {} });
+        return res.json({ etat: true, detail: await ConfigurationInterfaceAdmin(req) });
+    },
+    "controleurSupprimerTousQuiz",
+    "Erreur lors de la suppression des audios du quiz",
+);
 export const sseConnexion = (req, res) => {
     const { jobId } = req.params;
 
@@ -545,10 +620,12 @@ export const sseConnexion = (req, res) => {
 
     registerClient(jobId, res);
 
-    res.write(`data: ${JSON.stringify({
-        type: "connected",
-        jobId
-    })}\n\n`);
+    res.write(
+        `data: ${JSON.stringify({
+            type: "connected",
+            jobId,
+        })}\n\n`,
+    );
 
     req.on("close", () => {
         res.end();

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRequete } from "../../fonctions/requete";
 import Chargement from "../Chargement";
+import { Cctv } from "lucide-react";
 
 export default function CardCamera() {
     const [token, setToken] = useState<string>("");
@@ -54,7 +55,9 @@ export default function CardCamera() {
     return (
         <div className="card cameraCard coinsHud">
             <h3>Aperçu caméra</h3>
-            <div className="cameraPreview">{chargement ? <Chargement variant="button" /> : <img ref={imgRef} alt="stream" />}</div>
+            <div className="cameraPreview">
+                {chargement ? <Cctv size={30} />: <img ref={imgRef} alt="stream" />}
+            </div>
         </div>
     );
 }

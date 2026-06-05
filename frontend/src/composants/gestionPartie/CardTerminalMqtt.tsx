@@ -31,7 +31,7 @@ export default function CardTerminalMqtt({ messages, estConnecte, vider }: Props
                         <span className="horodatage">{msg.horodatage}</span>
                         <div className="contenuMqtt">
                             <span className="topicMqtt">{msg.topic}</span>
-                            <span className={`payloadMqtt ${msg.type ?? ""}`}>{msg.payload}</span>
+                            <span className={`payloadMqtt ${msg.type ?? ""}`}>{msg.payload.toString()}</span>
                         </div>
                     </div>
                 ))}

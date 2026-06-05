@@ -805,9 +805,9 @@ export default function InterfaceAdministration() {
                             <a className="boutonAction" onClick={() => setContenuModal("gererDeroulerScenario")}>
                                 Gérer le dérouler
                             </a>
-                            <a className="boutonAction" onClick={() => setContenuModal("audiosAideScenario")}>
+                            {/* <a className="boutonAction" onClick={() => setContenuModal("audiosAideScenario")}>
                                 Audios d'aide
-                            </a>
+                            </a> */}
                             <a className="boutonAction" onClick={() => setContenuModal("modifierNomScenario")}>
                                 Modifier le nom
                             </a>
@@ -1479,7 +1479,7 @@ export default function InterfaceAdministration() {
                         <p className="label">Mission 3 :</p>
                         <BlocConfiguration contenu={{ reader1: "Couronne", reader2: "Artefact", reader5: "Tour" }} />
                         <p className="label">Mission 4 :</p>
-                        <BlocConfiguration contenu={{ devinette: "EAU", code: 1234 }} />
+                        <BlocConfiguration contenu={{ devinette: "EAU", code: "RVVR" }} />
                         <p className="label">Mission 5 :</p>
                         <BlocConfiguration contenu={{ boitequiz: "ok" }} />
                     </div>
