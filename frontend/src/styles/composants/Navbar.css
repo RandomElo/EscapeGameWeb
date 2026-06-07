@@ -113,3 +113,58 @@
         }
     }
 }
+.navbar-hamburger {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    /* ou la breakpoint de ton ResponsiveContext */
+    .GestionPartie {
+        margin-top: var(--space-2xl);
+    }
+    .navbar {
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--space-sm) var(--space-md);
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .navbar-hamburger {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: none;
+        color: var(--text-secondary);
+        cursor: pointer;
+        padding: var(--space-sm);
+        position: relative;
+        right: 20px;
+    }
+
+    .navbar-hamburger:hover {
+        color: var(--amber);
+    }
+
+    .navbar--open ul,
+    .navbar--open .navbar-footer {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .navbar--open .navbar-footer {
+        margin-top: 0;
+        top: 0;
+        flex-direction: column;
+        gap: var(--space-sm);
+    }
+    .navbar-logo {
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+    }
+}

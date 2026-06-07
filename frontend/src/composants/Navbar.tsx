@@ -5,6 +5,7 @@ import type { Role } from "../contexts/AuthContext";
 import type { DemandeAdhesion } from "./Generale";
 import "../styles/composants/Navbar.css";
 import Chargement from "./Chargement";
+import { useResponsive } from "../contexts/ResponsiveContext";
 
 type Props = {
     estAuth: boolean;
@@ -14,7 +15,10 @@ type Props = {
 };
 
 export default function Navbar({ estAuth, role, demandesAdhesion, setAfficherModal }: Props) {
+    const { estMobile } = useResponsive();
+
     const [menuOuvert, setMenuOuvert] = useState(false);
+
     const [navigationEnCours, setNavigationEnCours] = useState<"administration" | "suiviPartie" | "monCompte">();
     const fermerMenu = () => setMenuOuvert(false);
     const location = useLocation();
@@ -27,117 +31,125 @@ export default function Navbar({ estAuth, role, demandesAdhesion, setAfficherMod
     }, [location.pathname]);
     return (
         <>
-            <aside className="navbar">
+            <aside className={`navbar${estMobile && menuOuvert ? " navbar--open" : ""}`}>
                 {/* LOGO */}
                 <NavLink className="navbar-logo" to="/" onClick={fermerMenu}>
                     <img src="/ancre.png" alt="Logo ancre" />
                     <span>Escape Game</span>
                 </NavLink>
-
+                {estMobile && (
+                    <button className="navbar-hamburger" onClick={() => setMenuOuvert((o) => !o)}>
+                        {menuOuvert ? <X size={22} /> : <Menu size={22} />}
+                    </button>
+                )}
                 {/* NAVIGATION PRINCIPALE */}
-                <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                    <NavLink className={({ isActive }) => `nav-item${isActive ? " active" : ""}`} to="/" onClick={fermerMenu}>
-                        <House size={16} />
-                        Accueil
-                    </NavLink>
-                    {role == "controleur" && (
-                        <>
-                            <li>
-                                <NavLink
-                                    className={({ isActive }) => `nav-item${isActive ? " active" : ""}`}
-                                    onClick={() => {
-                                        fermerMenu();
-
-                                        if (location.pathname !== "/suivi-partie") {
-                                            setNavigationEnCours("suiviPartie");
-                                        }
-                                    }}
-                                    to="/suivi-partie"
-                                >
-                                    {navigationEnCours == "suiviPartie" ? <Chargement variant="button" /> : <MonitorPlay size={16} />}
-                                    Suivi partie
-                                </NavLink>
-                            </li>
-                            <li>
-                                <NavLink
-                                    className={({ isActive }) => `nav-item${isActive ? " active" : ""}`}
-                                    onClick={() => {
-                                        fermerMenu();
-
-                                        if (location.pathname !== "/administration") {
-                                            setNavigationEnCours("administration");
-                                        }
-                                    }}
-                                    to="/administration"
-                                >
-                                    {navigationEnCours == "administration" ? <Chargement variant="button" /> : <Shield size={16} />}
-                                    Administration
-                                </NavLink>
-                            </li>
-                        </>
-                    )}
-                    <li>
-                        <NavLink className={({ isActive }) => `nav-item${isActive ? " active" : ""}`} to="/classement">
-                            <Trophy size={16} />
-                            Classements
+                {(!estMobile || menuOuvert) && (
+                    <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                        <NavLink className={({ isActive }) => `nav-item${isActive ? " active" : ""}`} to="/" onClick={fermerMenu}>
+                            <House size={16} />
+                            Accueil
                         </NavLink>
-                    </li>
-                    {role === "joueur" && (
+                        {role == "controleur" && (
+                            <>
+                                <li>
+                                    <NavLink
+                                        className={({ isActive }) => `nav-item${isActive ? " active" : ""}`}
+                                        onClick={() => {
+                                            fermerMenu();
+
+                                            if (location.pathname !== "/suivi-partie") {
+                                                setNavigationEnCours("suiviPartie");
+                                            }
+                                        }}
+                                        to="/suivi-partie"
+                                    >
+                                        {navigationEnCours == "suiviPartie" ? <Chargement variant="button" /> : <MonitorPlay size={16} />}
+                                        Suivi partie
+                                    </NavLink>
+                                </li>
+                                <li>
+                                    <NavLink
+                                        className={({ isActive }) => `nav-item${isActive ? " active" : ""}`}
+                                        onClick={() => {
+                                            fermerMenu();
+
+                                            if (location.pathname !== "/administration") {
+                                                setNavigationEnCours("administration");
+                                            }
+                                        }}
+                                        to="/administration"
+                                    >
+                                        {navigationEnCours == "administration" ? <Chargement variant="button" /> : <Shield size={16} />}
+                                        Administration
+                                    </NavLink>
+                                </li>
+                            </>
+                        )}
                         <li>
-                            <NavLink className={({ isActive }) => `nav-item${isActive ? " active" : ""}`} to="/equipe">
-                                <Users size={16} />
-                                Équipe
+                            <NavLink className={({ isActive }) => `nav-item${isActive ? " active" : ""}`} to="/classement">
+                                <Trophy size={16} />
+                                Classements
                             </NavLink>
                         </li>
-                    )}
-                    <li>
-                        <NavLink className={({ isActive }) => `nav-item${isActive ? " active" : ""}`} to="/informations-legales">
-                            <Scale size={16} />
-                            Informations légales
-                        </NavLink>
-                    </li>
-                </ul>
+                        {role === "joueur" && (
+                            <li>
+                                <NavLink className={({ isActive }) => `nav-item${isActive ? " active" : ""}`} to="/equipe">
+                                    <Users size={16} />
+                                    Équipe
+                                </NavLink>
+                            </li>
+                        )}
+                        <li>
+                            <NavLink className={({ isActive }) => `nav-item${isActive ? " active" : ""}`} to="/informations-legales">
+                                <Scale size={16} />
+                                Informations légales
+                            </NavLink>
+                        </li>
+                    </ul>
+                )}
 
                 {/* FOOTER — connexion ou profil */}
-                <div className="navbar-footer">
-                    {estAuth ? (
-                        <>
-                            <NavLink
-                                className={({ isActive }) => `nav-item${isActive ? " active" : ""}`}
-                                to="/mon-compte"
-                                onClick={() => {
-                                    fermerMenu();
+                {(!estMobile || menuOuvert) && (
+                    <div className="navbar-footer">
+                        {estAuth ? (
+                            <>
+                                <NavLink
+                                    className={({ isActive }) => `nav-item${isActive ? " active" : ""}`}
+                                    to="/mon-compte"
+                                    onClick={() => {
+                                        fermerMenu();
 
-                                    if (location.pathname !== "/mon-compte") {
-                                        setNavigationEnCours("monCompte");
-                                    }
-                                }}
-                            >
-                                {navigationEnCours == "monCompte" ? <Chargement variant="button" /> : <UserCircle2 size={18} />}
-                                Mon compte
-                            </NavLink>
+                                        if (location.pathname !== "/mon-compte") {
+                                            setNavigationEnCours("monCompte");
+                                        }
+                                    }}
+                                >
+                                    {navigationEnCours == "monCompte" ? <Chargement variant="button" /> : <UserCircle2 size={18} />}
+                                    Mon compte
+                                </NavLink>
 
-                            {demandesAdhesion && demandesAdhesion.length > 0 && (
-                                <button className="navbarNotification" onClick={() => setAfficherModal(true)}>
-                                    <BellDot size={18} />
-                                    <span className="navbarNotificationBadge">{demandesAdhesion.length}</span>
-                                </button>
-                            )}
-                        </>
-                    ) : (
-                        <>
-                            <NavLink className={({ isActive }) => `nav-item${isActive ? " active" : ""}`} to="/connexion" onClick={() => fermerMenu()}>
-                                <UserRound size={18} />
-                                Connexion
-                            </NavLink>
+                                {demandesAdhesion && demandesAdhesion.length > 0 && (
+                                    <button className="navbarNotification" onClick={() => setAfficherModal(true)}>
+                                        <BellDot size={18} />
+                                        <span className="navbarNotificationBadge">{demandesAdhesion.length}</span>
+                                    </button>
+                                )}
+                            </>
+                        ) : (
+                            <>
+                                <NavLink className={({ isActive }) => `nav-item${isActive ? " active" : ""}`} to="/connexion" onClick={() => fermerMenu()}>
+                                    <UserRound size={18} />
+                                    Connexion
+                                </NavLink>
 
-                            <NavLink className={({ isActive }) => `nav-item${isActive ? " active" : ""}`} to="/inscription" onClick={() => fermerMenu()}>
-                                <UserRoundPlus size={18} />
-                                Inscription
-                            </NavLink>
-                        </>
-                    )}
-                </div>
+                                <NavLink className={({ isActive }) => `nav-item${isActive ? " active" : ""}`} to="/inscription" onClick={() => fermerMenu()}>
+                                    <UserRoundPlus size={18} />
+                                    Inscription
+                                </NavLink>
+                            </>
+                        )}
+                    </div>
+                )}
             </aside>
         </>
     );

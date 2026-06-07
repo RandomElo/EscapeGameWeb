@@ -833,11 +833,12 @@
    ------------------------------------------------------------ */
 
 @media (max-width: 768px) {
-    .gestionPartie {
+    .GestionPartie {
         display: flex;
         flex-direction: column;
         gap: var(--space-md);
         padding-bottom: 70px; /* espace bottom nav */
+        margin-left: 0;
     }
 
     .timeline::before {
